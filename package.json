@@ -12,6 +12,7 @@
     "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.5",
     "@material-tailwind/react": "^2.1.9",
+    "@react-google-maps/api": "^2.19.3",
     "axios": "^1.7.4",
     "next": "14.2.6",
     "react": "^18",
