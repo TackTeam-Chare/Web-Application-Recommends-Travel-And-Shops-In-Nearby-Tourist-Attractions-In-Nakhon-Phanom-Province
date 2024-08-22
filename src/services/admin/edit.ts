@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import { UpdateResponse, UpdateData} from '@/models/interface';
+import { UpdateResponse, UpdateData} from '@/models/model';
 
 const auth: AxiosInstance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BACKEND_URL as string,

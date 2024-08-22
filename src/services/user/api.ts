@@ -6,6 +6,7 @@ const api: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL as string,
 });
 
+
 // Function to fetch categories
 export const fetchCategories = async (): Promise<Category[]> => {
   try {
@@ -198,13 +199,32 @@ export const getNearbyFetchTourismData = async (id: number, radius = 5000): Prom
     const response: AxiosResponse<EntityResponse> = await api.get(`/place/nearby/${id}?radius=${radius}`);
     const { entity, nearbyEntities } = response.data;
 
+    // Map images for the main entity
+    if (entity.images && Array.isArray(entity.images)) {
+      entity.images = entity.images.map(image => ({
+        ...image,
+        image_url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`
+      }));
+    }
+
+    // Map images for the nearby entities
+    if (nearbyEntities && Array.isArray(nearbyEntities)) {
+      nearbyEntities.forEach(entity => {
+        if (entity.images && Array.isArray(entity.images)) {
+          entity.images = entity.images.map(image => ({
+            ...image,
+            image_url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`
+          }));
+        }
+      });
+    }
+
     return { entity, nearbyEntities };
   } catch (error) {
     console.error('Error fetching tourism data:', error);
     throw error;
   }
 };
-
 // Function to fetch random tourist attractions
 export const fetchRandomTouristAttractions = async (): Promise<Place[]> => {
   try {
