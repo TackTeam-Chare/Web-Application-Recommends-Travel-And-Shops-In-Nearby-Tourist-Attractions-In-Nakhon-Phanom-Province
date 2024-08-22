@@ -19,17 +19,38 @@ const Carousel = () => {
   const slides = [
     {
       id: 1,
-      title: "Amazing Thailand",
-      subtitle: "Phu Phra Bat Historical Park, Udon Thani",
-      description: "Thailand's Fifth Cultural Heritage Site. อุทยานประวัติศาสตร์ภูพระบาท จ. อุดรธานี มรดกโลกทางวัฒนธรรมแห่งที่ 5 ของประเทศไทย",
-      imageUrl: "https://cms.dmpcdn.com/travel/2022/07/10/6fbc4090-002d-11ed-aa6d-6bfb6ee4de9a_webp_original.jpg",
+      title: "วัดพระธาตุพนมวรมหาวิหาร",
+      subtitle: "Phra That Phanom",
+      description: "วัดพระธาตุพนมวรมหาวิหาร เป็นสถานที่ศักดิ์สิทธิ์ที่สำคัญที่สุดในจังหวัดนครพนม ตั้งอยู่ในอำเภอธาตุพนม เป็นพระธาตุเก่าแก่ที่สุดแห่งหนึ่งในประเทศไทย และเป็นที่สักการะของชาวพุทธทั่วประเทศ เพื่อขอพรและเป็นสิริมงคลในการเริ่มต้นชีวิตใหม่",
+      imageUrl: "https://static.thairath.co.th/media/dFQROr7oWzulq5Fa5BwNdKo6g2JTzOk2NPx5DpVmq3CyK5DbyHcO2DGTbxERnH3P2Ok.jpg",
     },
     {
       id: 2,
-      title: "Another Destination",
-      subtitle: "Beautiful Beaches",
-      description: "Experience the most beautiful beaches in Thailand.",
-      imageUrl: "https://www.thaitravelcenter.com/webdatas/travelinfo/content/Nakhon-panom-1-day-trip/1.jpg",
+      title: "พระธาตุเรณูนคร",
+      subtitle: "Phra That Renu Nakhon",
+      description: "พระธาตุเรณูนคร เป็นอีกหนึ่งสถานที่สำคัญของจังหวัดนครพนม ที่ตั้งอยู่ในอำเภอเรณูนคร มีลักษณะเป็นเจดีย์องค์เล็กที่สร้างขึ้นตามแบบจำลองของพระธาตุพนม เหมาะสำหรับการมาสักการะเพื่อขอพรให้มีความเจริญรุ่งเรืองในชีวิต",
+      imageUrl: "https://www.museumthailand.com/upload/evidence/1523261578_18994.jpg",
+    },
+    {
+      id: 3,
+      title: "สะพานมิตรภาพไทย-ลาว แห่งที่ 3",
+      subtitle: "Third Thai-Lao Friendship Bridge",
+      description: "สะพานมิตรภาพไทย-ลาว แห่งที่ 3 ที่นครพนม เป็นอีกหนึ่งจุดท่องเที่ยวที่น่าสนใจ ด้วยความงดงามของสะพานที่ทอดยาวข้ามแม่น้ำโขง เชื่อมต่อระหว่างไทยและลาว นักท่องเที่ยวสามารถมาชมวิวทิวทัศน์ที่นี่ในยามเย็นและแวะถ่ายรูปเป็นที่ระลึก",
+      imageUrl: "https://cbtthailand.dasta.or.th/upload-file-api/Resources/RelateAttraction/Images/RAT480335/1.jpeg",
+    },
+    {
+      id: 4,
+      title: "ภูพานน้อย",
+      subtitle: "Phu Phan Noi",
+      description: "ภูพานน้อย เป็นแหล่งท่องเที่ยวทางธรรมชาติที่สวยงามในจังหวัดนครพนม เหมาะสำหรับการเดินป่าและการชมวิวทิวทัศน์ที่สวยงามของภูเขาและแม่น้ำโขง เป็นจุดที่นักท่องเที่ยวนิยมมาพักผ่อนและสัมผัสกับธรรมชาติ",
+      imageUrl: "https://www.matichon.co.th/wp-content/uploads/2019/01/6-11.jpg",
+    },
+    {
+      id: 5,
+      title: "วัดนักบุญอันนา หนองแสง",
+      subtitle: "Saint Anna Nong Saeng Church",
+      description: "วัดนักบุญอันนา หนองแสง เป็นโบสถ์คริสต์ที่เก่าแก่และงดงาม ตั้งอยู่ริมแม่น้ำโขงในเมืองนครพนม โบสถ์นี้มีสถาปัตยกรรมที่สวยงามและเป็นสถานที่ที่สำคัญสำหรับชาวคริสต์ในพื้นที่",
+      imageUrl: "https://mpics.mgronline.com/pics/Images/566000005562105.JPEG",
     },
   ];
 
@@ -37,7 +58,7 @@ const Carousel = () => {
     <div className="w-full">
       <Slider {...settings}>
         {slides.map((slide) => (
-          <div key={slide.id} className="relative w-full h-[40vh] md:h-[50vh] lg:h-[60vh] overflow-hidden">
+          <div key={slide.id} className="relative w-full h-[60vh] md:h-[70vh] lg:h-[80vh] overflow-hidden">
             <Image
               src={slide.imageUrl}
               alt={slide.title}
