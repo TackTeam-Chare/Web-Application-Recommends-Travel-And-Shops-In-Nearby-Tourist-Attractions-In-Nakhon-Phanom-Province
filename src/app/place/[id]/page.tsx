@@ -113,6 +113,7 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
           <GoogleMapComponent
             lat={Number(tourismData.latitude)}
             lng={Number(tourismData.longitude)}
+            nearbyEntities={nearbyEntities}
           />
         )}
       </div>

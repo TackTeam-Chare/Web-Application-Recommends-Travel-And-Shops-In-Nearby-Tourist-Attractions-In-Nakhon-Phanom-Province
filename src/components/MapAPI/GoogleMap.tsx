@@ -1,27 +1,34 @@
+"use client";
 import React, { useCallback, useRef } from "react";
-import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 
 const mapContainerStyle = {
-  width: "100%",
-  height: "400px",
+  width: '100%',
+  height: '400px',
+  borderRadius: '10px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
 };
 
-const options = {
-  disableDefaultUI: true,
-  zoomControl: true,
-};
-
+const options: google.maps.MapOptions = {
+    disableDefaultUI: true,
+    zoomControl: true,
+    styles: [
+     
+    ]
+  };
+  
 interface GoogleMapComponentProps {
   lat: number;
   lng: number;
+  nearbyEntities: { latitude: string; longitude: string; name: string }[];
 }
 
-const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ lat, lng }) => {
+const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ lat, lng, nearbyEntities }) => {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
   });
 
-  const center = {
+  const center: google.maps.LatLngLiteral = {
     lat: Number(lat),
     lng: Number(lng),
   };
@@ -43,7 +50,17 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ lat, lng }) => 
       options={options}
       onLoad={onMapLoad}
     >
-      <Marker position={{ lat: center.lat, lng: center.lng }} />
+      {/* Marker for the main place */}
+      <MarkerF position={center} />
+
+      {/* Markers for nearby entities */}
+      {nearbyEntities.map((entity, index) => (
+        <MarkerF
+          key={index}
+          position={{ lat: Number(entity.latitude), lng: Number(entity.longitude) }}
+          title={entity.name}
+        />
+      ))}
     </GoogleMap>
   );
 };
