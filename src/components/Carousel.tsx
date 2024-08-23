@@ -22,14 +22,14 @@ const Carousel = () => {
       title: "วัดพระธาตุพนมวรมหาวิหาร",
       subtitle: "Phra That Phanom",
       description: "วัดพระธาตุพนมวรมหาวิหาร เป็นสถานที่ศักดิ์สิทธิ์ที่สำคัญที่สุดในจังหวัดนครพนม ตั้งอยู่ในอำเภอธาตุพนม เป็นพระธาตุเก่าแก่ที่สุดแห่งหนึ่งในประเทศไทย และเป็นที่สักการะของชาวพุทธทั่วประเทศ เพื่อขอพรและเป็นสิริมงคลในการเริ่มต้นชีวิตใหม่",
-      imageUrl: "https://static.thairath.co.th/media/dFQROr7oWzulq5Fa5BwNdKo6g2JTzOk2NPx5DpVmq3CyK5DbyHcO2DGTbxERnH3P2Ok.jpg",
+      imageUrl: "https://mpics.mgronline.com/pics/Images/565000010299801.JPEG",
     },
     {
       id: 2,
       title: "พระธาตุเรณูนคร",
       subtitle: "Phra That Renu Nakhon",
       description: "พระธาตุเรณูนคร เป็นอีกหนึ่งสถานที่สำคัญของจังหวัดนครพนม ที่ตั้งอยู่ในอำเภอเรณูนคร มีลักษณะเป็นเจดีย์องค์เล็กที่สร้างขึ้นตามแบบจำลองของพระธาตุพนม เหมาะสำหรับการมาสักการะเพื่อขอพรให้มีความเจริญรุ่งเรืองในชีวิต",
-      imageUrl: "https://www.museumthailand.com/upload/evidence/1523261578_18994.jpg",
+      imageUrl: "https://www.prachachat.net/wp-content/uploads/2021/03/%E0%B8%99%E0%B8%84%E0%B8%A3%E0%B8%9E%E0%B8%99%E0%B8%A1.jpg",
     },
     {
       id: 3,

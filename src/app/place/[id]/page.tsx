@@ -86,7 +86,7 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
   return (
     <div className={`container mx-auto mt-10 px-4 flex ${nearbyEntities.length > 0 ? "flex-col lg:flex-row" : "flex-col"} gap-8`}>
       <div className={nearbyEntities.length > 0 ? "w-full lg:w-2/3" : "w-full"}>
-        <h1 className="text-4xl font-bold text-gray-800">
+        <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-Orange-500 text-center mt-10 mb-5">
           ชื่อสถานที่: {tourismData.name}
         </h1>
         <Slider {...settings}>

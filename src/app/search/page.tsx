@@ -108,26 +108,33 @@ const SearchPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold text-center mb-8">ค้นหาสถานที่</h1>
-
+      <h2 className="text-4xl md:text-4xl lg:text-5xl font-bold text-Orange-500 text-center mt-10 mb-5">ค้นหาสถานที่</h2>
       {/* Search Input */}
-      <div className="mb-6">
-        <input
-          type="text"
-          className="w-full p-3 rounded-lg border border-gray-300 focus:ring focus:ring-orange-300"
-          placeholder="ค้นหาสถานที่ท่องเที่ยว ร้านค้าของฝาก ที่พัก ร้านอาหาร..."
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            handleSearch();
-          }}
-        />
-      </div>
+      <div className="relative mb-6">
+  <input
+    type="text"
+    id="search-input"
+    placeholder=" " // ใช้ placeholder เป็นช่องว่าง
+    value={searchQuery}
+    onChange={(e) => {
+      setSearchQuery(e.target.value);
+      handleSearch();
+    }}
+    className="w-full p-3 rounded-lg border border-gray-300 peer"
+  />
+  <label
+    htmlFor="search-input"
+    className="absolute left-3 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-[-10px] peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-700 bg-white px-1"
+  >
+    ค้นหาสถานที่ท่องเที่ยว ร้านค้าของฝาก ที่พัก ร้านอาหาร...
+  </label>
+</div>
+
 
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <select
-          className="p-3 rounded-lg border border-gray-300 focus:ring focus:ring-orange-300"
+          className="p-3 rounded-lg border border-gray-300"
           value={selectedCategory || ""}
           onChange={(e) => handleFilterChange("category", Number(e.target.value) || null)}
         >
@@ -140,7 +147,7 @@ const SearchPage: React.FC = () => {
         </select>
 
         <select
-          className="p-3 rounded-lg border border-gray-300 focus:ring focus:ring-orange-300"
+          className="p-3 rounded-lg border border-gray-300 "
           value={selectedDistrict || ""}
           onChange={(e) => handleFilterChange("district", Number(e.target.value) || null)}
         >
@@ -153,7 +160,7 @@ const SearchPage: React.FC = () => {
         </select>
 
         <select
-          className="p-3 rounded-lg border border-gray-300 focus:ring focus:ring-orange-300"
+          className="p-3 rounded-lg border border-gray-300"
           value={selectedSeason || ""}
           onChange={(e) => handleFilterChange("season", Number(e.target.value) || null)}
         >
@@ -169,7 +176,7 @@ const SearchPage: React.FC = () => {
       {/* Time Filter */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <select
-          className="p-3 rounded-lg border border-gray-300 focus:ring focus:ring-orange-300"
+          className="p-3 rounded-lg border border-gray-300g"
           value={timeFilter.day_of_week}
           onChange={(e) => handleFilterChange("time", { day_of_week: e.target.value })}
         >
@@ -185,7 +192,7 @@ const SearchPage: React.FC = () => {
 
         <input
           type="time"
-          className="p-3 rounded-lg border border-gray-300 focus:ring focus:ring-orange-300"
+          className="p-3 rounded-lg border border-gray-300 "
           placeholder="เวลาเปิด"
           value={timeFilter.opening_time}
           onChange={(e) => handleFilterChange("time", { opening_time: e.target.value })}
@@ -193,7 +200,7 @@ const SearchPage: React.FC = () => {
 
         <input
           type="time"
-          className="p-3 rounded-lg border border-gray-300 focus:ring focus:ring-orange-300"
+          className="p-3 rounded-lg border border-gray-300 "
           placeholder="เวลาปิด"
           value={timeFilter.closing_time}
           onChange={(e) => handleFilterChange("time", { closing_time: e.target.value })}
@@ -221,7 +228,7 @@ const SearchPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {results.map((place) => (
           <Link key={place.id} href={`/place/${place.id}`}>
-            <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 ease-in-out h-full flex flex-col justify-between">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full">
               {place.image_url && place.image_url[0] ? (
                 <Image
                   src={place.image_url[0]}
