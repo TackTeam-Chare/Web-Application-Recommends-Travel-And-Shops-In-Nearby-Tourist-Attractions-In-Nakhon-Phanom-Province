@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchRestaurants } from '@/services/user/api';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Place } from '@/models/interface';
 import { PaginationProps } from "@/models/interface";
 
@@ -39,6 +40,7 @@ const RestaurantsPage: React.FC = () => {
       <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-Orange-500 text-center mt-10 mb-5">ร้านอาหาร</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {paginatedRestaurants.map((restaurant) => (
+                     <Link href={`/place/${restaurant.id}`} key={restaurant.id}>
           <div
             key={restaurant.id}
             className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full"
@@ -60,6 +62,7 @@ const RestaurantsPage: React.FC = () => {
             <p className="text-gray-600 flex-grow">{restaurant.description}</p>
             <p className="text-orange-500 mt-2 font-bold self-end">อ่านต่อ...</p>
           </div>
+          </Link>
         ))}
       </div>
       <Pagination

@@ -1,7 +1,9 @@
-"use client"
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import { fetchTouristAttractions } from '@/services/user/api';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Place } from '@/models/interface';
 import { PaginationProps } from "@/models/interface";
 
@@ -36,27 +38,29 @@ const TouristAttractionsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-Orange-500 text-center mt-10 mb-5">สถานที่ท่องเที่ยว</h1>
+      <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-orange-500 text-center mt-10 mb-5">สถานที่ท่องเที่ยว</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {paginatedAttractions.map((attraction) => (
-          <div key={attraction.id} className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full">
-            {attraction.image_url && attraction.image_url[0] ? (
-              <Image
-                src={attraction.image_url[0]}
-                alt={attraction.name}
-                width={500}
-                height={300}
-                className="rounded-lg mb-4 object-cover w-full h-48"
-              />
-            ) : (
-              <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
-                <span className="text-gray-500">ไม่มีรูปภาพ</span>
-              </div>
-            )}
-            <h2 className="text-xl font-semibold">{attraction.name}</h2>
-            <p className="text-gray-600 flex-grow">{attraction.description}</p>
-            <p className="text-orange-500 mt-2 font-bold self-end">อ่านต่อ...</p>
-          </div>
+          <Link href={`/place/${attraction.id}`} key={attraction.id}>
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full">
+              {attraction.image_url && attraction.image_url[0] ? (
+                <Image
+                  src={attraction.image_url[0]}
+                  alt={attraction.name}
+                  width={500}
+                  height={300}
+                  className="rounded-lg mb-4 object-cover w-full h-48"
+                />
+              ) : (
+                <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
+                  <span className="text-gray-500">ไม่มีรูปภาพ</span>
+                </div>
+              )}
+              <h2 className="text-xl font-semibold">{attraction.name}</h2>
+              <p className="text-gray-600 flex-grow">{attraction.description}</p>
+              <p className="text-orange-500 mt-2 font-bold self-end">อ่านต่อ...</p>
+            </div>
+          </Link>
         ))}
       </div>
       <Pagination
@@ -88,7 +92,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
             page === currentPage
             ? 'bg-orange-700 text-white hover:shadow-xl hover:bg-gradient-to-r hover:from-orange-600 hover:to-orange-800'
             : 'bg-orange-500 text-white hover:bg-gradient-to-r hover:from-orange-400 hover:to-orange-600'
-        } hover:scale-105`}        
+        } hover:scale-105`}
         >
           {page}
         </button>

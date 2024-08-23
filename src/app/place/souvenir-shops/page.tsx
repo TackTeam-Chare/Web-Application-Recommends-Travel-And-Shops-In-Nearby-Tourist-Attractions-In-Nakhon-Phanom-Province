@@ -1,9 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { fetchSouvenirShops } from '@/services/user/api';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Place } from '@/models/interface';
 import { PaginationProps } from "@/models/interface";
+import { fetchSouvenirShops } from '@/services/user/api';
 
 const SouvenirShopsPage: React.FC = () => {
   const [souvenirShops, setSouvenirShops] = useState<Place[]>([]);
@@ -39,6 +40,7 @@ const SouvenirShopsPage: React.FC = () => {
       <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-Orange-500 text-center mt-10 mb-5">ร้านค้าของฝาก</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {paginatedSouvenirShops.map((shop) => (
+                 <Link href={`/place/${shop.id}`} key={shop.id}>
           <div
             key={shop.id}
             className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full"
@@ -60,6 +62,7 @@ const SouvenirShopsPage: React.FC = () => {
             <p className="text-gray-600 flex-grow">{shop.description}</p>
             <p className="text-orange-500 mt-2 font-bold self-end">อ่านต่อ...</p>
           </div>
+          </Link>
         ))}
       </div>
       <Pagination

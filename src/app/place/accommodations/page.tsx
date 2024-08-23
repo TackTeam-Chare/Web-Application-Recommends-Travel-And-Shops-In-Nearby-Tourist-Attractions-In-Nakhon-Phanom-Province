@@ -1,9 +1,10 @@
  "use client"
 import React, { useEffect, useState } from 'react';
-import { fetchAccommodations } from '@/services/user/api';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Place } from '@/models/interface';
 import { PaginationProps } from "@/models/interface";
+import { fetchAccommodations } from '@/services/user/api';
 
 const AccommodationsPage: React.FC = () => {
   const [accommodations, setAccommodations] = useState<Place[]>([]);
@@ -39,6 +40,7 @@ const AccommodationsPage: React.FC = () => {
       <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-Orange-500 text-center mt-10 mb-5">ที่พัก</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {paginatedAccommodations.map((accommodation) => (
+                <Link href={`/place/${accommodation.id}`} key={accommodation.id}>
           <div
             key={accommodation.id}
             className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full"
@@ -60,6 +62,7 @@ const AccommodationsPage: React.FC = () => {
             <p className="text-gray-600 flex-grow">{accommodation.description}</p>
             <p className="text-orange-500 mt-2 font-bold self-end">อ่านต่อ...</p>
           </div>
+          </Link>
         ))}
       </div>
       <Pagination
