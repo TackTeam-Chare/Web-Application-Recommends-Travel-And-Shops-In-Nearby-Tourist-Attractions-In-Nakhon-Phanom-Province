@@ -47,6 +47,9 @@ export default function Header() {
                 <a href="/place/season-real-time" className="block px-4 py-2 hover:bg-gray-100">
                ฤดูกาลนี้
                 </a>
+                <a href="/place/top-rated-tourist-entities" className="block px-4 py-2 hover:bg-gray-100">
+               ติดอันดับ
+                </a>
                 <a href="/place" className="block px-4 py-2 hover:bg-gray-100">
                   สถานที่ทั้งหมด
                 </a>
@@ -137,6 +140,9 @@ export default function Header() {
                 </a>
                 <a href="/place/season-real-time" className="block px-4 py-2 hover:bg-gray-100">
                ฤดูกาลนี้
+                </a>
+                <a href="/place/top-rated-tourist-entities" className="block px-4 py-2 hover:bg-gray-100">
+               ติดอันดับ
                 </a>
                 <a
                   href="/place"

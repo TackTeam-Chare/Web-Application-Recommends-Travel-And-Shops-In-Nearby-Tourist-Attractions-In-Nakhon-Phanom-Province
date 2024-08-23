@@ -33,11 +33,10 @@ export const getTopRatedTouristEntities = async (): Promise<Place[]> => {
   }
 };
 
-
 // Fetch top-rated tourist attractions
 export const fetchTopRatedTouristAttractions = async (): Promise<Place[]> => {
   try {
-    const response: AxiosResponse<Place[]> = await axios.get('/places/top-rated/tourist-attractions');
+    const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/tourist-attractions');
     return response.data;
   } catch (error: any) {
     console.error('Error fetching top-rated tourist attractions:', error);
@@ -48,7 +47,7 @@ export const fetchTopRatedTouristAttractions = async (): Promise<Place[]> => {
 // Fetch top-rated accommodations
 export const fetchTopRatedAccommodations = async (): Promise<Place[]> => {
   try {
-    const response: AxiosResponse<Place[]> = await axios.get('/places/top-rated/accommodations');
+    const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/accommodations');
     return response.data;
   } catch (error: any) {
     console.error('Error fetching top-rated accommodations:', error);
@@ -59,7 +58,7 @@ export const fetchTopRatedAccommodations = async (): Promise<Place[]> => {
 // Fetch top-rated restaurants
 export const fetchTopRatedRestaurants = async (): Promise<Place[]> => {
   try {
-    const response: AxiosResponse<Place[]> = await axios.get('/places/top-rated/restaurants');
+    const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/restaurants');
     return response.data;
   } catch (error: any) {
     console.error('Error fetching top-rated restaurants:', error);
@@ -70,7 +69,7 @@ export const fetchTopRatedRestaurants = async (): Promise<Place[]> => {
 // Fetch top-rated souvenir shops
 export const fetchTopRatedSouvenirShops = async (): Promise<Place[]> => {
   try {
-    const response: AxiosResponse<Place[]> = await axios.get('/places/top-rated/souvenir-shops');
+    const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/souvenir-shops');
     return response.data;
   } catch (error: any) {
     console.error('Error fetching top-rated souvenir shops:', error);

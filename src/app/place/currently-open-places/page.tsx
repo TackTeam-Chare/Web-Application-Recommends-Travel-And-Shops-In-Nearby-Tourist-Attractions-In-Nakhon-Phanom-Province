@@ -1,4 +1,4 @@
-import CurrentlyOpenPlaces from '@/components/Card/Places/CurrentlyOpen'
+import CurrentlyOpenPlaces from '@/components/Places/CurrentlyOpen'
 
 export default function Home() {
   return (

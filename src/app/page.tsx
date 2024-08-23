@@ -1,8 +1,8 @@
 
 import Carousel from '@/components/Carousel'
-import PlacesRandom from '@/components/Card/Places/PlacesRandom'
-import RealTimeSeasonalAttractions from '@/components/Card/Places/RealTime'
-import TopRatedCarousel from '@/components/Card/Places/TopRatedCarousel'
+import PlacesRandom from '@/components/Places/PlacesRandom'
+import RealTimeSeasonalAttractions from '@/components/Places/RealTime'
+import TopRatedCarousel from '@/components/Places/TopRatedCarousel'
 
 export default function Home() {
   return (
