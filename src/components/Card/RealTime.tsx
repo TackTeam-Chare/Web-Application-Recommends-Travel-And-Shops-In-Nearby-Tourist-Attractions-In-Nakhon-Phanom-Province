@@ -5,6 +5,7 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { fetchRealTimeTouristAttractions } from "@/services/user/api";
 import Image from "next/image";
+import Link from "next/link";
 
 const responsive = {
   desktop: {
@@ -46,8 +47,8 @@ const RealTimeSeasonalAttractions = () => {
       {attractions.length > 0 ? (
         <Carousel responsive={responsive} className="z-10">
           {attractions.map((attraction, index) => (
-            <div key={index} className="p-4">
-              <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <Link key={index} href={`/place/${attraction.id}`} className="p-4 block">
+              <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full">
                 {attraction.images && attraction.images.length > 0 ? (
                   <Image
                     src={attraction.images[0].image_url}
@@ -61,13 +62,15 @@ const RealTimeSeasonalAttractions = () => {
                     <span className="text-gray-500">ไม่มีรูปภาพ</span>
                   </div>
                 )}
-                <div className="p-4">
+                <div className="p-4 flex-grow flex flex-col">
                   <h3 className="text-lg font-semibold">{attraction.name}</h3>
-                  <p className="text-gray-600">{attraction.description}</p>
+                  <p className="text-gray-600 flex-grow overflow-hidden text-ellipsis">
+                    {attraction.description}
+                  </p>
                   <p className="text-gray-600"><strong>อำเภอ:</strong> {attraction.district_name}</p>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </Carousel>
       ) : (

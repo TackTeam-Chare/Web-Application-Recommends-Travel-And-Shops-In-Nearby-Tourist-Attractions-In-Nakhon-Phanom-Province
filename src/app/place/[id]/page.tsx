@@ -1,8 +1,9 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
-import Link from "next/link"; // Import the Link component from Next.js
+import Link from "next/link";
 import { getNearbyFetchTourismData } from "@/services/user/api";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -32,7 +33,7 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
             data.entity.images = removeDuplicateImages(data.entity.images);
           }
           if (data.nearbyEntities) {
-            data.nearbyEntities = data.nearbyEntities.map(entity => {
+            data.nearbyEntities = data.nearbyEntities.map((entity) => {
               if (entity.images) {
                 entity.images = removeDuplicateImages(entity.images);
               }
@@ -42,7 +43,7 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
           setTourismData(data.entity);
           setNearbyEntities(data.nearbyEntities);
         } catch (error) {
-          console.error('Error fetching tourism data:', error);
+          console.error("Error fetching tourism data:", error);
         }
       }
     };
@@ -67,8 +68,23 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
     arrows: true,
   };
 
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case "สถานที่ท่องเที่ยว":
+        return "bg-orange-500";
+      case "ที่พัก":
+        return "bg-blue-500";
+      case "ร้านอาหาร":
+        return "bg-green-500";
+      case "ร้านค้าของฝาก":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
   return (
-    <div className={`container mx-auto mt-10 px-4 flex ${nearbyEntities.length > 0 ? 'flex-col lg:flex-row' : 'flex-col'} gap-8`}>
+    <div className={`container mx-auto mt-10 px-4 flex ${nearbyEntities.length > 0 ? "flex-col lg:flex-row" : "flex-col"} gap-8`}>
       <div className={nearbyEntities.length > 0 ? "w-full lg:w-2/3" : "w-full"}>
         <h1 className="text-4xl font-bold text-gray-800">
           ชื่อสถานที่: {tourismData.name}
@@ -109,7 +125,6 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
             <strong>อำเภอ:</strong> {tourismData.district_name}
           </p>
         </div>
-        {/* Integrate Google Map */}
         {isValidCoordinates && (
           <GoogleMapComponent
             lat={Number(tourismData.latitude)}
@@ -119,13 +134,15 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
         )}
       </div>
 
-      {/* Check if there are nearby entities before rendering the section */}
       {nearbyEntities.length > 0 && (
         <div className="w-full lg:w-1/3 flex flex-col gap-4">
           <h1 className="text-4xl font-bold text-gray-800">สถานที่ใกล้เคียง</h1>
           {nearbyEntities.map((entity: any) => (
-            <Link key={entity.id} href={`/place/${entity.id}`} className="block"> {/* Wrap the entire div in a Link component */}
-              <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-start">
+            <Link key={entity.id} href={`/place/${entity.id}`} className="block">
+              <div className={`bg-white p-4 rounded-lg shadow-lg flex flex-col items-start relative hover:shadow-2xl transition-shadow duration-300 ease-in-out`}>
+                <div className={`absolute top-0 right-0 mt-2 mr-2 ${getCategoryColor(entity.category_name)} text-white text-xs font-semibold px-2 py-1 rounded`}>
+                  {entity.category_name}
+                </div>
                 {Array.isArray(entity.images) && entity.images.length > 0 ? (
                   <Image
                     src={entity.images[0].image_url}
@@ -140,7 +157,9 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
                     <span className="text-gray-500">ไม่มีรูปภาพ</span>
                   </div>
                 )}
-                <h3 className="text-lg font-semibold mb-2">{entity.name}</h3>
+                <h3 className="text-lg font-semibold mb-2 hover:text-orange-500 transition-colors duration-300 ease-in-out">
+                  {entity.name}
+                </h3>
                 <p className="text-gray-700 mb-1"><strong>หมวดหมู่:</strong> {entity.category_name}</p>
                 <p className="text-gray-700 mb-1"><strong>เขต:</strong> {entity.district_name}</p>
                 <p className="text-gray-700 mb-1"><strong>ระยะทาง:</strong> {entity.distance} เมตร</p>

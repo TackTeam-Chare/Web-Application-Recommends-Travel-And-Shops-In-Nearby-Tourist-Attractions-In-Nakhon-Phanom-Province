@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import Image from 'next/image';
 import {
   Dialog,
   DialogPanel,
@@ -28,7 +27,7 @@ export default function Header() {
         <div className="text-4xl font-bold">นครพนม</div>
         <nav className="hidden md:flex space-x-6">
           <a href="/" className="text-lg hover:text-gray-200">หน้าเเรก</a>
-          <a href="/places/map" className="text-lg hover:text-gray-200">ค้นหาสถานที่</a>
+          <a href="/search" className="text-lg hover:text-gray-200">ค้นหาสถานที่</a>
           <a href="/places/map" className="text-lg hover:text-gray-200">เเผนที่</a>
           <Popover className="relative">
             <PopoverButton className="text-lg hover:text-gray-200 flex items-center">
