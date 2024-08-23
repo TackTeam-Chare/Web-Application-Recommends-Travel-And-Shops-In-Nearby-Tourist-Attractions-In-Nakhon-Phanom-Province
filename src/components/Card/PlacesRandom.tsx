@@ -6,6 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { Place } from '@/models/interface';
 import { fetchRandomTouristAttractions } from '@/services/user/api';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const CardRandom = () => {
   const [places, setPlaces] = useState<Place[]>([]);
@@ -40,7 +41,7 @@ const CardRandom = () => {
         {places.map((place) => (
           <div key={place.id} className="flex items-center">
             <div className="flex-1">
-              <a href={place.link} target="_blank" rel="noopener noreferrer">
+              <Link href={`/place/${place.id}`}>
                 {place.image_url && typeof place.image_url === 'string' ? (
                   <Image
                     src={place.image_url}
@@ -55,19 +56,20 @@ const CardRandom = () => {
                     <span className="text-gray-500">ไม่มีรูปภาพสถานที่</span>
                   </div>
                 )}
-              </a>
+              </Link>
             </div>
             <div className="flex-1 flex flex-col justify-between p-6">
               <h3 className="entry-title text-3xl font-bold mb-4">
-                <a href={place.link} target="_blank" rel="noopener noreferrer">
+                <Link href={`/place/${place.id}`}>
                   {place.name}
-                </a>
+                </Link>
               </h3>
-              <div className="line-divided line-divided-yellow mb-4"></div>
+              <p className="flex-grow"><strong>หมวดหมู่:</strong> {place.category_name}</p>
+              <p className="flex-grow"><strong>อำเภอ:</strong> {place.district_name}</p>
               <p className="flex-grow">{place.description}</p>
-              <a href={place.link} target="_blank" className="text-orange-500 hover:text-orange-600 font-semibold mt-auto">
+              <Link href={`/place/${place.id}`} className="text-orange-500 hover:text-orange-600 font-semibold mt-auto">
                 อ่านต่อ →
-              </a>
+              </Link>
             </div>
           </div>
         ))}

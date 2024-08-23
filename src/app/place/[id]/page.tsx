@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
+import Link from "next/link"; // Import the Link component from Next.js
 import { getNearbyFetchTourismData } from "@/services/user/api";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -123,27 +124,29 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
         <div className="w-full lg:w-1/3 flex flex-col gap-4">
           <h1 className="text-4xl font-bold text-gray-800">สถานที่ใกล้เคียง</h1>
           {nearbyEntities.map((entity: any) => (
-            <div key={entity.id} className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-start">
-              {Array.isArray(entity.images) && entity.images.length > 0 ? (
-                <Image
-                  src={entity.images[0].image_url}
-                  alt={entity.name}
-                  width={500}
-                  height={300}
-                  className="w-full h-auto rounded-lg shadow-md"
-                  quality={100}
-                />
-              ) : (
-                <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-500">ไม่มีรูปภาพ</span>
-                </div>
-              )}
-              <h3 className="text-lg font-semibold mb-2">{entity.name}</h3>
-              <p className="text-gray-700 mb-1"><strong>หมวดหมู่:</strong> {entity.category_name}</p>
-              <p className="text-gray-700 mb-1"><strong>เขต:</strong> {entity.district_name}</p>
-              <p className="text-gray-700 mb-1"><strong>ระยะทาง:</strong> {entity.distance} เมตร</p>
-              <p className="text-gray-700 mb-1"><strong>เวลาทำการ:</strong> {entity.opening_times} - {entity.closing_times}</p>
-            </div>
+            <Link key={entity.id} href={`/place/${entity.id}`} className="block"> {/* Wrap the entire div in a Link component */}
+              <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-start">
+                {Array.isArray(entity.images) && entity.images.length > 0 ? (
+                  <Image
+                    src={entity.images[0].image_url}
+                    alt={entity.name}
+                    width={500}
+                    height={300}
+                    className="w-full h-auto rounded-lg shadow-md"
+                    quality={100}
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                    <span className="text-gray-500">ไม่มีรูปภาพ</span>
+                  </div>
+                )}
+                <h3 className="text-lg font-semibold mb-2">{entity.name}</h3>
+                <p className="text-gray-700 mb-1"><strong>หมวดหมู่:</strong> {entity.category_name}</p>
+                <p className="text-gray-700 mb-1"><strong>เขต:</strong> {entity.district_name}</p>
+                <p className="text-gray-700 mb-1"><strong>ระยะทาง:</strong> {entity.distance} เมตร</p>
+                <p className="text-gray-700 mb-1"><strong>เวลาทำการ:</strong> {entity.opening_times} - {entity.closing_times}</p>
+              </div>
+            </Link>
           ))}
         </div>
       )}
