@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Link from "next/link";
+import { showInfoAlert, showErrorAlert } from "@/lib/sweetalert";
 
 const CurrentlyOpenPlaces: React.FC = () => {
   const [places, setPlaces] = useState<Place[]>([]);
@@ -15,9 +16,13 @@ const CurrentlyOpenPlaces: React.FC = () => {
     const fetchPlaces = async () => {
       try {
         const openPlaces = await fetchCurrentlyOpenTouristEntities();
+        if (openPlaces.length === 0) {
+          showInfoAlert("ไม่มีสถานที่เปิดในขณะนี้", "ขณะนี้ไม่มีสถานที่ท่องเที่ยวเปิดให้บริการ");
+        }
         setPlaces(openPlaces);
       } catch (error) {
         console.error("Error fetching currently open places:", error);
+        showErrorAlert("เกิดข้อผิดพลาด", "ไม่สามารถดึงข้อมูลสถานที่ได้ กรุณาลองใหม่อีกครั้ง");
       }
     };
 
@@ -26,7 +31,9 @@ const CurrentlyOpenPlaces: React.FC = () => {
 
   return (
     <div className="container mx-auto py-10">
-  <h2 className="text-4xl md:text-4xl lg:text-5xl font-bold text-Orange-500 text-center mt-10 mb-5">สถานที่ที่เปิดทำการในเวลานี้</h2>
+      <h2 className="text-4xl md:text-4xl lg:text-5xl font-bold text-orange-500 text-center mt-10 mb-5">
+        สถานที่ที่เปิดทำการในเวลานี้
+      </h2>
       {places.length > 0 ? (
         <Carousel
           showThumbs={false}
@@ -65,7 +72,9 @@ const CurrentlyOpenPlaces: React.FC = () => {
           ))}
         </Carousel>
       ) : (
-        <p className="text-center text-gray-600">ไม่มีสถานที่เปิดในขณะนี้</p>
+        <p className="text-center text-xl font-bold text-orange-500">
+          ไม่มีสถานที่เปิดในขณะนี้
+        </p>
       )}
     </div>
   );
