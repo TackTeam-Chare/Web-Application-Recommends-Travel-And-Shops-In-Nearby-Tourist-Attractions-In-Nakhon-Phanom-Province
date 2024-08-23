@@ -34,9 +34,6 @@ export default function Header() {
           <a href="/2" className="text-lg hover:text-gray-200">
             เเผนที่
           </a>
-          <a href="/place/currently-open-places" className="text-lg hover:text-gray-200">
-            สถานที่ที่เปิดตอนนี้
-          </a>
           <Popover className="relative">
             <PopoverButton className="text-lg hover:text-gray-200 flex items-center">
               สถานที่
@@ -44,6 +41,12 @@ export default function Header() {
             </PopoverButton>
             <PopoverPanel className="absolute left-0 z-10 mt-2 w-48 rounded-lg bg-white text-gray-700 shadow-lg">
               <div className="py-2">
+                <a href="/place/currently-open-places" className="block px-4 py-2 hover:bg-gray-100">
+                เปิดในขณะนี้
+                </a>
+                <a href="/place/season-real-time" className="block px-4 py-2 hover:bg-gray-100">
+               ฤดูกาลนี้
+                </a>
                 <a href="/place" className="block px-4 py-2 hover:bg-gray-100">
                   สถานที่ทั้งหมด
                 </a>
@@ -123,18 +126,18 @@ export default function Header() {
             >
               เเผนที่
             </a>
-            <a
-              href="/place/currently-open-places"
-              className="block text-lg text-white hover:bg-orange-600 rounded-md px-4 py-2"
-            >
-              สถานที่ที่เปิดตอนนี้
-            </a>
             <Disclosure as="div">
               <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 px-4 text-lg hover:bg-orange-600">
                 สถานที่
                 <ChevronDownIcon className="h-5 w-5 group-data-[open]:rotate-180" />
               </DisclosureButton>
               <DisclosurePanel className="mt-2 space-y-2">
+                <a href="/place/currently-open-places" className="block px-4 py-2 hover:bg-gray-100">
+                เปิดในขณะนี้
+                </a>
+                <a href="/place/season-real-time" className="block px-4 py-2 hover:bg-gray-100">
+               ฤดูกาลนี้
+                </a>
                 <a
                   href="/place"
                   className="block rounded-lg py-2 px-4 text-lg hover:bg-orange-600"

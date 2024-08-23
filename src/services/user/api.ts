@@ -6,6 +6,77 @@ const api: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL as string,
 });
 
+// Function to fetch getNearbyTouristEntitiesRealTime
+export const getNearbyTouristEntitiesRealTime = async (latitude: number, longitude: number): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/places/nearby-realtime`, {
+      params: {
+        latitude,
+        longitude
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching nearby tourist entities:', error);
+    throw error;
+  }
+};
+
+// Function to fetch top-rated tourist entities
+export const getTopRatedTouristEntities = async (): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/tourist-entities');
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching top-rated tourist entities:', error);
+    throw new Error(error.response?.data?.error || 'Error fetching top-rated tourist entities');
+  }
+};
+
+
+// Fetch top-rated tourist attractions
+export const fetchTopRatedTouristAttractions = async (): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await axios.get('/places/top-rated/tourist-attractions');
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching top-rated tourist attractions:', error);
+    throw new Error(error.response?.data?.error || 'Error fetching top-rated tourist attractions');
+  }
+};
+
+// Fetch top-rated accommodations
+export const fetchTopRatedAccommodations = async (): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await axios.get('/places/top-rated/accommodations');
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching top-rated accommodations:', error);
+    throw new Error(error.response?.data?.error || 'Error fetching top-rated accommodations');
+  }
+};
+
+// Fetch top-rated restaurants
+export const fetchTopRatedRestaurants = async (): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await axios.get('/places/top-rated/restaurants');
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching top-rated restaurants:', error);
+    throw new Error(error.response?.data?.error || 'Error fetching top-rated restaurants');
+  }
+};
+
+// Fetch top-rated souvenir shops
+export const fetchTopRatedSouvenirShops = async (): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await axios.get('/places/top-rated/souvenir-shops');
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching top-rated souvenir shops:', error);
+    throw new Error(error.response?.data?.error || 'Error fetching top-rated souvenir shops');
+  }
+};
 
 // Function to fetch categories
 export const fetchCategories = async (): Promise<Category[]> => {

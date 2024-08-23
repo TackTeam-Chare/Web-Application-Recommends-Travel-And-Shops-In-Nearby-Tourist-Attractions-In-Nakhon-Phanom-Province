@@ -43,36 +43,46 @@ const RealTimeSeasonalAttractions = () => {
 
   return (
     <div className="container mx-auto mt-10 px-4">
-      <h1 className="text-4xl font-bold text-gray-800 mb-8">สถานที่ท่องเที่ยวตามฤดูกาลปัจจุบัน</h1>
+      <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-Orange-500  mt-10 mb-5">สถานที่ท่องเที่ยวตามฤดูกาลปัจจุบัน</h1>
       {attractions.length > 0 ? (
-        <Carousel responsive={responsive} className="z-10">
-          {attractions.map((attraction, index) => (
-            <Link key={index} href={`/place/${attraction.id}`} className="p-4 block">
-              <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full">
-                {attraction.images && attraction.images.length > 0 ? (
-                  <Image
-                    src={attraction.images[0].image_url}
-                    alt={attraction.name}
-                    width={500}
-                    height={300}
-                    className="w-full h-48 object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-500">ไม่มีรูปภาพ</span>
+        <div>
+          <Carousel responsive={responsive} className="z-10">
+            {attractions.map((attraction, index) => (
+              <Link key={index} href={`/place/${attraction.id}`} className="p-4 block">
+                <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full">
+                  {attraction.images && attraction.images.length > 0 ? (
+                    <Image
+                      src={attraction.images[0].image_url}
+                      alt={attraction.name}
+                      width={500}
+                      height={300}
+                      className="w-full h-48 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-500">ไม่มีรูปภาพ</span>
+                    </div>
+                  )}
+                  <div className="p-4 flex-grow flex flex-col">
+                    <h3 className="text-lg font-semibold">{attraction.name}</h3>
+                    <p className="text-gray-600 flex-grow overflow-hidden text-ellipsis">
+                      {attraction.description}
+                    </p>
+                    <p className="text-gray-600"><strong>อำเภอ:</strong> {attraction.district_name}</p>
                   </div>
-                )}
-                <div className="p-4 flex-grow flex flex-col">
-                  <h3 className="text-lg font-semibold">{attraction.name}</h3>
-                  <p className="text-gray-600 flex-grow overflow-hidden text-ellipsis">
-                    {attraction.description}
-                  </p>
-                  <p className="text-gray-600"><strong>อำเภอ:</strong> {attraction.district_name}</p>
                 </div>
-              </div>
+              </Link>
+            ))}
+          </Carousel>
+          <div className="flex justify-end">
+            <Link
+              href="/place/season-real-time"
+              className="bg-orange-500 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              ดูทั้งหมด
             </Link>
-          ))}
-        </Carousel>
+          </div>
+        </div>
       ) : (
         <p className="text-gray-600">ไม่มีสถานที่ท่องเที่ยวตามฤดูกาลในขณะนี้</p>
       )}
