@@ -17,7 +17,7 @@ import {
   GiftIcon,
   ShoppingBagIcon,
   BuildingStorefrontIcon,
-  XCircleIcon
+  XCircleIcon,
 } from "@heroicons/react/20/solid";
 
 export default function Header() {
@@ -42,9 +42,12 @@ export default function Header() {
         <div className="flex items-center space-x-4 md:space-x-10">
           {/* Logo */}
           <div className="text-2xl md:text-4xl font-bold">นครพนม</div>
-          
+
           {/* Search Form */}
-          <form onSubmit={handleSearch} className="relative flex items-center w-full max-w-md">
+          <form
+            onSubmit={handleSearch}
+            className="relative flex items-center w-full max-w-md"
+          >
             <MagnifyingGlassIcon className="absolute left-3 h-5 w-5 text-gray-500" />
             <input
               type="text"
@@ -86,7 +89,7 @@ export default function Header() {
               สถานที่
               <ChevronDownIcon className="ml-1 h-5 w-5" />
             </Popover.Button>
-            <Popover.Panel className="absolute left-0 z-10 mt-2 w-56 rounded-lg bg-white text-gray-700 shadow-lg">
+            <Popover.Panel className="absolute left-0 z-10 mt-2 w-56 rounded-lg bg-orange-500 text-white shadow-lg">
               <div className="py-2">
                 {[
                   { href: "/place/currently-open-places", icon: ClockIcon, text: "เปิดในขณะนี้" },
@@ -101,7 +104,7 @@ export default function Header() {
                   <a
                     key={index}
                     href={item.href}
-                    className="flex items-center block px-4 py-2 hover:bg-gray-100 transition duration-300 ease-in-out"
+                    className="flex items-center block px-4 py-2 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out"
                   >
                     <item.icon className="h-5 w-5 mr-2" />
                     {item.text}
@@ -178,7 +181,7 @@ export default function Header() {
                   <a
                     key={index}
                     href={item.href}
-                    className="flex items-center block rounded-lg py-2 px-4 hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105"
+                    className="flex items-center block rounded-lg py-2 px-4 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
                   >
                     <item.icon className="h-5 w-5 mr-2" />
                     {item.text}

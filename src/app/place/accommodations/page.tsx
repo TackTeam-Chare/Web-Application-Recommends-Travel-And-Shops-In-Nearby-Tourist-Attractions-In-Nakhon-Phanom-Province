@@ -1,10 +1,12 @@
 "use client";
+
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Place, District } from '@/models/interface';
 import { PaginationProps } from "@/models/interface";
 import { fetchAccommodationsByDistrict, fetchDistricts } from '@/services/user/api';
+import { FaChevronRight } from 'react-icons/fa'; // Import an icon for "read more"
 
 const AccommodationsPage: React.FC = () => {
   const [accommodations, setAccommodations] = useState<Place[]>([]);
@@ -111,13 +113,23 @@ const AccommodationsPage: React.FC = () => {
                   <span className="text-gray-500">ไม่มีรูปภาพ</span>
                 </div>
               )}
-              <h2 className="text-xl font-semibold">{accommodation.name}</h2>
-              <p className="text-gray-600 flex-grow">{accommodation.description}</p>
-              <p className="text-orange-500 mt-2 font-bold self-end">อ่านต่อ...</p>
+              <div className="p-4 flex-grow flex flex-col">
+                <h2 className="text-xl font-semibold mb-2">{accommodation.name}</h2>
+                <p className="text-gray-600 flex-grow">{accommodation.description}</p>
+                {/* Display season name */}
+                <p className="text-orange-500 font-bold mt-2">
+                  {accommodation.season_name}
+                </p>
+                <Link href={`/place/${accommodation.id}`} className="text-orange-500 mt-2 font-bold self-end flex items-center hover:underline">
+                  อ่านเพิ่มเติม
+                  <FaChevronRight className="ml-1" />
+                </Link>
+              </div>
             </div>
           </Link>
         ))}
       </div>
+
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}

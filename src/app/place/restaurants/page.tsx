@@ -1,10 +1,12 @@
 "use client";
+
 import React, { useEffect, useState } from 'react';
-import { fetchRestaurants, fetchDistricts, fetchRestaurantsByDistrict } from '@/services/user/api';
+import { fetchDistricts, fetchRestaurantsByDistrict } from '@/services/user/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Place, District } from '@/models/interface';
 import { PaginationProps } from "@/models/interface";
+import { FaChevronRight } from 'react-icons/fa';
 
 const RestaurantsPage: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Place[]>([]);
@@ -113,9 +115,18 @@ const RestaurantsPage: React.FC = () => {
                   <span className="text-gray-500">ไม่มีรูปภาพ</span>
                 </div>
               )}
-              <h2 className="text-xl font-semibold">{restaurant.name}</h2>
-              <p className="text-gray-600 flex-grow">{restaurant.description}</p>
-              <p className="text-orange-500 mt-2 font-bold self-end">อ่านต่อ...</p>
+              <div className="p-4 flex-grow flex flex-col">
+                <h2 className="text-xl font-semibold mb-2">{restaurant.name}</h2>
+                <p className="text-gray-600 flex-grow">{restaurant.description}</p>
+                {/* Display season name */}
+                <p className="text-orange-500 font-bold mt-2">
+                  {restaurant.season_name}
+                </p>
+                <Link href={`/place/${restaurant.id}`} className="text-orange-500 mt-2 font-bold self-end flex items-center hover:underline">
+                  อ่านเพิ่มเติม
+                  <FaChevronRight className="ml-1" />
+                </Link>
+              </div>
             </div>
           </Link>
         ))}

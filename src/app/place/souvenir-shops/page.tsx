@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { FaChevronRight } from 'react-icons/fa';
 import { Place, District } from '@/models/interface';
 import { PaginationProps } from "@/models/interface";
-import { fetchSouvenirShops, fetchDistricts, fetchSouvenirShopsByDistrict } from '@/services/user/api';
+import { fetchDistricts, fetchSouvenirShopsByDistrict } from '@/services/user/api';
 
 const SouvenirShopsPage: React.FC = () => {
   const [souvenirShops, setSouvenirShops] = useState<Place[]>([]);
@@ -15,7 +16,6 @@ const SouvenirShopsPage: React.FC = () => {
   const itemsPerPage = 6; // Number of items per page
 
   useEffect(() => {
-    // Fetch districts on component mount
     const fetchDistrictData = async () => {
       try {
         const districtsData = await fetchDistricts();
@@ -33,10 +33,8 @@ const SouvenirShopsPage: React.FC = () => {
       try {
         let data;
         if (selectedDistrict !== null) {
-          // Fetch souvenir shops by district if selected
           data = await fetchSouvenirShopsByDistrict(selectedDistrict);
         } else {
-          // Fetch all souvenir shops if no district is selected
           const allShops = await Promise.all(
             districts.map(district => fetchSouvenirShopsByDistrict(district.id))
           );
@@ -113,13 +111,24 @@ const SouvenirShopsPage: React.FC = () => {
                   <span className="text-gray-500">ไม่มีรูปภาพ</span>
                 </div>
               )}
-              <h2 className="text-xl font-semibold">{shop.name}</h2>
-              <p className="text-gray-600 flex-grow">{shop.description}</p>
-              <p className="text-orange-500 mt-2 font-bold self-end">อ่านต่อ...</p>
+              <div className="p-4 flex-grow flex flex-col justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold">{shop.name}</h2>
+                  <p className="text-gray-600">{shop.description}</p>
+                  {/* Display the season name */}
+                  <p className="text-orange-500 font-bold mt-2">{shop.season_name}</p>
+                </div>
+                <div className="flex justify-end mt-4">
+                  <p className="text-orange-500 font-bold flex items-center">
+                    อ่านต่อ... <FaChevronRight className="ml-2" />
+                  </p>
+                </div>
+              </div>
             </div>
           </Link>
         ))}
       </div>
+
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
