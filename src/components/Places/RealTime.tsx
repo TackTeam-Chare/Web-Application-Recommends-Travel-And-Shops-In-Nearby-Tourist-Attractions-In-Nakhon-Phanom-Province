@@ -49,7 +49,7 @@ const RealTimeSeasonalAttractions = () => {
           <Carousel responsive={responsive} className="z-10">
             {attractions.map((attraction, index) => (
               <Link key={index} href={`/place/${attraction.id}`} className="p-4 block">
-                <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full">
+                 <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full">
                   {attraction.images && attraction.images.length > 0 ? (
                     <Image
                       src={attraction.images[0].image_url}

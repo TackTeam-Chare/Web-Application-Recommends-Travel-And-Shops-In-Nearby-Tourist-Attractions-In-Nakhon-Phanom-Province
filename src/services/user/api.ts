@@ -204,7 +204,7 @@ export const searchPlaces = async (query: string): Promise<Place[]> => {
 };
 
 // Function to fetch all tourism data
-export const getAllFetchTourismData = async (): Promise<Place[]> => {
+export const getAllFetchTouristEntities= async (): Promise<Place[]> => {
   try {
     const response: AxiosResponse<Place[]> = await api.get('/places');
     const data = Array.isArray(response.data) ? response.data : [];

@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { FaFacebook, FaYoutube, FaTiktok, FaEnvelope, FaUser } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -20,17 +23,23 @@ export default function Footer() {
         {/* Attribution Section */}
         <div className="text-center md:text-right">
           <h2 className="text-xl font-semibold mb-2">จัดทำโดย</h2>
-          <p className="mb-2">Chare Auppachitwan</p>
-          <p className="mb-4">Email: tackteam.dev@gmail.com</p>
+          <p className="mb-2 flex items-center justify-center md:justify-end">
+            <FaUser className="mr-2" />
+            Chare Auppachitwan
+          </p>
+          <p className="mb-4 flex items-center justify-center md:justify-end">
+            <FaEnvelope className="mr-2" />
+            <span>tackteam.dev@gmail.com</span>
+          </p>
           <div className="flex justify-center md:justify-end space-x-4">
-            <a href="#" className="text-2xl">
-              <i className="fab fa-facebook"></i>
+            <a href="https://www.facebook.com/chare.uppachittan" className="text-2xl hover:text-gray-200 transition duration-300">
+              <FaFacebook />
             </a>
-            <a href="#" className="text-2xl">
-              <i className="fab fa-youtube"></i>
+            <a href="https://www.youtube.com" className="text-2xl hover:text-gray-200 transition duration-300">
+              <FaYoutube />
             </a>
-            <a href="#" className="text-2xl">
-              <i className="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com" className="text-2xl hover:text-gray-200 transition duration-300">
+              <FaTiktok />
             </a>
           </div>
         </div>

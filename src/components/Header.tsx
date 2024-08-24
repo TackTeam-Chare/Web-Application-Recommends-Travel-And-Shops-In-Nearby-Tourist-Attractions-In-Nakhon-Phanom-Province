@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Dialog, Disclosure, Popover } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -16,15 +17,56 @@ import {
   GiftIcon,
   ShoppingBagIcon,
   BuildingStorefrontIcon,
+  XCircleIcon
 } from "@heroicons/react/20/solid";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search/?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+  };
 
   return (
     <header className="bg-orange-500 text-white shadow-md p-4">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="text-4xl font-bold">นครพนม</div>
+        <div className="flex items-center space-x-4">
+        <div className="container mx-auto flex justify-between items-center">
+  <div className="flex items-center space-x-10">
+    <div className="text-4xl font-bold">นครพนม</div>
+    <form onSubmit={handleSearch} className="relative flex items-center"> 
+      <MagnifyingGlassIcon className="absolute left-3 h-5 w-5 text-gray-500" />
+      <input
+        type="text"
+        className="text-gray-700 rounded-full pl-10 pr-10 py-2 w-full focus:outline-none"
+        placeholder="ค้นหาสถานที่"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      {searchQuery && (
+        <button
+          type="button"
+          onClick={clearSearch}
+          className="absolute right-3 text-gray-500"
+        >
+          <XCircleIcon className="h-5 w-5" />
+        </button>
+      )}
+    </form>
+  </div>
+
+</div>
+
+        </div>
         <nav className="hidden md:flex space-x-6">
           <a
             href="/"
