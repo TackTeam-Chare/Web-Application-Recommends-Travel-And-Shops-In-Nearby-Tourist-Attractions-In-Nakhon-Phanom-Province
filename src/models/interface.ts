@@ -6,7 +6,9 @@ export interface Place {
     description: string;
     image_path?: string | null;
     image_url?: string | string[] | null;
-    images?: { image_path: string }[];
+    images?: {
+      image_url: string | undefined; image_path: string 
+}[];
     [key: string]: any;
 }
 

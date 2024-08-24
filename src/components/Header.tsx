@@ -73,7 +73,7 @@ export default function Header() {
           {[
             { href: "/", icon: HomeIcon, text: "หน้าเเรก" },
             { href: "/search", icon: MagnifyingGlassIcon, text: "ค้นหาสถานที่" },
-            { href: "/2", icon: MapIcon, text: "เเผนที่" },
+            { href: "/place/map", icon: MapIcon, text: "เเผนที่" },
           ].map((item, index) => (
             <a
               key={index}
@@ -151,7 +151,7 @@ export default function Header() {
             {[
               { href: "/", icon: HomeIcon, text: "หน้าเเรก" },
               { href: "/search", icon: MagnifyingGlassIcon, text: "ค้นหาสถานที่" },
-              { href: "/2", icon: MapIcon, text: "เเผนที่" },
+              { href: "/place/map", icon: MapIcon, text: "เเผนที่" },
             ].map((item, index) => (
               <a
                 key={index}

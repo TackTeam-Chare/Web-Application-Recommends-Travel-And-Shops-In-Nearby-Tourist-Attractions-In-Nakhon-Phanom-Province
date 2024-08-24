@@ -6,22 +6,6 @@ const api: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL as string,
 });
 
-// Function to fetch getNearbyTouristEntitiesRealTime
-export const getNearbyTouristEntitiesRealTime = async (latitude: number, longitude: number): Promise<Place[]> => {
-  try {
-    const response: AxiosResponse<Place[]> = await api.get(`/places/nearby-realtime`, {
-      params: {
-        latitude,
-        longitude
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching nearby tourist entities:', error);
-    throw error;
-  }
-};
-
 // Function to fetch top-rated tourist entities
 export const getTopRatedTouristEntities = async (): Promise<Place[]> => {
   try {
@@ -367,6 +351,7 @@ export const getNearbyFetchTourismData = async (id: number, radius = 5000): Prom
     throw error;
   }
 };
+
 // Function to fetch random tourist attractions
 export const fetchRandomTouristAttractions = async (): Promise<Place[]> => {
   try {
@@ -460,5 +445,28 @@ export const fetchSouvenirShopsByDistrict = async (districtId: number): Promise<
   } catch (error) {
     console.error('Error fetching souvenir shops by district:', error);
     throw error;
+  }
+};
+
+// Function to fetch places nearby by coordinates
+export const fetchPlacesNearbyByCoordinates = async (latitude: number, longitude: number, radius = 5000): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/places/nearby-by-coordinates`, {
+      params: {
+        lat: latitude,
+        lng: longitude,
+        radius: radius
+      }
+    });
+
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
+  } catch (error: any) {
+    console.error('Error fetching places nearby by coordinates:', error);
+    throw new Error(error.response?.data?.error || 'Error fetching places nearby by coordinates');
   }
 };
