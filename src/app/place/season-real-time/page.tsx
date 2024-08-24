@@ -1,33 +1,68 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { fetchRealTimeTouristAttractions } from "@/services/user/api";
+import {
+  fetchSeasons,
+  searchBySeason,
+  fetchRealTimeTouristAttractions,
+} from "@/services/user/api";
 import Image from "next/image";
 import Link from "next/link";
-import { PaginationProps } from "@/models/interface";
+import { PaginationProps, Place, Season } from "@/models/interface";
 
 const RealTimeSeasonalAttractions = () => {
-  const [attractions, setAttractions] = useState<any[]>([]);
+  const [attractions, setAttractions] = useState<Place[]>([]);
+  const [seasons, setSeasons] = useState<Season[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [selectedSeason, setSelectedSeason] = useState<number | null>(null);
   const itemsPerPage = 6;
 
   useEffect(() => {
+    // Fetch all seasons on component mount
+    const fetchAllSeasons = async () => {
+      try {
+        const data = await fetchSeasons();
+        setSeasons(data);
+      } catch (error) {
+        console.error("Error fetching seasons:", error);
+      }
+    };
+
+    fetchAllSeasons();
+  }, []);
+
+  useEffect(() => {
+    // Fetch attractions based on the selected season
     const fetchAttractions = async () => {
       try {
-        const data = await fetchRealTimeTouristAttractions();
+        let data: Place[] = [];
+
+        if (selectedSeason !== null) {
+          // Fetch attractions by the selected season
+          data = await searchBySeason(selectedSeason);
+        } else {
+          // Fetch real-time attractions if no season is selected
+          data = await fetchRealTimeTouristAttractions();
+        }
+
         setAttractions(data);
         setTotalPages(Math.ceil(data.length / itemsPerPage));
       } catch (error) {
-        console.error("Error fetching real-time tourist attractions:", error);
+        console.error("Error fetching tourist attractions:", error);
       }
     };
 
     fetchAttractions();
-  }, []);
+  }, [selectedSeason]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleSeasonChange = (seasonId: number | null) => {
+    setSelectedSeason(seasonId);
+    setCurrentPage(1); // Reset to the first page on season change
   };
 
   const paginatedAttractions = attractions.slice(
@@ -35,11 +70,44 @@ const RealTimeSeasonalAttractions = () => {
     currentPage * itemsPerPage
   );
 
+  // Find the selected season name
+  const selectedSeasonName = selectedSeason
+    ? seasons.find((season) => season.id === selectedSeason)?.name
+    : "ฤดูกาลปัจจุบัน";
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-orange-500 text-center mt-10 mb-5">
-        สถานที่ท่องเที่ยวตามฤดูกาลปัจจุบัน
+        สถานที่ท่องเที่ยวตามฤดูกาล
       </h1>
+
+      {/* Season Buttons */}
+      <div className="flex flex-wrap gap-3 justify-center mb-6">
+        <button
+          onClick={() => handleSeasonChange(null)}
+          className={`py-2 px-4 rounded-full hover:bg-orange-300 transition duration-200 ${
+            selectedSeason === null
+              ? "bg-orange-600 text-white"
+              : "bg-orange-200 text-orange-800"
+          }`}
+        >
+          ฤดูกาลปัจจุบัน
+        </button>
+        {seasons.map((season) => (
+          <button
+            key={season.id}
+            onClick={() => handleSeasonChange(season.id)}
+            className={`py-2 px-4 rounded-full hover:bg-orange-300 transition duration-200 ${
+              selectedSeason === season.id
+                ? "bg-orange-600 text-white"
+                : "bg-orange-200 text-orange-800"
+            }`}
+          >
+            {season.name}
+          </button>
+        ))}
+      </div>
+
       {paginatedAttractions.length > 0 ? (
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -50,9 +118,9 @@ const RealTimeSeasonalAttractions = () => {
                 className="p-4 block"
               >
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full">
-                  {attraction.images && attraction.images.length > 0 ? (
+                  {attraction.image_url && attraction.image_url.length > 0 ? (
                     <Image
-                      src={attraction.images[0].image_url}
+                      src={attraction.image_url[0]}
                       alt={attraction.name}
                       width={500}
                       height={300}
@@ -65,11 +133,15 @@ const RealTimeSeasonalAttractions = () => {
                   )}
                   <div className="p-4 flex-grow flex flex-col">
                     <h3 className="text-xl font-semibold">{attraction.name}</h3>
+                    {/* Display highlighted season name */}
                     <p className="text-gray-600 flex-grow overflow-hidden text-ellipsis">
                       {attraction.description}
                     </p>
+                    <p className="text-orange-500 font-bold mb-2">
+                    {attraction.district_name}
+                    </p>
                     <p className="text-gray-600">
-                      <strong>อำเภอ:</strong> {attraction.district_name}
+                      <strong>ที่ตั้ง:</strong>   {attraction.location}
                     </p>
                   </div>
                 </div>

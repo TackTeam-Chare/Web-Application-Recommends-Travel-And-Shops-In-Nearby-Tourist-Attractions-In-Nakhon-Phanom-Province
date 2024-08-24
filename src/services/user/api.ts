@@ -110,6 +110,78 @@ export const fetchSeasons = async (): Promise<Season[]> => {
   }
 };
 
+// Function to search accommodations
+export const searchAccommodations = async (query: string): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/search/accommodations?q=${query}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: typeof place.image_url === 'string'
+        ? place.image_url.split(',').map(imagePath => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${imagePath.trim()}`)
+        : []
+    }));
+  } catch (error) {
+    console.error('Error searching accommodations:', error);
+    throw error;
+  }
+};
+
+// Function to search restaurants
+export const searchRestaurants = async (query: string): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/search/restaurants?q=${query}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: typeof place.image_url === 'string'
+        ? place.image_url.split(',').map(imagePath => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${imagePath.trim()}`)
+        : []
+    }));
+  } catch (error) {
+    console.error('Error searching restaurants:', error);
+    throw error;
+  }
+};
+
+// Function to search souvenir shops
+export const searchSouvenirShops = async (query: string): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/search/souvenir-shops?q=${query}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: typeof place.image_url === 'string'
+        ? place.image_url.split(',').map(imagePath => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${imagePath.trim()}`)
+        : []
+    }));
+  } catch (error) {
+    console.error('Error searching souvenir shops:', error);
+    throw error;
+  }
+};
+
+// Function to search tourist attractions
+export const searchTouristAttractions = async (query: string): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/search/tourist-attractions?q=${query}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: typeof place.image_url === 'string'
+        ? place.image_url.split(',').map(imagePath => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${imagePath.trim()}`)
+        : []
+    }));
+  } catch (error) {
+    console.error('Error searching tourist attractions:', error);
+    throw error;
+  }
+};
+
 // Function to search places by category
 export const searchByCategory = async (categoryId: number): Promise<Place[]> => {
   try {

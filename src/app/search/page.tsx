@@ -10,7 +10,7 @@ import {
   searchByDistrict,
   searchBySeason,
   searchByTime,
-} from "@/services/user/api"; // Adjust the path based on your project structure
+} from "@/services/user/api";
 import Image from "next/image";
 import Link from "next/link";
 import { Category, District, Season, Place } from "@/models/interface";
@@ -124,6 +124,28 @@ const SearchPage: React.FC = () => {
     handleSearch();
   };
 
+  // ฟังก์ชันสำหรับไฮไลท์คำที่พบในชื่อหรือคำอธิบาย
+  const highlightText = (text: string, highlight: string) => {
+    if (!highlight.trim()) {
+      return text;
+    }
+    const regex = new RegExp(`(${highlight})`, "gi");
+    const parts = text.split(regex);
+    return (
+      <>
+        {parts.map((part, index) =>
+          part.toLowerCase() === highlight.toLowerCase() ? (
+            <span key={index} className="bg-yellow-200">
+              {part}
+            </span>
+          ) : (
+            part
+          )
+        )}
+      </>
+    );
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-4xl font-bold text-orange-600 text-center mt-10 mb-5">
@@ -135,29 +157,38 @@ const SearchPage: React.FC = () => {
 
       {/* Search Input */}
       <div className="relative w-full max-w-md mb-6 mx-auto">
-        <input
-          type="text"
-          placeholder=" "
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="peer w-full p-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-orange-600"
-        />
-        <label
-          htmlFor="search-input"
-          className="absolute left-3 top-3 text-gray-600 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-600 peer-focus:top-[-10px] peer-focus:left-2 peer-focus:text-sm peer-focus:text-orange-600 bg-white px-1"
-        >
-          ค้นหาสถานที่ท่องเที่ยว ร้านค้าของฝาก ที่พัก ร้านอาหาร...
+        <label htmlFor="search-input" className="block text-sm font-semibold mb-2 text-orange-600">
+          ค้นหาชื่อสถานที่
         </label>
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => setSearchQuery("")}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
-          >
-            <XCircleIcon className="h-6 w-6" />
-          </button>
-        )}
+        <div className="relative flex items-center">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="กรอกชื่อสถานที่เพื่อค้นหาเลย!"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="peer w-full p-3 pr-10 rounded-md border border-orange-600 focus:outline-none"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 text-gray-600 hover:text-gray-800"
+            >
+              <XCircleIcon className="h-6 w-6" />
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Highlighted Search Query */}
+      {searchQuery && (
+        <div className="mb-4 text-center">
+          <span className="text-lg font-semibold text-orange-600">
+            ผลการค้นหาสำหรับ: "{searchQuery}"
+          </span>
+        </div>
+      )}
 
       {/* Day and Time Filters */}
       <div className="flex flex-wrap gap-4 items-center mb-6 justify-center">
@@ -168,7 +199,7 @@ const SearchPage: React.FC = () => {
           <div className="flex gap-4">
             <select
               id="day-select"
-              className="p-2 w-32 rounded-md border border-gray-300 focus:ring-2 focus:ring-orange-600"
+              className="p-2 w-32 rounded-md border border-orange-600"
               value={timeFilter.day_of_week}
               onChange={(e) => handleFilterChange("time", { day_of_week: e.target.value })}
             >
@@ -184,14 +215,14 @@ const SearchPage: React.FC = () => {
             <input
               type="time"
               id="opening-time"
-              className="w-32 p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-orange-600"
+              className="w-32 p-2 rounded-md border border-orange-600"
               value={timeFilter.opening_time}
               onChange={(e) => handleFilterChange("time", { opening_time: e.target.value })}
             />
             <input
               type="time"
               id="closing-time"
-              className="w-32 p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-orange-600"
+              className="w-32 p-2 rounded-md border border-orange-600"
               value={timeFilter.closing_time}
               onChange={(e) => handleFilterChange("time", { closing_time: e.target.value })}
             />
@@ -206,7 +237,7 @@ const SearchPage: React.FC = () => {
             key={district.id}
             onClick={() => setSelectedDistrict(district.id)}
             className={`py-2 px-4 rounded-full hover:bg-orange-300 transition duration-200 ${
-              selectedDistrict === district.id ? 'bg-orange-600 text-white' : 'bg-orange-200 text-orange-800'
+              selectedDistrict === district.id ? "bg-orange-600 text-white" : "bg-orange-200 text-orange-800"
             }`}
           >
             {district.name}
@@ -217,7 +248,7 @@ const SearchPage: React.FC = () => {
             key={category.id}
             onClick={() => setSelectedCategory(category.id)}
             className={`py-2 px-4 rounded-full hover:bg-orange-300 transition duration-200 ${
-              selectedCategory === category.id ? 'bg-orange-600 text-white' : 'bg-orange-200 text-orange-800'
+              selectedCategory === category.id ? "bg-orange-600 text-white" : "bg-orange-200 text-orange-800"
             }`}
           >
             {category.name}
@@ -228,7 +259,7 @@ const SearchPage: React.FC = () => {
             key={season.id}
             onClick={() => setSelectedSeason(season.id)}
             className={`py-2 px-4 rounded-full hover:bg-orange-300 transition duration-200 ${
-              selectedSeason === season.id ? 'bg-orange-600 text-white' : 'bg-orange-200 text-orange-800'
+              selectedSeason === season.id ? "bg-orange-600 text-white" : "bg-orange-200 text-orange-800"
             }`}
           >
             {season.name}
@@ -274,8 +305,12 @@ const SearchPage: React.FC = () => {
                     <span className="text-gray-500">ไม่มีรูปภาพ</span>
                   </div>
                 )}
-                <h2 className="text-xl font-semibold px-4">{place.name}</h2>
-                <p className="text-gray-600 px-4 flex-grow">{place.description}</p>
+                <h2 className="text-xl font-semibold px-4">
+                  {highlightText(place.name, searchQuery)}
+                </h2>
+                <p className="text-gray-600 px-4 flex-grow">
+                  {highlightText(place.description, searchQuery)}
+                </p>
                 <p className="text-orange-600 mt-2 font-bold self-end px-4 mb-4">อ่านต่อ...</p>
               </div>
             </Link>
