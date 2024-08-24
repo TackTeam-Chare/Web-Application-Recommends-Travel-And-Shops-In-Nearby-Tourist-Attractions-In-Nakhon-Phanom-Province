@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { fetchTouristAttractions, fetchDistricts, fetchTouristAttractionsByDistrict } from '@/services/user/api';
+import { fetchDistricts, fetchTouristAttractionsByDistrict } from '@/services/user/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Place, District } from '@/models/interface';
 import { PaginationProps } from "@/models/interface";
+import { ChevronRightIcon } from '@heroicons/react/20/solid'; // Importing icon from Heroicons
 
 const TouristAttractionsPage: React.FC = () => {
   const [attractions, setAttractions] = useState<Place[]>([]);
@@ -112,13 +113,26 @@ const TouristAttractionsPage: React.FC = () => {
                   <span className="text-gray-500">ไม่มีรูปภาพ</span>
                 </div>
               )}
-              <h2 className="text-xl font-semibold">{attraction.name}</h2>
-              <p className="text-gray-600 flex-grow">{attraction.description}</p>
-              <p className="text-orange-500 mt-2 font-bold self-end">อ่านต่อ...</p>
+              {/* Adding padding around text content */}
+              <div className="p-4 flex flex-col flex-grow">
+                <h2 className="text-xl font-semibold mb-2">{attraction.name}</h2>
+                <p className="text-gray-600 mb-4">{attraction.description}</p>
+                    <p className="text-orange-500 font-bold flex items-center">
+                      {attraction.season_name}
+                    </p>
+                <div className="flex justify-end mt-auto">
+                  <p className="text-orange-500 font-bold flex items-center space-x-1 hover:underline">
+                    อ่านต่อ...
+                    <ChevronRightIcon className="h-5 w-5 text-orange-500" />
+                  </p>
+                </div>
+              </div>
             </div>
           </Link>
         ))}
       </div>
+
+      {/* Pagination Component */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}

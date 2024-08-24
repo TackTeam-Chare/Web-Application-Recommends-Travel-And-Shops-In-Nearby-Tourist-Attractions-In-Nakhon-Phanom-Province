@@ -121,7 +121,7 @@ const CurrentlyOpenPlaces: React.FC = () => {
                 <div className="flex justify-end w-full mt-4">
                   <Link
                     href={`/place/${place.id}`}
-                    className="text-orange-500 font-bold hover:underline flex items-center"
+                    className="text-orange-500 font-bold ฏ flex items-center"
                   >
                     อ่านเพิ่มเติม{" "}
                     <FontAwesomeIcon

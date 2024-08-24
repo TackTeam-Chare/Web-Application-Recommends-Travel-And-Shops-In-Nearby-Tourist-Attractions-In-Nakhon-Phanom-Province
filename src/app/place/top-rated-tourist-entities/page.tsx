@@ -15,6 +15,23 @@ import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 
 const PAGE_SIZE = 6;
 
+// Define a type for valid categories
+type Category =
+  | "tourist-entities"
+  | "tourist-attractions"
+  | "accommodations"
+  | "restaurants"
+  | "souvenir-shops";
+
+// Mapping category to display text
+const categoryDisplayName: Record<Category, string> = {
+  "tourist-entities": "สถานที่ทั้งหมด",
+  "tourist-attractions": "สถานที่ท่องเที่ยว",
+  accommodations: "ที่พัก",
+  restaurants: "ร้านอาหาร",
+  "souvenir-shops": "ร้านค้าของฝาก",
+};
+
 // Helper function to render star icons based on rating
 const renderStars = (rating: number) => {
   const stars = [];
@@ -40,7 +57,7 @@ const TopRatedPlacesPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
-  const [category, setCategory] = useState<string>("tourist-attractions");
+  const [category, setCategory] = useState<Category>("tourist-attractions");
 
   useEffect(() => {
     const fetchPlaces = async () => {
@@ -68,7 +85,9 @@ const TopRatedPlacesPage: React.FC = () => {
             break;
         }
 
-        setPlaces(response.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE));
+        setPlaces(
+          response.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+        );
         setTotalPages(Math.ceil(response.length / PAGE_SIZE));
       } catch (error) {
         console.error("Error fetching places:", error);
@@ -80,7 +99,7 @@ const TopRatedPlacesPage: React.FC = () => {
     fetchPlaces();
   }, [category, currentPage]);
 
-  const handleCategoryChange = (newCategory: string) => {
+  const handleCategoryChange = (newCategory: Category) => {
     setCategory(newCategory);
     setCurrentPage(1);
   };
@@ -91,22 +110,22 @@ const TopRatedPlacesPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-orange-500 text-center mt-10 mb-5">สถานที่ท่องเที่ยวติดอันดับ</h1>
+      <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-orange-500 text-center mt-10 mb-5">
+        {categoryDisplayName[category]}
+      </h1>
       {/* Category Selector */}
-      <div className="flex justify-center mb-6">
-        {["tourist-entities", "tourist-attractions", "accommodations", "restaurants", "souvenir-shops"].map((cat) => (
+      <div className="flex justify-center mb-6 flex-wrap gap-2">
+        {Object.keys(categoryDisplayName).map((cat) => (
           <button
             key={cat}
-            className={`px-4 py-2 mx-2 rounded ${
-              category === cat ? "bg-orange-500 text-white" : "bg-gray-200 text-gray-700"
+            className={`px-4 py-2 rounded ${
+              category === cat
+                ? "bg-orange-500 text-white"
+                : "bg-gray-200 text-gray-700"
             }`}
-            onClick={() => handleCategoryChange(cat)}
+            onClick={() => handleCategoryChange(cat as Category)}
           >
-            {cat === "tourist-entities" && "ทั้งหมด"}
-            {cat === "tourist-attractions" && "สถานที่ท่องเที่ยว"}
-            {cat === "accommodations" && "ที่พัก"}
-            {cat === "restaurants" && "ร้านอาหาร"}
-            {cat === "souvenir-shops" && "ร้านค้าของฝาก"}
+            {categoryDisplayName[cat as Category]}
           </button>
         ))}
       </div>
@@ -136,7 +155,15 @@ const TopRatedPlacesPage: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-semibold mb-2">{place.name}</h3>
                     <p className="text-gray-600">{place.description}</p>
-                    <p className="text-gray-600 mt-2"><strong>อำเภอ:</strong> {place.district_name}</p>
+                    <p className="text-orange-500 font-bold flex items-center">
+                      {place.district_name}
+                    </p>
+                    <p className="text-orange-500 font-bold flex items-center">
+                      {place.category_name}
+                    </p>
+                    <p className="text-orange-500 font-bold flex items-center">
+                      {place.season_name}
+                    </p>
                   </div>
                   {/* Rating display */}
                   <div className="flex items-center justify-between mt-4">
@@ -169,15 +196,19 @@ const TopRatedPlacesPage: React.FC = () => {
 };
 
 // Pagination Component
-const Pagination: React.FC<{ currentPage: number; totalPages: number; onPageChange: (page: number) => void; }> = ({ currentPage, totalPages, onPageChange }) => {
+const Pagination: React.FC<{
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}> = ({ currentPage, totalPages, onPageChange }) => {
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
 
   return (
-    <div className="flex justify-center mt-8">
+    <div className="flex justify-center mt-8 flex-wrap gap-2">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="mx-1 px-3 py-2 bg-orange-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gradient-to-r hover:from-orange-400 hover:to-orange-600 transform hover:scale-105 transition duration-300 ease-in-out"
+        className="mx-1 my-2 px-3 py-2 bg-orange-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gradient-to-r hover:from-orange-400 hover:to-orange-600 transform hover:scale-105 transition duration-300 ease-in-out"
       >
         ก่อนหน้า
       </button>
@@ -185,10 +216,10 @@ const Pagination: React.FC<{ currentPage: number; totalPages: number; onPageChan
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          className={`mx-1 px-3 py-2 rounded-lg transform transition duration-300 ease-in-out ${
+          className={`mx-1 my-2 px-3 py-2 rounded-lg transform transition duration-300 ease-in-out ${
             page === currentPage
-              ? 'bg-orange-700 text-white hover:shadow-xl hover:bg-gradient-to-r hover:from-orange-600 hover:to-orange-800'
-              : 'bg-orange-500 text-white hover:bg-gradient-to-r hover:from-orange-400 hover:to-orange-600'
+              ? "bg-orange-700 text-white hover:shadow-xl hover:bg-gradient-to-r hover:from-orange-600 hover:to-orange-800"
+              : "bg-orange-500 text-white hover:bg-gradient-to-r hover:from-orange-400 hover:to-orange-600"
           } hover:scale-105`}
         >
           {page}
@@ -197,7 +228,7 @@ const Pagination: React.FC<{ currentPage: number; totalPages: number; onPageChan
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="mx-1 px-3 py-2 bg-orange-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gradient-to-r hover:from-orange-400 hover:to-orange-600 transform hover:scale-105 transition duration-300 ease-in-out"
+        className="mx-1 my-2 px-3 py-2 bg-orange-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gradient-to-r hover:from-orange-400 hover:to-orange-600 transform hover:scale-105 transition duration-300 ease-in-out"
       >
         ถัดไป
       </button>
