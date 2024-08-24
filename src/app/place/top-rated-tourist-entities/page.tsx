@@ -91,8 +91,7 @@ const TopRatedPlacesPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold text-center mb-8">สถานที่ท่องเที่ยวแนะนำ</h1>
-
+      <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-orange-500 text-center mt-10 mb-5">สถานที่ท่องเที่ยวติดอันดับ</h1>
       {/* Category Selector */}
       <div className="flex justify-center mb-6">
         {["tourist-entities", "tourist-attractions", "accommodations", "restaurants", "souvenir-shops"].map((cat) => (

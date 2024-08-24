@@ -326,3 +326,67 @@ export const fetchCurrentlyOpenTouristEntities = async (): Promise<Place[]> => {
     throw error;
   }
 };
+
+// Function to fetch tourist attractions by district
+export const fetchTouristAttractionsByDistrict = async (districtId: number): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/tourist-attractions/${districtId}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
+  } catch (error) {
+    console.error('Error fetching tourist attractions by district:', error);
+    throw error;
+  }
+};
+
+// Function to fetch accommodations by district
+export const fetchAccommodationsByDistrict = async (districtId: number): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/accommodations/${districtId}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
+  } catch (error) {
+    console.error('Error fetching accommodations by district:', error);
+    throw error;
+  }
+};
+
+// Function to fetch restaurants by district
+export const fetchRestaurantsByDistrict = async (districtId: number): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/restaurants/${districtId}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
+  } catch (error) {
+    console.error('Error fetching restaurants by district:', error);
+    throw error;
+  }
+};
+
+// Function to fetch souvenir shops by district
+export const fetchSouvenirShopsByDistrict = async (districtId: number): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/souvenir-shops/${districtId}`);
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
+  } catch (error) {
+    console.error('Error fetching souvenir shops by district:', error);
+    throw error;
+  }
+};
