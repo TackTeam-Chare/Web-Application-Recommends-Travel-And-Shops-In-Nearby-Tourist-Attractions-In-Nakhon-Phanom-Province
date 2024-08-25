@@ -4,15 +4,16 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
 import Link from "next/link";
-import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
+import { GoogleMap, MarkerF, InfoWindowF, useLoadScript } from "@react-google-maps/api";
 import { getNearbyFetchTourismData } from "@/services/user/api";
+import Swal from "sweetalert2"; // Import SweetAlert2 for alerts
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 // Ensure TypeScript knows about google.maps types
 declare global {
   interface Window {
-    google: any; // Adding this global declaration ensures TypeScript recognizes the google object
+    google: any;
   }
 }
 
@@ -28,10 +29,75 @@ const removeDuplicateImages = (images: any[]) => {
   return Array.from(uniqueImages.values());
 };
 
+// Function to map place types to their corresponding icons
+const getIconForPlaceType = (type: string) => {
+  switch (type) {
+    case "amusement_park":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon5.png";
+    case "aquarium":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon13.png";
+    case "art_gallery":
+      return "http://maps.google.com/mapfiles/kml/pal3/icon21.png";
+    case "atm":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon56.png";
+    case "bar":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon49.png";
+    case "bus_station":
+      return "http://maps.google.com/mapfiles/kml/pal3/icon33.png";
+    case "cafe":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon23.png";
+    case "campground":
+      return "http://maps.google.com/mapfiles/kml/pal4/icon7.png";
+    case "church":
+      return "http://maps.google.com/mapfiles/kml/pal3/icon38.png";
+    case "clothing_store":
+      return "http://maps.google.com/mapfiles/kml/pal4/icon15.png";
+    case "convenience_store":
+      return "http://maps.google.com/mapfiles/kml/pal3/icon20.png";
+    case "department_store":
+      return "http://maps.google.com/mapfiles/kml/pal4/icon19.png";
+    case "florist":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon58.png";
+    case "gas_station":
+      return "http://maps.google.com/mapfiles/kml/pal4/icon14.png";
+    case "lodging":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon63.png";
+    case "movie_theater":
+      return "http://maps.google.com/mapfiles/kml/pal4/icon34.png";
+    case "museum":
+      return "http://maps.google.com/mapfiles/kml/pal3/icon45.png";
+    case "park":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon6.png";
+    case "parking":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon15.png";
+    case "restaurant":
+      return "http://maps.google.com/mapfiles/kml/pal3/icon56.png";
+    case "shopping_mall":
+      return "http://maps.google.com/mapfiles/kml/pal4/icon12.png";
+    case "spa":
+      return "http://maps.google.com/mapfiles/kml/pal3/icon27.png";
+    case "store":
+      return "http://maps.google.com/mapfiles/kml/pal3/icon10.png";
+    case "subway_station":
+      return "http://maps.google.com/mapfiles/kml/pal3/icon34.png";
+    case "supermarket":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon45.png";
+    case "tourist_attraction":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon39.png";
+    case "train_station":
+      return "http://maps.google.com/mapfiles/kml/pal4/icon33.png";
+    case "zoo":
+      return "http://maps.google.com/mapfiles/kml/pal2/icon31.png";
+    default:
+      return "http://maps.google.com/mapfiles/kml/pal2/icon5.png";
+  }
+};
+
 const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const [tourismData, setTourismData] = useState<any>(null);
   const [nearbyEntities, setNearbyEntities] = useState<any[]>([]);
+  const [selectedEntity, setSelectedEntity] = useState<any>(null); // State for selected marker
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -39,7 +105,6 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
 
   const mapRef = useRef<google.maps.Map | null>(null);
 
-  // Moved fetch logic inside useEffect to avoid conditional hook usage
   useEffect(() => {
     const fetchTourismData = async () => {
       if (id) {
@@ -58,8 +123,14 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
           }
           setTourismData(data.entity);
           setNearbyEntities(data.nearbyEntities);
+
+          // Show alert if no nearby places found
+          if (!data.nearbyEntities || data.nearbyEntities.length === 0) {
+            Swal.fire("No Nearby Places", "ไม่พบสถานที่ใกล้เคียง", "info");
+          }
         } catch (error) {
           console.error("Error fetching tourism data:", error);
+          Swal.fire("Error", "ไม่สามารถดึงข้อมูลได้ กรุณาลองใหม่อีกครั้ง", "error");
         }
       }
     };
@@ -173,8 +244,16 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
             }}
             onLoad={onMapLoad}
           >
-            {/* Main Place Marker */}
-            <MarkerF position={center} title={tourismData.name} />
+            {/* Main Place Marker with distinct icon */}
+            <MarkerF 
+              position={center} 
+              title={tourismData.name} 
+              icon={{
+                url: "http://maps.google.com/mapfiles/kml/pal2/icon56.png", // Main place icon
+                scaledSize: new window.google.maps.Size(50, 50),
+              }}
+              onClick={() => setSelectedEntity(tourismData)}
+            />
 
             {/* Markers for Nearby Places */}
             {nearbyEntities.map((entity: any) => (
@@ -182,8 +261,47 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
                 key={entity.id}
                 position={{ lat: Number(entity.latitude), lng: Number(entity.longitude) }}
                 title={entity.name}
+                icon={{
+                  url: getIconForPlaceType(entity.category_name),
+                  scaledSize: new window.google.maps.Size(40, 40), // Adjust size as needed
+                }}
+                onClick={() => setSelectedEntity(entity)}
               />
             ))}
+
+            {/* InfoWindow for Selected Place */}
+            {selectedEntity && (
+              <InfoWindowF
+                position={{ lat: Number(selectedEntity.latitude), lng: Number(selectedEntity.longitude) }}
+                onCloseClick={() => setSelectedEntity(null)}
+              >
+                <div className="p-2">
+                  <h3 className="text-lg font-bold">{selectedEntity.name}</h3>
+                  {selectedEntity.images && selectedEntity.images[0] && (
+                    <Image
+                      src={selectedEntity.images[0].image_url}
+                      alt={selectedEntity.name}
+                      width={100}
+                      height={75}
+                      className="rounded-lg mb-2"
+                    />
+                  )}
+                  <p className="text-gray-600">{selectedEntity.district_name}</p>
+                  <p className="text-gray-600">{selectedEntity.distance?.toFixed(2) || 0} กม. จากคุณ</p>
+                  {selectedEntity.season_name && (
+                    <p className="text-gray-600">ฤดูกาล: {selectedEntity.season_name}</p>
+                  )}
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${selectedEntity.latitude},${selectedEntity.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    เปิดใน Google Maps
+                  </a>
+                </div>
+              </InfoWindowF>
+            )}
           </GoogleMap>
         )}
       </div>
