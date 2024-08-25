@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import {
   fetchSeasons,
@@ -9,6 +8,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { PaginationProps, Place, Season } from "@/models/interface";
+import { showInfoAlert } from "@/lib/sweetalert";
 
 const RealTimeSeasonalAttractions = () => {
   const [attractions, setAttractions] = useState<Place[]>([]);
@@ -19,7 +19,6 @@ const RealTimeSeasonalAttractions = () => {
   const itemsPerPage = 6;
 
   useEffect(() => {
-    // Fetch all seasons on component mount
     const fetchAllSeasons = async () => {
       try {
         const data = await fetchSeasons();
@@ -33,28 +32,36 @@ const RealTimeSeasonalAttractions = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch attractions based on the selected season
     const fetchAttractions = async () => {
       try {
         let data: Place[] = [];
 
         if (selectedSeason !== null) {
-          // Fetch attractions by the selected season
           data = await searchBySeason(selectedSeason);
         } else {
-          // Fetch real-time attractions if no season is selected
           data = await fetchRealTimeTouristAttractions();
         }
 
         setAttractions(data);
         setTotalPages(Math.ceil(data.length / itemsPerPage));
+
+        const seasonName = selectedSeason
+          ? seasons.find((season) => season.id === selectedSeason)?.name
+          : "ฤดูกาลปัจจุบัน";
+
+        if (data.length === 0) {
+          showInfoAlert(
+            `ไม่มีสถานที่ท่องเที่ยวใน${seasonName}ขณะนี้`,
+            "กรุณาลองเลือกฤดูกาลอื่นหรือตรวจสอบข้อมูลใหม่ในภายหลัง"
+          );
+        }
       } catch (error) {
         console.error("Error fetching tourist attractions:", error);
       }
     };
 
     fetchAttractions();
-  }, [selectedSeason]);
+  }, [selectedSeason, seasons]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -62,18 +69,13 @@ const RealTimeSeasonalAttractions = () => {
 
   const handleSeasonChange = (seasonId: number | null) => {
     setSelectedSeason(seasonId);
-    setCurrentPage(1); // Reset to the first page on season change
+    setCurrentPage(1);
   };
 
   const paginatedAttractions = attractions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
-  // Find the selected season name
-  const selectedSeasonName = selectedSeason
-    ? seasons.find((season) => season.id === selectedSeason)?.name
-    : "ฤดูกาลปัจจุบัน";
 
   return (
     <div className="container mx-auto p-4">
@@ -138,10 +140,10 @@ const RealTimeSeasonalAttractions = () => {
                       {attraction.description}
                     </p>
                     <p className="text-orange-500 font-bold mb-2">
-                    {attraction.district_name}
+                      {attraction.district_name}
                     </p>
                     <p className="text-gray-600">
-                      <strong>ที่ตั้ง:</strong>   {attraction.location}
+                      <strong>ที่ตั้ง:</strong> {attraction.location}
                     </p>
                   </div>
                 </div>
@@ -154,11 +156,7 @@ const RealTimeSeasonalAttractions = () => {
             onPageChange={handlePageChange}
           />
         </div>
-      ) : (
-        <p className="text-gray-600 text-center mt-8">
-          ไม่มีสถานที่ท่องเที่ยวตามฤดูกาลในขณะนี้
-        </p>
-      )}
+      ) : null}
     </div>
   );
 };

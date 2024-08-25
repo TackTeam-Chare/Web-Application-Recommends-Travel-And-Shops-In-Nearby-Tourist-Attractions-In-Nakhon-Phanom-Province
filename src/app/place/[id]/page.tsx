@@ -9,7 +9,9 @@ import { getNearbyFetchTourismData } from "@/services/user/api";
 import Swal from "sweetalert2"; // Import SweetAlert2 for alerts
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+ {/* InfoWindow for Selected Place */}
+ import { FaMapMarkerAlt, FaStoreAlt, FaInfoCircle, FaMapSigns, FaExternalLinkAlt } from 'react-icons/fa'; // Import necessary icons
+ 
 // Ensure TypeScript knows about google.maps types
 declare global {
   interface Window {
@@ -269,39 +271,84 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
               />
             ))}
 
-            {/* InfoWindow for Selected Place */}
-            {selectedEntity && (
-              <InfoWindowF
-                position={{ lat: Number(selectedEntity.latitude), lng: Number(selectedEntity.longitude) }}
-                onCloseClick={() => setSelectedEntity(null)}
-              >
-                <div className="p-2">
-                  <h3 className="text-lg font-bold">{selectedEntity.name}</h3>
-                  {selectedEntity.images && selectedEntity.images[0] && (
-                    <Image
-                      src={selectedEntity.images[0].image_url}
-                      alt={selectedEntity.name}
-                      width={100}
-                      height={75}
-                      className="rounded-lg mb-2"
-                    />
-                  )}
-                  <p className="text-gray-600">{selectedEntity.district_name}</p>
-                  <p className="text-gray-600">{selectedEntity.distance?.toFixed(2) || 0} กม. จากคุณ</p>
-                  {selectedEntity.season_name && (
-                    <p className="text-gray-600">ฤดูกาล: {selectedEntity.season_name}</p>
-                  )}
-                  <a
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${selectedEntity.latitude},${selectedEntity.longitude}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 underline"
-                  >
-                    เปิดใน Google Maps
-                  </a>
-                </div>
-              </InfoWindowF>
-            )}
+{/* InfoWindow for Selected Place */}
+
+{/* InfoWindow for Selected Place */}
+{selectedEntity && (
+  <InfoWindowF
+    position={{ lat: Number(selectedEntity.latitude), lng: Number(selectedEntity.longitude) }}
+    onCloseClick={() => setSelectedEntity(null)}
+    options={{ maxWidth: 350 }} // Adjust the max width for a more compact layout
+  >
+    <div className="max-w-md w-full bg-white rounded-lg shadow-lg flex flex-col">
+      {/* Image and Info Section */}
+      <div className="flex flex-col items-start">
+        {/* Image Section */}
+        {selectedEntity.images && selectedEntity.images[0] ? (
+          <Image
+            src={selectedEntity.images[0].image_url}
+            alt={selectedEntity.name}
+            width={350} // Set width equal to the max width of the InfoWindow
+            height={150} // Adjust height as necessary to maintain aspect ratio
+            className="rounded-t-lg mb-2 object-cover"
+          />
+        ) : (
+          <div className="w-full h-24 bg-gray-200 flex items-center justify-center rounded-t-lg">
+            <span className="text-gray-500">ไม่มีรูปภาพ</span>
+          </div>
+        )}
+
+        {/* Info Content */}
+        <div className="p-3 w-full flex flex-col">
+          {/* Place Name and Description */}
+          <h3 className="text-orange-500 font-bold mt-2">{selectedEntity.name}</h3>
+          <p className="text-gray-700 text-sm flex items-center mb-1">
+            <FaInfoCircle className="text-blue-500 mr-2" />
+            {selectedEntity.description || 'ไม่มีคำอธิบาย'}
+          </p>
+
+          {/* Location and Distance */}
+          <div className="flex items-center mb-1">
+            <FaMapMarkerAlt className="text-green-500 w-4 h-4 mr-2" />
+            <div className="text-xs">
+              <p className="text-gray-900 leading-none">{selectedEntity.district_name}</p>
+              <p className="text-gray-600">{selectedEntity.distance?.toFixed(2) || 0} กม. จากคุณ</p>
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="flex items-center mb-1">
+            <FaMapSigns className="text-blue-500 w-4 h-4 mr-2" />
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${selectedEntity.latitude},${selectedEntity.longitude}&travelmode=driving`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 text-xs underline"
+            >
+              นำทางไปยังสถานที่นี้
+            </a>
+          </div>
+
+          {/* View on Google Maps */}
+          <div className="flex items-center">
+            <FaExternalLinkAlt className="text-blue-500 w-4 h-4 mr-2" />
+            <a
+              href={`https://www.google.com/maps/place/${encodeURIComponent(selectedEntity.name)}/@${selectedEntity.latitude},${selectedEntity.longitude},17z`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 text-xs underline"
+            >
+              ดูบน Google Maps
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </InfoWindowF>
+)}
+
+
+
           </GoogleMap>
         )}
       </div>

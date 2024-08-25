@@ -184,9 +184,9 @@ const SearchPage: React.FC = () => {
       {/* Highlighted Search Query */}
       {searchQuery && (
         <div className="mb-4 text-center">
-          <span className="text-lg font-semibold text-orange-600">
-            ผลการค้นหาสำหรับ: "{searchQuery}"
-          </span>
+        <span className="text-lg font-semibold text-orange-600">
+  ผลการค้นหาสำหรับ: `{searchQuery}`
+</span>
         </div>
       )}
 

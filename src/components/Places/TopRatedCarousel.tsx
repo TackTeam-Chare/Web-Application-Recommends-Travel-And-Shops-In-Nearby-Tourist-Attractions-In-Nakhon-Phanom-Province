@@ -27,7 +27,6 @@ const responsive = {
   },
 };
 
-// Function to render star icons based on average_rating
 const renderStars = (average_rating: number) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
@@ -57,6 +56,11 @@ const TopRatedCarousel: React.FC = () => {
 
     fetchTopRatedAttractions();
   }, []);
+
+  if (attractions.length === 0) {
+    // ซ่อนเนื้อหาทั้งหมดถ้าไม่มีข้อมูล
+    return null;
+  }
 
   return (
     <div className="container mx-auto mt-10 px-4">
