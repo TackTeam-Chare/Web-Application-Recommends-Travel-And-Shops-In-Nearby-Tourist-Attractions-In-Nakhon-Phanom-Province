@@ -1,13 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
 import Link from "next/link";
+import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { getNearbyFetchTourismData } from "@/services/user/api";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import GoogleMapComponent from "@/components/MapAPI/GoogleMap";
+
+// Ensure TypeScript knows about google.maps types
+declare global {
+  interface Window {
+    google: any; // Adding this global declaration ensures TypeScript recognizes the google object
+  }
+}
+
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string;
 
 const removeDuplicateImages = (images: any[]) => {
   const uniqueImages = new Map();
@@ -24,6 +33,13 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
   const [tourismData, setTourismData] = useState<any>(null);
   const [nearbyEntities, setNearbyEntities] = useState<any[]>([]);
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+  });
+
+  const mapRef = useRef<google.maps.Map | null>(null);
+
+  // Moved fetch logic inside useEffect to avoid conditional hook usage
   useEffect(() => {
     const fetchTourismData = async () => {
       if (id) {
@@ -50,6 +66,14 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
 
     fetchTourismData();
   }, [id]);
+
+  const onMapLoad = useCallback((map: google.maps.Map) => {
+    mapRef.current = map;
+  }, []);
+
+  if (!isLoaded) {
+    return <div>Loading Maps...</div>;
+  }
 
   if (!tourismData) {
     return <div>Loading...</div>;
@@ -83,11 +107,23 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
+  const mapContainerStyle = {
+    width: "100%",
+    height: "400px",
+    borderRadius: "10px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  };
+
+  const center = {
+    lat: Number(tourismData.latitude),
+    lng: Number(tourismData.longitude),
+  };
+
   return (
     <div className={`container mx-auto mt-10 px-4 flex ${nearbyEntities.length > 0 ? "flex-col lg:flex-row" : "flex-col"} gap-8`}>
       <div className={nearbyEntities.length > 0 ? "w-full lg:w-2/3" : "w-full"}>
-        <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-Orange-500 text-center mt-10 mb-5">
-         {tourismData.name}
+        <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-orange-500 text-center mt-10 mb-5">
+          {tourismData.name}
         </h1>
         <Slider {...settings}>
           {Array.isArray(tourismData.images) && tourismData.images.length > 0 ? (
@@ -126,11 +162,29 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
           </p>
         </div>
         {isValidCoordinates && (
-          <GoogleMapComponent
-            lat={Number(tourismData.latitude)}
-            lng={Number(tourismData.longitude)}
-            nearbyEntities={nearbyEntities}
-          />
+          <GoogleMap
+            mapContainerStyle={mapContainerStyle}
+            center={center}
+            zoom={14}
+            options={{
+              disableDefaultUI: true,
+              zoomControl: true,
+              styles: [],
+            }}
+            onLoad={onMapLoad}
+          >
+            {/* Main Place Marker */}
+            <MarkerF position={center} title={tourismData.name} />
+
+            {/* Markers for Nearby Places */}
+            {nearbyEntities.map((entity: any) => (
+              <MarkerF
+                key={entity.id}
+                position={{ lat: Number(entity.latitude), lng: Number(entity.longitude) }}
+                title={entity.name}
+              />
+            ))}
+          </GoogleMap>
         )}
       </div>
 

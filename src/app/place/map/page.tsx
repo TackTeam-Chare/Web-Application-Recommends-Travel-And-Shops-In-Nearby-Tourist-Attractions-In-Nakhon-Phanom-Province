@@ -1,9 +1,42 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, Marker, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
-import { FaMapMarkerAlt, FaMapPin, FaRuler, FaInfoCircle } from 'react-icons/fa';
+import { 
+  FaMapMarkerAlt, 
+  FaTree,          
+  FaFish,          
+  FaPalette,       
+  FaMoneyBill,     
+  FaBeer,          
+  FaBus,           
+  FaCoffee,        
+  FaCampground,    
+  FaChurch,        
+  FaTshirt,        
+  FaStore,         
+  FaStoreAlt,      
+  FaLeaf,          
+  FaGasPump,       
+  FaHotel,         
+  FaFilm,          
+  FaLandmark,      
+  FaParking,       
+  FaUtensils,      
+  FaShoppingCart,  
+  FaSpa,           
+  FaSubway,        
+  FaShoppingBasket,
+  FaUmbrellaBeach, 
+  FaTrain,         
+  FaPaw,
+  FaMapPin,
+  FaInfoCircle,
+  FaRuler        
+} from 'react-icons/fa';  
+
 import { TbFileDescription } from "react-icons/tb";
-import { Rings } from 'react-loader-spinner'; // Import the loading spinner
+import { FallingLines } from 'react-loader-spinner'; // Enhanced loading spinner
+import Swal from 'sweetalert2'; // Import SweetAlert2
 import { fetchPlacesNearbyByCoordinates } from '@/services/user/api';
 import { Place } from '@/models/interface';
 
@@ -66,6 +99,13 @@ const GeocodingPage: React.FC = () => {
       
       // Ensure data is an array and not null or undefined
       if (data && Array.isArray(data)) {
+        if (data.length === 0) {
+          Swal.fire({
+            icon: 'info',
+            title: 'ไม่พบสถานที่ใกล้เคียง',
+            text: 'ไม่มีสถานที่ใกล้เคียงที่พบในบริเวณนี้.',
+          });
+        }
         const placesWithImages = data.map(place => ({
           ...place,
           images: place.images ? place.images.map(image => ({
@@ -94,22 +134,80 @@ const GeocodingPage: React.FC = () => {
     }
   };
 
+  // Function to map place types to their corresponding icons
   const getIconForPlaceType = (type: string) => {
     switch (type) {
-      case 'restaurant':
-        return '/icons/restaurant.png';
-      case 'hotel':
-        return '/icons/hotel.png';
+      case 'amusement_park':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon5.png';
+      case 'aquarium':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon13.png';
+      case 'art_gallery':
+        return 'http://maps.google.com/mapfiles/kml/pal3/icon21.png';
+      case 'atm':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon56.png';
+      case 'bar':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon49.png';
+      case 'bus_station':
+        return 'http://maps.google.com/mapfiles/kml/pal3/icon33.png';
+      case 'cafe':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon23.png';
+      case 'campground':
+        return 'http://maps.google.com/mapfiles/kml/pal4/icon7.png';
+      case 'church':
+        return 'http://maps.google.com/mapfiles/kml/pal3/icon38.png';
+      case 'clothing_store':
+        return 'http://maps.google.com/mapfiles/kml/pal4/icon15.png';
+      case 'convenience_store':
+        return 'http://maps.google.com/mapfiles/kml/pal3/icon20.png';
+      case 'department_store':
+        return 'http://maps.google.com/mapfiles/kml/pal4/icon19.png';
+      case 'florist':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon58.png';
+      case 'gas_station':
+        return 'http://maps.google.com/mapfiles/kml/pal4/icon14.png';
+      case 'lodging':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon63.png';
+      case 'movie_theater':
+        return 'http://maps.google.com/mapfiles/kml/pal4/icon34.png';
+      case 'museum':
+        return 'http://maps.google.com/mapfiles/kml/pal3/icon45.png';
       case 'park':
-        return '/icons/park.png';
-      // Add more cases for different place types
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon6.png';
+      case 'parking':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon15.png';
+      case 'restaurant':
+        return 'http://maps.google.com/mapfiles/kml/pal3/icon56.png';
+      case 'shopping_mall':
+        return 'http://maps.google.com/mapfiles/kml/pal4/icon12.png';
+      case 'spa':
+        return 'http://maps.google.com/mapfiles/kml/pal3/icon27.png';
+      case 'store':
+        return 'http://maps.google.com/mapfiles/kml/pal3/icon10.png';
+      case 'subway_station':
+        return 'http://maps.google.com/mapfiles/kml/pal3/icon34.png';
+      case 'supermarket':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon45.png';
+      case 'tourist_attraction':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon39.png';
+      case 'train_station':
+        return 'http://maps.google.com/mapfiles/kml/pal4/icon33.png';
+      case 'zoo':
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon31.png';
       default:
-        return '/icons/default.png';
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon5.png';
     }
   };
-
+  
   if (!isLoaded) {
-    return <div>Loading Maps...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <FallingLines
+          width="100"
+          color="#4fa94d"
+          visible={true}
+        />
+      </div>
+    );
   }
 
   return (
@@ -127,11 +225,10 @@ const GeocodingPage: React.FC = () => {
 
       {loading && ( // Show loading spinner when loading
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
-          <Rings
-            height="150"
-            width="150"
+          <FallingLines
+            width="100"
             color="#4fa94d"
-            ariaLabel="loading-indicator"
+            visible={true}
           />
         </div>
       )}
@@ -148,37 +245,49 @@ const GeocodingPage: React.FC = () => {
               mapTypeControl: false, 
               fullscreenControl: false,
               streetViewControl: false,
-              disableDefaultUI: false, // Enables default UI
-              clickableIcons: false, // To prevent clickable icons on the map
+              disableDefaultUI: false,
+              clickableIcons: false,
             }}
-            onLoad={(map) => (mapRef.current = map)} // Save the map instance to the ref
+            onLoad={(map) => {
+              mapRef.current = map;
+            }}
           >
             {/* Marker for User's Current Location */}
             <Marker
               position={userLocation}
               icon={{
                 url: '/user.png',
-                scaledSize: new window.google.maps.Size(40, 40), // Corrected usage
+                scaledSize: new window.google.maps.Size(40, 40),
               }}
             />
 
             {/* Markers for Nearby Places */}
-            {nearbyPlaces.map((place) => place.latitude && place.longitude && (
-              <Marker
-                key={place.id}
-                position={{ lat: place.latitude, lng: place.longitude }}
-                icon={{ 
-                  url: getIconForPlaceType(place.category_name), // Dynamically set icon based on place type
-                  scaledSize: new window.google.maps.Size(40, 40),
-                }}
-                onClick={() => setSelectedPlace(place)}
-              />
-            ))}
+            {nearbyPlaces.map((place) => {
+              const lat = Number(place.latitude);
+              const lng = Number(place.longitude);
+
+              if (isNaN(lat) || isNaN(lng)) {
+                console.warn(`Invalid coordinates for place ID: ${place.id}`);
+                return null;
+              }
+
+              return (
+                <Marker
+                  key={place.id}
+                  position={{ lat, lng }}
+                  icon={{
+                    url: getIconForPlaceType(place.category_name),
+                    scaledSize: new window.google.maps.Size(40, 40), // Icon size
+                  }}
+                  onClick={() => setSelectedPlace(place)}
+                />
+              );
+            })}
 
             {/* InfoWindow for Selected Place */}
             {selectedPlace && (
               <InfoWindow
-                position={{ lat: selectedPlace.latitude, lng: selectedPlace.longitude }}
+                position={{ lat: Number(selectedPlace.latitude), lng: Number(selectedPlace.longitude) }}
                 onCloseClick={() => setSelectedPlace(null)}
               >
                 <div>

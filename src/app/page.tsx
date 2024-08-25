@@ -7,12 +7,12 @@ import TopRatedCarousel from '@/components/Places/TopRatedCarousel'
 export default function Home() {
   return (
   <>
-  <div>  <Carousel /></div>
+  <div><Carousel/></div>
 <div> <RealTimeSeasonalAttractions /></div>
     <div>
       <TopRatedCarousel />
     </div>
-<div>    <PlacesRandom /></div>
+<div><PlacesRandom /></div>
    </>
   );
 }
