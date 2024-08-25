@@ -42,8 +42,7 @@ const RealTimeSeasonalAttractions = () => {
   }, []);
 
   if (attractions.length === 0) {
-    // ซ่อนเนื้อหาทั้งหมดถ้าไม่มีข้อมูล
-    return null;
+    return null; // Hide the entire content if there's no data
   }
 
   return (
@@ -69,18 +68,20 @@ const RealTimeSeasonalAttractions = () => {
                     <span className="text-gray-500">ไม่มีรูปภาพ</span>
                   </div>
                 )}
-                <div className="p-4 flex-grow flex flex-col">
-                  <h3 className="text-lg font-semibold">{attraction.name}</h3>
-                  <p className="text-gray-600 flex-grow overflow-hidden text-ellipsis">
-                    {attraction.description}
-                  </p>
-                  <p className="text-gray-600"><strong>อำเภอ:</strong> {attraction.district_name}</p>
+                <div className="p-4 flex flex-col flex-grow justify-between h-full">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold">{attraction.name}</h3>
+                    <p className="text-gray-600 line-clamp-2">{attraction.description}</p>
+                  </div>
+                  <div className="mt-auto">
+                    <p className="text-gray-600"><strong>อำเภอ:</strong> {attraction.district_name}</p>
+                  </div>
                 </div>
               </div>
             </Link>
           ))}
         </Carousel>
-        <div className="flex justify-end">
+        <div className="flex justify-end mt-4">
           <Link
             href="/place/season-real-time"
             className="bg-orange-500 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105"

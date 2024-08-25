@@ -449,7 +449,7 @@ export const fetchSouvenirShopsByDistrict = async (districtId: number): Promise<
 };
 
 // Function to fetch places nearby by coordinates
-export const fetchPlacesNearbyByCoordinates = async (latitude: number, longitude: number, radius = 5000): Promise<Place[]> => {
+export const fetchPlacesNearbyByCoordinates = async (latitude: number, longitude: number, radius = 20): Promise<Place[]> => {
   try {
     const response: AxiosResponse<Place[]> = await api.get(`/places/nearby-by-coordinates`, {
       params: {
@@ -468,5 +468,34 @@ export const fetchPlacesNearbyByCoordinates = async (latitude: number, longitude
   } catch (error: any) {
     console.error('Error fetching places nearby by coordinates:', error);
     throw new Error(error.response?.data?.error || 'Error fetching places nearby by coordinates');
+  }
+};
+
+// Unified search for all criteria
+export const searchTouristEntitiesUnified = async (params: Record<string, string | number>): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get('/search/map', { params });
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: typeof place.image_url === 'string'
+        ? place.image_url.split(',').map(imagePath => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${imagePath.trim()}`)
+        : []
+    }));
+  } catch (error: any) {
+    console.error('Error fetching tourist entities with unified search:', error);
+    throw new Error(error.response?.data?.error || 'Error fetching tourist entities with unified search');
+  }
+};
+
+// Fetch all filters (seasons, districts, categories)
+export const fetchAllFilters = async (): Promise<{ seasons: Season[], districts: District[], categories: Category[] }> => {
+  try {
+    const response: AxiosResponse<{ seasons: Season[], districts: District[], categories: Category[] }> = await api.get('/filters');
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching all filters:', error);
+    throw new Error(error.response?.data?.error || 'Error fetching all filters');
   }
 };
