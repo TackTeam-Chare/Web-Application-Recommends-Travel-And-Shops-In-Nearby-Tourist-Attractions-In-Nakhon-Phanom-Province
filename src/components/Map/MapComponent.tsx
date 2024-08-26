@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, Marker, InfoWindow, Polyline } from '@react-google-maps/api';
 import { Place } from '@/models/interface';
 
 interface MapComponentProps {
@@ -25,6 +25,16 @@ const mapStyles = [
   },
 ];
 
+const polylineOptions = {
+  strokeColor: '#FF5733',
+  strokeOpacity: 0.8,
+  strokeWeight: 4,
+  clickable: false,
+  draggable: false,
+  editable: false,
+  geodesic: true,
+};
+
 const MapComponent: React.FC<MapComponentProps> = ({
   isLoaded,
   userLocation,
@@ -32,7 +42,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   searchResults,
   nearbyPlaces,
   selectedPlace,
-  onSelectPlace
+  onSelectPlace,
 }) => {
   const mapRef = useRef<google.maps.Map | null>(null);
 
@@ -49,7 +59,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       case 'bar':
         return 'http://maps.google.com/mapfiles/kml/pal2/icon27.png';
       case 'bus_station':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon18.png';
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon27.png';
       case 'cafe':
         return 'http://maps.google.com/mapfiles/kml/pal2/icon19.png';
       case 'campground':
@@ -63,7 +73,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       case 'department_store':
         return 'http://maps.google.com/mapfiles/kml/pal2/icon24.png';
       case 'florist':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon26.png';
+        return 'http://maps.google.com/mapfiles/kml/pal2/icon27.png';
       case 'gas_station':
         return 'http://maps.google.com/mapfiles/kml/pal2/icon27.png';
       case 'lodging':
@@ -169,6 +179,28 @@ const MapComponent: React.FC<MapComponentProps> = ({
         );
       })}
 
+      {userLocation &&
+        searchResults.map((place) => (
+          <Polyline
+            key={`polyline-${place.id}`}
+            path={[
+              userLocation,
+              { lat: Number(place.latitude), lng: Number(place.longitude) },
+            ]}
+            options={{
+              ...polylineOptions,
+              icons: [
+                {
+                  icon: window.google && {
+                    path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                  },
+                  offset: '100%',
+                },
+              ],
+            }}
+          />
+        ))}
+
       {selectedPlace && (
         <InfoWindow
           position={{ lat: Number(selectedPlace.latitude), lng: Number(selectedPlace.longitude) }}
@@ -177,7 +209,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
           <div>
             <h3 className="text-lg font-bold">{selectedPlace.name}</h3>
             <p className="text-gray-600">{selectedPlace.district_name}</p>
-            <p className="text-gray-600">{selectedPlace.distance ? selectedPlace.distance.toFixed(2) : 'ไม่ทราบ'} กม. จากคุณ</p>
+            <p className="text-gray-600">
+              {selectedPlace.distance ? selectedPlace.distance.toFixed(2) : 'ไม่ทราบ'} กม. จากคุณ
+            </p>
             {selectedPlace.season_name && (
               <p className="text-gray-600">ฤดูกาล: {selectedPlace.season_name}</p>
             )}
