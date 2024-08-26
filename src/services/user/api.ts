@@ -10,7 +10,12 @@ const api: AxiosInstance = axios.create({
 export const getTopRatedTouristEntities = async (): Promise<Place[]> => {
   try {
     const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/tourist-entities');
-    return response.data;
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
   } catch (error: any) {
     console.error('Error fetching top-rated tourist entities:', error);
     throw new Error(error.response?.data?.error || 'Error fetching top-rated tourist entities');
@@ -21,7 +26,13 @@ export const getTopRatedTouristEntities = async (): Promise<Place[]> => {
 export const fetchTopRatedTouristAttractions = async (): Promise<Place[]> => {
   try {
     const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/tourist-attractions');
-    return response.data;
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    // Map images for each place to construct full URLs
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
   } catch (error: any) {
     console.error('Error fetching top-rated tourist attractions:', error);
     throw new Error(error.response?.data?.error || 'Error fetching top-rated tourist attractions');
@@ -32,7 +43,13 @@ export const fetchTopRatedTouristAttractions = async (): Promise<Place[]> => {
 export const fetchTopRatedAccommodations = async (): Promise<Place[]> => {
   try {
     const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/accommodations');
-    return response.data;
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    // Map images for each accommodation
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
   } catch (error: any) {
     console.error('Error fetching top-rated accommodations:', error);
     throw new Error(error.response?.data?.error || 'Error fetching top-rated accommodations');
@@ -43,7 +60,13 @@ export const fetchTopRatedAccommodations = async (): Promise<Place[]> => {
 export const fetchTopRatedRestaurants = async (): Promise<Place[]> => {
   try {
     const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/restaurants');
-    return response.data;
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    // Map images for each restaurant
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
   } catch (error: any) {
     console.error('Error fetching top-rated restaurants:', error);
     throw new Error(error.response?.data?.error || 'Error fetching top-rated restaurants');
@@ -54,12 +77,19 @@ export const fetchTopRatedRestaurants = async (): Promise<Place[]> => {
 export const fetchTopRatedSouvenirShops = async (): Promise<Place[]> => {
   try {
     const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/souvenir-shops');
-    return response.data;
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    // Map images for each souvenir shop
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
   } catch (error: any) {
     console.error('Error fetching top-rated souvenir shops:', error);
     throw new Error(error.response?.data?.error || 'Error fetching top-rated souvenir shops');
   }
 };
+
 
 // Function to fetch categories
 export const fetchCategories = async (): Promise<Category[]> => {
@@ -234,12 +264,19 @@ export const searchByTime = async (day_of_week: string, opening_time: string, cl
 export const fetchRealTimeTouristAttractions = async (): Promise<Place[]> => {
   try {
     const response: AxiosResponse<Place[]> = await api.get('/seasons/real-time');
-    return response.data;
-  } catch (error) {
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    // Map images for each place to construct full URLs
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
+  } catch (error: any) {
     console.error('Error fetching real-time tourist attractions:', error);
-    throw error;
+    throw new Error(error.response?.data?.error || 'Error fetching real-time tourist attractions');
   }
 };
+
 
 // Function to search places
 export const searchPlaces = async (query: string): Promise<Place[]> => {
@@ -279,7 +316,12 @@ export const getAllFetchTouristEntities= async (): Promise<Place[]> => {
 export const fetchTouristAttractions = async (): Promise<Place[]> => {
   try {
     const response: AxiosResponse<Place[]> = await api.get('/tourist-attractions');
-    return response.data;
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+    }));
   } catch (error) {
     console.error('Error fetching tourist attractions:', error);
     throw error;
@@ -348,22 +390,6 @@ export const getNearbyFetchTourismData = async (id: number, radius = 5000): Prom
     return { entity, nearbyEntities };
   } catch (error) {
     console.error('Error fetching tourism data:', error);
-    throw error;
-  }
-};
-
-// Function to fetch random tourist attractions
-export const fetchRandomTouristAttractions = async (): Promise<Place[]> => {
-  try {
-    const response: AxiosResponse<Place[]> = await api.get('/places/random');
-    const data = Array.isArray(response.data) ? response.data : [];
-
-    return data.map(place => ({
-      ...place,
-      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
-    }));
-  } catch (error) {
-    console.error('Error fetching random tourist attractions:', error);
     throw error;
   }
 };
