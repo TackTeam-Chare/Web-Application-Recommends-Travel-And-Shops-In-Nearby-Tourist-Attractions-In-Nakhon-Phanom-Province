@@ -449,7 +449,7 @@ export const fetchSouvenirShopsByDistrict = async (districtId: number): Promise<
 };
 
 // Function to fetch places nearby by coordinates
-export const fetchPlacesNearbyByCoordinates = async (latitude: number, longitude: number, radius = 20): Promise<Place[]> => {
+export const fetchPlacesNearbyByCoordinates = async (latitude: number, longitude: number, radius = 5000): Promise<Place[]> => {
   try {
     const response: AxiosResponse<Place[]> = await api.get(`/places/nearby-by-coordinates`, {
       params: {

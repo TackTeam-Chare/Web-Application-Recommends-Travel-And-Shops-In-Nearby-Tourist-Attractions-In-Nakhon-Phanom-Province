@@ -16,6 +16,7 @@
     "@material-tailwind/react": "^2.1.9",
     "@react-google-maps/api": "^2.19.3",
     "axios": "^1.7.4",
+    "downshift": "^9.0.8",
     "google-map-react": "^2.2.1",
     "next": "14.2.6",
     "react": "^18",
@@ -24,6 +25,7 @@
     "react-loader-spinner": "^6.1.6",
     "react-multi-carousel": "^2.8.5",
     "react-responsive-carousel": "^3.2.23",
+    "react-select": "^5.8.0",
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.12.4"

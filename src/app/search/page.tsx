@@ -1,330 +1,457 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import {
-  fetchCategories,
-  fetchDistricts,
-  fetchSeasons,
-  searchPlaces,
-  searchByCategory,
-  searchByDistrict,
-  searchBySeason,
-  searchByTime,
+  FaMapMarkerAlt,
+  FaMapPin,
+  FaInfoCircle,
+  FaRuler,
+  FaSearch,
+  FaTree,
+  FaFish,
+  FaBrush,
+  FaAt,
+  FaBeer,
+  FaBus,
+  FaCoffee,
+  FaCampground,
+  FaChurch,
+  FaStore,
+  FaGasPump,
+  FaBed,
+  FaFilm,
+  FaLandmark,
+  FaParking,
+  FaUtensils,
+  FaShoppingCart,
+  FaSubway,
+} from "react-icons/fa";
+import { TbFileDescription } from "react-icons/tb";
+import { FallingLines } from "react-loader-spinner";
+import {
+  fetchPlacesNearbyByCoordinates,
+  searchTouristEntitiesUnified,
+  fetchAllFilters,
 } from "@/services/user/api";
+import { Place, Season, District, Category } from "@/models/interface";
 import Image from "next/image";
-import Link from "next/link";
-import { Category, District, Season, Place } from "@/models/interface";
-import { XCircleIcon } from "@heroicons/react/20/solid";
-import { useSearchParams } from "next/navigation";
+import MapComponent from "@/components/Map/MapComponent";
+import { useJsApiLoader } from "@react-google-maps/api";
 
-interface TimeFilter {
-  day_of_week: string;
-  opening_time: string;
-  closing_time: string;
-}
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string;
 
-const SearchPage: React.FC = () => {
-  const searchParams = useSearchParams();
-  const queryParam = searchParams.get("q") || ""; // Get the search query from the URL
-
-  const [searchQuery, setSearchQuery] = useState<string>(queryParam);
-  const [results, setResults] = useState<Place[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [seasons, setSeasons] = useState<Season[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [selectedDistrict, setSelectedDistrict] = useState<number | null>(null);
-  const [selectedSeason, setSelectedSeason] = useState<number | null>(null);
-  const [timeFilter, setTimeFilter] = useState<TimeFilter>({
-    day_of_week: "",
-    opening_time: "",
-    closing_time: "",
-  });
+const GeocodingSearchPage: React.FC = () => {
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [nearbyPlaces, setNearbyPlaces] = useState<Place[]>([]);
+  const [searchResults, setSearchResults] = useState<Place[]>([]);
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [filters, setFilters] = useState<{ seasons: Season[]; districts: District[]; categories: Category[] }>({
+    seasons: [],
+    districts: [],
+    categories: [],
+  });
+  const [searchParams, setSearchParams] = useState<{ q?: string; category?: number; district?: number; season?: number }>({});
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
+
+  // Load the Google Maps API
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+  });
 
   useEffect(() => {
     const loadFilters = async () => {
-      const categoriesData = await fetchCategories();
-      const districtsData = await fetchDistricts();
-      const seasonsData = await fetchSeasons();
-      setCategories(categoriesData);
-      setDistricts(districtsData);
-      setSeasons(seasonsData);
+      try {
+        const data = await fetchAllFilters();
+        setFilters(data);
+      } catch (error) {
+        console.error("Error fetching filters:", error);
+      }
     };
 
     loadFilters();
   }, []);
 
-  const handleSearch = async () => {
-    setHasSearched(true);
-    setLoading(true);
-    let searchResults: Place[] = [];
-
-    if (searchQuery) {
-      searchResults = await searchPlaces(searchQuery);
-    } else if (selectedCategory) {
-      searchResults = await searchByCategory(selectedCategory);
-    } else if (selectedDistrict) {
-      searchResults = await searchByDistrict(selectedDistrict);
-    } else if (selectedSeason) {
-      searchResults = await searchBySeason(selectedSeason);
-    } else if (timeFilter.day_of_week || timeFilter.opening_time || timeFilter.closing_time) {
-      searchResults = await searchByTime(
-        timeFilter.day_of_week,
-        timeFilter.opening_time,
-        timeFilter.closing_time
-      );
-    }
-
-    setResults(searchResults);
-    setLoading(false);
-  };
-
   useEffect(() => {
-    if (
-      searchQuery ||
-      selectedCategory ||
-      selectedDistrict ||
-      selectedSeason ||
-      timeFilter.day_of_week ||
-      timeFilter.opening_time ||
-      timeFilter.closing_time
-    ) {
-      handleSearch();
-    }
-  }, [searchQuery, selectedCategory, selectedDistrict, selectedSeason, timeFilter]);
+    const updateLocation = () => {
+      setLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+          fetchNearbyPlaces(latitude, longitude);
+          setLoading(false);
+        },
+        (error) => {
+          console.error("Error getting user's location:", error);
+          setLoading(false);
+        }
+      );
+    };
 
-  const handleReset = () => {
-    setSearchQuery("");
-    setSelectedCategory(null);
-    setSelectedDistrict(null);
-    setSelectedSeason(null);
-    setTimeFilter({ day_of_week: "", opening_time: "", closing_time: "" });
-    setResults([]);
-    setHasSearched(false);
+    updateLocation();
+  }, []);
+
+  const fetchNearbyPlaces = async (lat: number, lng: number) => {
+    try {
+      setLoading(true);
+      const data = await fetchPlacesNearbyByCoordinates(lat, lng, 5000);
+      setNearbyPlaces(data);
+    } catch (error) {
+      console.error("Error fetching nearby places:", error);
+      setNearbyPlaces([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleFilterChange = (filterType: string, value: any) => {
-    if (filterType === "category") {
-      setSelectedCategory(value);
-      setSelectedDistrict(null);
-      setSelectedSeason(null);
-    } else if (filterType === "district") {
-      setSelectedDistrict(value);
-      setSelectedCategory(null);
-      setSelectedSeason(null);
-    } else if (filterType === "season") {
-      setSelectedSeason(value);
-      setSelectedCategory(null);
-      setSelectedDistrict(null);
-    } else if (filterType === "time") {
-      setTimeFilter((prevState) => ({ ...prevState, ...value }));
+  const searchPlaces = async (params: typeof searchParams) => {
+    try {
+      setLoading(true);
+      const data = await searchTouristEntitiesUnified(params);
+      setSearchResults(data);
+
+      // If search results exist, update the map center to the first result's location
+      if (data.length > 0) {
+        const firstResult = data[0];
+        setMapCenter({ lat: Number(firstResult.latitude), lng: Number(firstResult.longitude) });
+      }
+    } catch (error) {
+      console.error("Error searching places:", error);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
     }
-    handleSearch();
   };
 
-  // ฟังก์ชันสำหรับไฮไลท์คำที่พบในชื่อหรือคำอธิบาย
-  const highlightText = (text: string, highlight: string) => {
-    if (!highlight.trim()) {
-      return text;
+  const handleSearchByField = (field: keyof typeof searchParams, value: string | number) => {
+    const updatedParams = { q: undefined, category: undefined, district: undefined, season: undefined, [field]: value };
+    setSearchParams(updatedParams);
+    searchPlaces(updatedParams);
+  };
+
+  const handleCurrentLocationClick = () => {
+    if (userLocation) {
+      fetchNearbyPlaces(userLocation.lat, userLocation.lng);
+      setMapCenter(userLocation); // Center map to user location
     }
-    const regex = new RegExp(`(${highlight})`, "gi");
-    const parts = text.split(regex);
+  };
+
+  const clearSearch = () => {
+    setSearchParams({});
+    setSearchResults([]);
+    setNearbyPlaces([]);
+    if (userLocation) {
+      setMapCenter(userLocation); // Reset map center to user's location
+    }
+  };
+
+  const categoryNames = {
+    amusement_park: "สวนสนุก",
+    aquarium: "พิพิธภัณฑ์สัตว์น้ำ",
+    art_gallery: "หอศิลป์",
+    atm: "ตู้เอทีเอ็ม",
+    bar: "บาร์",
+    bus_station: "สถานีรถบัส",
+    cafe: "ร้านกาแฟ",
+    campground: "ที่ตั้งแคมป์",
+    church: "โบสถ์",
+    clothing_store: "ร้านเสื้อผ้า",
+    convenience_store: "ร้านสะดวกซื้อ",
+    department_store: "ห้างสรรพสินค้า",
+    florist: "ร้านดอกไม้",
+    gas_station: "ปั๊มน้ำมัน",
+    lodging: "ที่พัก",
+    movie_theater: "โรงภาพยนตร์",
+    museum: "พิพิธภัณฑ์",
+    park: "สวนสาธารณะ",
+    parking: "ที่จอดรถ",
+    restaurant: "ร้านอาหาร",
+    shopping_mall: "ห้างสรรพสินค้า",
+    spa: "สปา",
+    store: "ร้านค้า",
+    subway_station: "สถานีรถไฟใต้ดิน",
+    supermarket: "ซุปเปอร์มาร์เก็ต",
+  };
+
+  const categoryIcons = {
+    amusement_park: <FaTree />,
+    aquarium: <FaFish />,
+    art_gallery: <FaBrush />,
+    atm: <FaAt />,
+    bar: <FaBeer />,
+    bus_station: <FaBus />,
+    cafe: <FaCoffee />,
+    campground: <FaCampground />,
+    church: <FaChurch />,
+    clothing_store: <FaStore />,
+    convenience_store: <FaStore />,
+    department_store: <FaShoppingCart />,
+    florist: <FaStore />,
+    gas_station: <FaGasPump />,
+    lodging: <FaBed />,
+    movie_theater: <FaFilm />,
+    museum: <FaLandmark />,
+    park: <FaTree />,
+    parking: <FaParking />,
+    restaurant: <FaUtensils />,
+    shopping_mall: <FaShoppingCart />,
+    spa: <FaStore />,
+    store: <FaStore />,
+    subway_station: <FaSubway />,
+    supermarket: <FaStore />,
+  };
+
+  const formattedCategories = filters.categories.map((category) => {
+    // ใช้ค่าเริ่มต้นหากไม่พบไอคอนหรือชื่อ
+    const icon = categoryIcons[category.name as keyof typeof categoryIcons] || <FaMapPin />;
+    const name = categoryNames[category.name as keyof typeof categoryNames] || "ไม่ทราบประเภท";
+
     return (
-      <>
-        {parts.map((part, index) =>
-          part.toLowerCase() === highlight.toLowerCase() ? (
-            <span key={index} className="bg-yellow-200">
-              {part}
-            </span>
-          ) : (
-            part
-          )
-        )}
-      </>
+      <option key={category.id} value={category.id}>
+        {name}
+      </option>
     );
-  };
+  });
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-4xl font-bold text-orange-600 text-center mt-10 mb-5">
-        ค้นหาสถานที่
-      </h2>
-      <p className="text-center text-gray-700 mb-6">
-        สถานที่ท่องเที่ยวใกล้เคียง ที่พัก ร้านอาหาร ร้านของฝาก จังหวัดนครพนม
-      </p>
+    <div className="container mx-auto p-4 relative">
+      <h1 className="text-4xl font-bold text-center text-orange-500 mb-4">สถานที่ใกล้เคียง</h1>
+      {/* Search Filters and Check Current Location Button */}
+      <div className="flex flex-wrap gap-3 mb-6 items-center justify-center">
+        <button
+          onClick={handleCurrentLocationClick}
+          className="bg-orange-500 text-white py-2 px-4 rounded-full flex items-center hover:bg-orange-600 transition duration-300"
+          aria-label="Check current location"
+        >
+          <FaMapMarkerAlt className="mr-2" />
+          เช็คตำแหน่งปัจจุบัน
+        </button>
 
-      {/* Search Input */}
-      <div className="relative w-full max-w-md mb-6 mx-auto">
-        <label htmlFor="search-input" className="block text-sm font-semibold mb-2 text-orange-600">
-          ค้นหาชื่อสถานที่
-        </label>
-        <div className="relative flex items-center">
+        <div className="relative w-full max-w-xs">
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
           <input
             type="text"
-            id="search-input"
-            placeholder="กรอกชื่อสถานที่เพื่อค้นหาเลย!"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="peer w-full p-3 pr-10 rounded-md border border-orange-600 focus:outline-none"
+            placeholder="ค้นหาชื่อสถานที่"
+            className="p-2 pl-10 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
+            value={searchParams.q || ""}
+            onChange={(e) => handleSearchByField("q", e.target.value)}
+            aria-label="Search by place name"
           />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              className="absolute right-3 text-gray-600 hover:text-gray-800"
-            >
-              <XCircleIcon className="h-6 w-6" />
-            </button>
-          )}
         </div>
-      </div>
 
-      {/* Highlighted Search Query */}
-      {searchQuery && (
-        <div className="mb-4 text-center">
-        <span className="text-lg font-semibold text-orange-600">
-  ผลการค้นหาสำหรับ: `{searchQuery}`
-</span>
+        {/* Replace react-select with regular dropdown */}
+        <div className="relative w-full max-w-xs">
+          <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
+          <select
+            value={searchParams.category || ""}
+            onChange={(e) => handleSearchByField("category", Number(e.target.value))}
+            className="p-2 pl-10 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
+            aria-label="Select category"
+          >
+            <option value="">เลือกหมวดหมู่</option>
+            {formattedCategories}
+          </select>
         </div>
-      )}
 
-      {/* Day and Time Filters */}
-      <div className="flex flex-wrap gap-4 items-center mb-6 justify-center">
-        <div className="flex flex-col">
-          <label htmlFor="day-select" className="text-sm font-semibold mb-1 text-orange-600">
-            เลือกวันและเวลาเปิดปิดสถานที่
-          </label>
-          <div className="flex gap-4">
-            <select
-              id="day-select"
-              className="p-2 w-32 rounded-md border border-orange-600"
-              value={timeFilter.day_of_week}
-              onChange={(e) => handleFilterChange("time", { day_of_week: e.target.value })}
-            >
-              <option value="">เลือกวัน</option>
-              <option value="Monday">จันทร์</option>
-              <option value="Tuesday">อังคาร</option>
-              <option value="Wednesday">พุธ</option>
-              <option value="Thursday">พฤหัสบดี</option>
-              <option value="Friday">ศุกร์</option>
-              <option value="Saturday">เสาร์</option>
-              <option value="Sunday">อาทิตย์</option>
-            </select>
-            <input
-              type="time"
-              id="opening-time"
-              className="w-32 p-2 rounded-md border border-orange-600"
-              value={timeFilter.opening_time}
-              onChange={(e) => handleFilterChange("time", { opening_time: e.target.value })}
-            />
-            <input
-              type="time"
-              id="closing-time"
-              className="w-32 p-2 rounded-md border border-orange-600"
-              value={timeFilter.closing_time}
-              onChange={(e) => handleFilterChange("time", { closing_time: e.target.value })}
-            />
-          </div>
+        <div className="relative w-full max-w-xs">
+          <FaMapMarkerAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
+          <select
+            value={searchParams.district || ""}
+            onChange={(e) => handleSearchByField("district", Number(e.target.value))}
+            className="p-2 pl-10 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
+            aria-label="Select district"
+          >
+            <option value="">เลือกอำเภอ</option>
+            {filters.districts.map((district) => (
+              <option key={district.id} value={district.id}>
+                {district.name}
+              </option>
+            ))}
+          </select>
         </div>
-      </div>
 
-      {/* Tag Buttons for Districts, Categories, and Seasons */}
-      <div className="flex flex-wrap gap-3 justify-center mb-6">
-        {districts.map((district) => (
-          <button
-            key={district.id}
-            onClick={() => setSelectedDistrict(district.id)}
-            className={`py-2 px-4 rounded-full hover:bg-orange-300 transition duration-200 ${
-              selectedDistrict === district.id ? "bg-orange-600 text-white" : "bg-orange-200 text-orange-800"
-            }`}
+        <div className="relative w-full max-w-xs">
+          <FaInfoCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
+          <select
+            value={searchParams.season || ""}
+            onChange={(e) => handleSearchByField("season", Number(e.target.value))}
+            className="p-2 pl-10 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
+            aria-label="Select season"
           >
-            {district.name}
-          </button>
-        ))}
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => setSelectedCategory(category.id)}
-            className={`py-2 px-4 rounded-full hover:bg-orange-300 transition duration-200 ${
-              selectedCategory === category.id ? "bg-orange-600 text-white" : "bg-orange-200 text-orange-800"
-            }`}
-          >
-            {category.name}
-          </button>
-        ))}
-        {seasons.map((season) => (
-          <button
-            key={season.id}
-            onClick={() => setSelectedSeason(season.id)}
-            className={`py-2 px-4 rounded-full hover:bg-orange-300 transition duration-200 ${
-              selectedSeason === season.id ? "bg-orange-600 text-white" : "bg-orange-200 text-orange-800"
-            }`}
-          >
-            {season.name}
-          </button>
-        ))}
-      </div>
+            <option value="">เลือกฤดูกาล</option>
+            {filters.seasons.map((season) => (
+              <option key={season.id} value={season.id}>
+                {season.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {/* Results Info */}
-      <div className="flex justify-between items-center mb-6">
-        <p className="text-gray-700">
-          {results.length > 0
-            ? `พบ ${results.length} ผลลัพธ์`
-            : hasSearched && results.length === 0
-            ? "ไม่พบผลลัพธ์การค้นหา"
-            : "ค้นหาสถานที่ที่คุณต้องการเลย!"}
-        </p>
         <button
-          onClick={handleReset}
-          className="bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition duration-200"
+          onClick={clearSearch}
+          className="bg-gray-300 text-black py-2 px-4 rounded-full"
+          aria-label="Clear search"
         >
           ล้างการค้นหา
         </button>
       </div>
 
-      {/* Results */}
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {results.map((place) => (
-            <Link key={place.id} href={`/place/${place.id}`}>
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full cursor-pointer">
-                {place.image_url && place.image_url[0] ? (
-                  <Image
-                    src={place.image_url[0]}
-                    alt={place.name}
-                    width={500}
-                    height={300}
-                    className="rounded-lg mb-4 object-cover w-full h-48"
-                  />
-                ) : (
-                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
-                    <span className="text-gray-500">ไม่มีรูปภาพ</span>
-                  </div>
-                )}
-                <h2 className="text-xl font-semibold px-4">
-                  {highlightText(place.name, searchQuery)}
-                </h2>
-                <p className="text-gray-600 px-4 flex-grow">
-                  {highlightText(place.description, searchQuery)}
-                </p>
-                <p className="text-orange-600 mt-2 font-bold self-end px-4 mb-4">อ่านต่อ...</p>
-              </div>
-            </Link>
-          ))}
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <FallingLines width="100" color="#4fa94d" visible={true} />
         </div>
       )}
 
-      {!hasSearched && results.length === 0 && (
-        <div className="text-center text-gray-600 mt-10">
-          ค้นหาสถานที่ที่คุณต้องการเลย!
+      {/* MapComponent Integration */}
+      <div className={`w-full h-96 mb-6 ${loading ? "blur-sm" : ""}`}>
+        <MapComponent
+          isLoaded={isLoaded}
+          userLocation={userLocation}
+          mapCenter={mapCenter}
+          searchResults={searchResults}
+          nearbyPlaces={nearbyPlaces}
+          selectedPlace={selectedPlace}
+          onSelectPlace={setSelectedPlace}
+        />
+      </div>
+
+      {/* Display search query and results count */}
+      <div className="mt-4">
+        {searchParams.q && (
+          <p className="text-lg font-bold text-center text-orange-500 mb-4 ">
+            คำที่ค้นหา: &quot;{searchParams.q}&quot; (พบ {searchResults.length} ผลลัพธ์)
+          </p>
+        )}
+        {/* Display search results separately */}
+        <h2 className="text-2xl font-bold text-orange-500 mb-4">ผลลัพธ์การค้นหา (พบ {searchResults.length} ผลลัพธ์)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {searchResults.map((place) => (
+            <div
+              key={place.id}
+              className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col"
+              onMouseEnter={() => setMapCenter({ lat: Number(place.latitude), lng: Number(place.longitude) })}
+            >
+              {place.images && place.images[0]?.image_url ? (
+                <Image
+                  src={place.images[0].image_url ?? "/default-image.jpg"}
+                  alt={place.name}
+                  className="rounded-lg mb-4 object-cover w-full h-48"
+                  width={500}
+                  height={300}
+                />
+              ) : (
+                <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
+                  <span className="text-gray-500">ไม่มีรูปภาพ</span>
+                </div>
+              )}
+              <div className="p-4 flex-grow">
+                <h3 className="text-xl font-semibold mb-2">{place.name}</h3>
+                <p className="text-gray-600 flex items-center mb-2">
+                  <TbFileDescription className="mr-2 text-orange-500" />
+                  {place.description}
+                </p>
+                <p className="text-gray-600 flex items-center mb-2">
+                  <FaMapMarkerAlt className="mr-2 text-orange-500" />
+                  {place.district_name}
+                </p>
+                <p className="text-gray-600 flex items-center mb-2">
+                  <FaMapPin className="mr-2 text-orange-500" />
+                  {place.category_name}
+                </p>
+                {place.distance !== undefined && place.distance !== null ? (
+                  <p className="text-gray-600 flex items-center mb-2">
+                    <FaRuler className="mr-2 text-orange-500" />
+                    {place.distance.toFixed(2)} กม.
+                  </p>
+                ) : (
+                  <p className="text-gray-600 flex items-center mb-2">
+                    <FaRuler className="mr-2 text-orange-500" />
+                    ไม่ทราบระยะทาง
+                  </p>
+                )}
+                {place.season_name && (
+                  <p className="text-gray-600 flex items-center mb-2">
+                    <FaInfoCircle className="mr-2 text-orange-500" />
+                    ฤดูกาล: {place.season_name}
+                  </p>
+                )}
+                <div className="flex justify-end mt-auto">
+                  <a href={`/place/${place.id}`} className="text-orange-500 mt-2 font-bold flex items-center hover:underline">
+                    อ่านเพิ่มเติม
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
+
+      {/* Display nearby places separately */}
+      <div className="mt-4">
+        <h2 className="text-2xl font-bold text-orange-500 mb-4">สถานที่ใกล้เคียง (พบ {nearbyPlaces.length} สถานที่)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {nearbyPlaces.map((place) => (
+            <div
+              key={place.id}
+              className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col"
+              onMouseEnter={() => setMapCenter({ lat: Number(place.latitude), lng: Number(place.longitude) })}
+            >
+              {place.images && place.images[0]?.image_url ? (
+                <Image
+                  src={place.images[0].image_url ?? "/default-image.jpg"}
+                  alt={place.name}
+                  className="rounded-lg mb-4 object-cover w-full h-48"
+                  width={500}
+                  height={300}
+                />
+              ) : (
+                <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
+                  <span className="text-gray-500">ไม่มีรูปภาพ</span>
+                </div>
+              )}
+              <div className="p-4 flex-grow">
+                <h3 className="text-xl font-semibold mb-2">{place.name}</h3>
+                <p className="text-gray-600 flex items-center mb-2">
+                  <TbFileDescription className="mr-2 text-orange-500" />
+                  {place.description}
+                </p>
+                <p className="text-gray-600 flex items-center mb-2">
+                  <FaMapMarkerAlt className="mr-2 text-orange-500" />
+                  {place.district_name}
+                </p>
+                <p className="text-gray-600 flex items-center mb-2">
+                  <FaMapPin className="mr-2 text-orange-500" />
+                  {place.category_name}
+                </p>
+                {place.distance !== undefined && place.distance !== null ? (
+                  <p className="text-gray-600 flex items-center mb-2">
+                    <FaRuler className="mr-2 text-orange-500" />
+                    {place.distance.toFixed(2)} กม.
+                  </p>
+                ) : (
+                  <p className="text-gray-600 flex items-center mb-2">
+                    <FaRuler className="mr-2 text-orange-500" />
+                    ไม่ทราบระยะทาง
+                  </p>
+                )}
+                {place.season_name && (
+                  <p className="text-gray-600 flex items-center mb-2">
+                    <FaInfoCircle className="mr-2 text-orange-500" />
+                    ฤดูกาล: {place.season_name}
+                  </p>
+                )}
+                <div className="flex justify-end mt-auto">
+                  <a href={`/place/${place.id}`} className="text-orange-500 mt-2 font-bold flex items-center hover:underline">
+                    อ่านเพิ่มเติม
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
 
-export default SearchPage;
+export default GeocodingSearchPage;
