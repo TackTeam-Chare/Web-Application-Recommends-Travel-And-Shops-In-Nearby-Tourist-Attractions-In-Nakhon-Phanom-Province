@@ -5,7 +5,7 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import { Place } from '@/models/interface';
-import { fetchPlacesNearbyByCoordinates } from '@/services/user/api';
+import { fetchPlacesNearbyByCoordinatesRealTime } from '@/services/user/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { showInfoAlert, showErrorAlert } from '@/lib/sweetalert';
@@ -46,7 +46,7 @@ const NearbyPlaces = () => {
     const getNearbyPlaces = async () => {
       if (latitude !== null && longitude !== null) {
         try {
-          const data = await fetchPlacesNearbyByCoordinates(latitude, longitude);
+          const data = await fetchPlacesNearbyByCoordinatesRealTime(latitude, longitude);
           if (data.length === 0) {
             showInfoAlert(
               'ไม่มีสถานที่ใกล้เคียง',
@@ -79,7 +79,7 @@ const NearbyPlaces = () => {
 
   return (
     <div className="container mx-auto mt-10 px-4">
-      <h2 className="text-4xl md:text-4xl lg:text-5xl font-bold text-orange-500 mt-10 mb-5 text-center">สถานที่ใกล้เคียง</h2>
+      <h2 className="text-4xl md:text-4xl lg:text-5xl font-bold text-orange-500 mt-10 mb-5 text-start">สถานที่ใกล้เคียง</h2>
       <Slider {...settings}>
         {places.map((place) => (
           <div key={place.id} className="flex items-center">
@@ -89,14 +89,14 @@ const NearbyPlaces = () => {
                   <Image
                     src={place.image_url[0]}
                     alt={place.name}
-                    width={800}  // Adjust the width
-                    height={450} // Adjust the height
-                    style={{ objectFit: 'cover' }} // Cover ensures the image covers the container
-                    className="rounded-lg shadow-md w-full h-full" // Make sure width and height cover the container
+                    width={800}
+                    height={200}
+                    style={{ objectFit: 'cover' }}
+                    className="rounded-lg shadow-md h-60 w-full object-fill "
                   />
                 ) : (
                   <div className="w-full h-56 flex items-center justify-center bg-gray-200">
-                    <span className="text-gray-500">ไม่มีรูปภาพสถานที่</span>
+                    <span className="text-gray-500 ">ไม่มีรูปภาพสถานที่</span>
                   </div>
                 )}
               </Link>

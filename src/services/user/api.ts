@@ -7,14 +7,19 @@ const api: AxiosInstance = axios.create({
 });
 
 // Function to fetch top-rated tourist entities
-export const getTopRatedTouristEntities = async (): Promise<Place[]> => {
+export const getTopRatedTouristAttractions = async (): Promise<Place[]> => {
   try {
-    const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/tourist-entities');
+    const response: AxiosResponse<Place[]> = await api.get('/places/top-rated/tourist-attractions');
     const data = Array.isArray(response.data) ? response.data : [];
 
     return data.map(place => ({
       ...place,
-      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+      images: place.images
+        ? place.images.map((image: { image_path: string }) => ({
+            image_path: image.image_path,
+            image_url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`
+          }))
+        : [] // Default to an empty array if no images
     }));
   } catch (error: any) {
     console.error('Error fetching top-rated tourist entities:', error);
@@ -409,7 +414,12 @@ export const fetchCurrentlyOpenTouristEntities = async (): Promise<Place[]> => {
 
     return data.map(place => ({
       ...place,
-      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+      images: place.images
+        ? place.images.map((image: { image_path: string }) => ({
+            image_path: image.image_path,
+            image_url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`
+          }))
+        : [] // Default to an empty array if no images
     }));
   } catch (error) {
     console.error('Error fetching currently open tourist entities:', error);
@@ -496,6 +506,35 @@ export const fetchPlacesNearbyByCoordinates = async (latitude: number, longitude
 
     return data.map(place => ({
       ...place,
+      images: place.images
+        ? place.images.map((image: { image_path: string }) => ({
+            image_path: image.image_path,
+            image_url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`
+          }))
+        : [] // Default to an empty array if no images
+    }));
+    
+  } catch (error: any) {
+    console.error('Error fetching places nearby by coordinates:', error);
+    throw new Error(error.response?.data?.error || 'Error fetching places nearby by coordinates');
+  }
+};
+
+// Function to fetch places nearby by coordinates
+export const fetchPlacesNearbyByCoordinatesRealTime = async (latitude: number, longitude: number, radius = 5000): Promise<Place[]> => {
+  try {
+    const response: AxiosResponse<Place[]> = await api.get(`/places/nearby-by-coordinates`, {
+      params: {
+        lat: latitude,
+        lng: longitude,
+        radius: radius
+      }
+    });
+
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
       image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
     }));
   } catch (error: any) {
@@ -503,6 +542,7 @@ export const fetchPlacesNearbyByCoordinates = async (latitude: number, longitude
     throw new Error(error.response?.data?.error || 'Error fetching places nearby by coordinates');
   }
 };
+
 
 // Unified search for all criteria
 export const searchTouristEntitiesUnified = async (params: Record<string, string | number>): Promise<Place[]> => {
@@ -512,9 +552,12 @@ export const searchTouristEntitiesUnified = async (params: Record<string, string
 
     return data.map(place => ({
       ...place,
-      image_url: typeof place.image_url === 'string'
-        ? place.image_url.split(',').map(imagePath => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${imagePath.trim()}`)
-        : []
+      images: place.images
+        ? place.images.map((image: { image_path: string }) => ({
+            image_path: image.image_path,
+            image_url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`
+          }))
+        : [] // Default to an empty array if no images
     }));
   } catch (error: any) {
     console.error('Error fetching tourist entities with unified search:', error);

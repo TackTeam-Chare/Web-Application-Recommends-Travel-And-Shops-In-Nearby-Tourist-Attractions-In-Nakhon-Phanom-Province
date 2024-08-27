@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { getTopRatedTouristEntities } from "@/services/user/api";
+import { getTopRatedTouristAttractions } from "@/services/user/api";
 import Image from "next/image";
 import Link from "next/link";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
@@ -47,7 +47,8 @@ const TopRatedCarousel: React.FC = () => {
   useEffect(() => {
     const fetchTopRatedAttractions = async () => {
       try {
-        const data = await getTopRatedTouristEntities();
+        const data = await getTopRatedTouristAttractions();
+        console.log('Fetched top-rated attractions:', data);
         setAttractions(data);
       } catch (error) {
         console.error("Error fetching top-rated attractions:", error);

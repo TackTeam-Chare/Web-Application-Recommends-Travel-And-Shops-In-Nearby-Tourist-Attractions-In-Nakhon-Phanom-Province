@@ -53,20 +53,19 @@ const CurrentlyOpenPlaces = () => {
           <div key={place.id} className="flex items-center">
             <div className="flex-1">
               <Link href={`/place/${place.id}`}>
-                {place.image_url && typeof place.image_url === 'string' ? (
-                  <Image
-                    src={place.image_url}
-                    alt={place.name}
-                    width={500}
-                    height={350}
-                    style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
-                    className="rounded-lg shadow-md"
-                  />
-                ) : (
-                  <div className="w-full h-56 flex items-center justify-center bg-gray-200">
-                    <span className="text-gray-500">ไม่มีรูปภาพสถานที่</span>
-                  </div>
-                )}
+              {place.images && place.images.length > 0 && place.images[0].image_url ? (
+  <Image
+    src={place.images[0].image_url}
+    alt={place.name}
+    width={500}
+    height={300}
+    className="w-full h-80 object-cover"
+  />
+) : (
+  <div className="w-full h-56 flex items-center justify-center bg-gray-200">
+    <span className="text-gray-500">ไม่มีรูปภาพสถานที่</span>
+  </div>
+)}
               </Link>
             </div>
             <div className="flex-1 flex flex-col justify-between p-6">

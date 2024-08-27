@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Place } from "@/models/interface";
 import {
-  getTopRatedTouristEntities,
+  getTopRatedTouristAttractions,
   fetchTopRatedTouristAttractions,
   fetchTopRatedAccommodations,
   fetchTopRatedRestaurants,
@@ -67,7 +67,7 @@ const TopRatedPlacesPage: React.FC = () => {
       try {
         switch (category) {
           case "tourist-entities":
-            response = await getTopRatedTouristEntities();
+            response = await getTopRatedTouristAttractions();
             break;
           case "tourist-attractions":
             response = await fetchTopRatedTouristAttractions();

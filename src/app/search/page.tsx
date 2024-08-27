@@ -1,13 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  FaMapMarkerAlt,
-  FaSearch,
-  FaRuler
-} from "react-icons/fa";
+import { FaMapMarkerAlt, FaSearch, FaRuler } from "react-icons/fa";
 import { TbFileDescription } from "react-icons/tb";
 import { FallingLines } from "react-loader-spinner";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   fetchPlacesNearbyByCoordinates,
   searchTouristEntitiesUnified,
@@ -44,8 +42,10 @@ const GeocodingSearchPage: React.FC = () => {
       try {
         const data = await fetchAllFilters();
         setFilters(data);
+        // ลบการแสดง toast สำหรับการโหลดตัวกรอง
       } catch (error) {
         console.error("Error fetching filters:", error);
+        // ลบการแสดง toast สำหรับการโหลดตัวกรองไม่สำเร็จ
       }
     };
 
@@ -64,6 +64,7 @@ const GeocodingSearchPage: React.FC = () => {
         },
         (error) => {
           console.error("Error getting user's location:", error);
+          toast.error("ไม่สามารถดึงตำแหน่งผู้ใช้ได้ กรุณาเปิดการใช้งานตำแหน่ง"); // แสดง alert เมื่อไม่สามารถเช็คพิกัดผู้ใช้ได้
           setLoading(false);
         }
       );
@@ -77,8 +78,14 @@ const GeocodingSearchPage: React.FC = () => {
       setLoading(true);
       const data = await fetchPlacesNearbyByCoordinates(lat, lng, 5000);
       setNearbyPlaces(data);
+      
+      // แสดง Alert เมื่อพบสถานที่ใกล้เคียง
+      if (data.length > 0) {
+        toast.success(`พบสถานที่ใกล้เคียง ${data.length} แห่ง!`);
+      }
     } catch (error) {
       console.error("Error fetching nearby places:", error);
+      toast.error("ไม่สามารถดึงสถานที่ใกล้เคียงได้"); // แสดง alert เมื่อเกิด error ในการดึงข้อมูลสถานที่ใกล้เคียง
       setNearbyPlaces([]);
     } finally {
       setLoading(false);
@@ -95,9 +102,13 @@ const GeocodingSearchPage: React.FC = () => {
       if (data.length > 0) {
         const firstResult = data[0];
         setMapCenter({ lat: Number(firstResult.latitude), lng: Number(firstResult.longitude) });
+        toast.success(`พบ ${data.length} เเห่ง`); // แสดง alert เมื่อค้นหาแล้วพบสถานที่
+      } else {
+        toast.info("ไม่พบผลลัพธ์สำหรับการค้นหาของคุณ");
       }
     } catch (error) {
       console.error("Error searching places:", error);
+      toast.error("ไม่สามารถทำการค้นหาได้"); // แสดง alert เมื่อเกิด error ในการค้นหา
       setSearchResults([]);
     } finally {
       setLoading(false);
@@ -124,10 +135,14 @@ const GeocodingSearchPage: React.FC = () => {
     if (userLocation) {
       setMapCenter(userLocation); // Reset map center to user's location
     }
+    // ลบ toast สำหรับการล้างการค้นหา
   };
 
   return (
     <div className="container mx-auto p-4 relative">
+      {/* ToastContainer to display notifications */}
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+
       <h1 className="text-4xl font-bold text-center text-orange-500 mb-4">สถานที่ใกล้เคียง</h1>
       {/* Search Filters and Check Current Location Button */}
       <div className="flex flex-wrap gap-3 mb-6 items-center justify-center">
