@@ -107,9 +107,11 @@ const NearbyPlaces = () => {
                   {place.name}
                 </Link>
               </h3>
-              <p className="flex-grow"><strong>หมวดหมู่:</strong> {place.category_name}</p>
-              <p className="flex-grow"><strong>อำเภอ:</strong> {place.district_name}</p>
-              <p className="flex-grow">{place.description}</p>
+              <p className="text-orange-500 font-bold flex items-center">{place.category_name}</p>
+              <p className="text-orange-500 font-bold flex items-center">
+                      {place.district_name}
+                  </p>
+                  <p className="flex-grow">{place.description}</p>
               <div className="flex justify-end mt-auto">
                 <Link href={`/place/${place.id}`} className="text-orange-500 hover:text-orange-600 font-semibold">
                   อ่านต่อ →

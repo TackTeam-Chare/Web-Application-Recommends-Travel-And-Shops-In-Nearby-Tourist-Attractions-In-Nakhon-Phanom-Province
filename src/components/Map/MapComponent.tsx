@@ -26,16 +26,6 @@ const mapStyles = [
   },
 ];
 
-const polylineOptions = {
-  strokeColor: '#FF5733',
-  strokeOpacity: 0.8,
-  strokeWeight: 4,
-  clickable: false,
-  draggable: false,
-  editable: false,
-  geodesic: true,
-};
-
 const MapComponent: React.FC<MapComponentProps> = ({
   isLoaded,
   userLocation,

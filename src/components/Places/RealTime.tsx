@@ -74,9 +74,9 @@ const RealTimeSeasonalAttractions = () => {
                     <h3 className="text-lg font-semibold">{attraction.name}</h3>
                     <p className="text-gray-600 line-clamp-2">{attraction.description}</p>
                   </div>
-                  <div className="mt-auto">
-                    <p className="text-gray-600"><strong>อำเภอ:</strong> {attraction.district_name}</p>
-                  </div>
+                  <p className="text-orange-500 font-bold flex items-center">
+                      {attraction.district_name}
+                  </p>
                 </div>
               </div>
             </Link>

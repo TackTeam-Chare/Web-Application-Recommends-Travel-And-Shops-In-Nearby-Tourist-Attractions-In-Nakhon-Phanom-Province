@@ -93,11 +93,8 @@ const TopRatedCarousel: React.FC = () => {
                     <h3 className="text-lg font-semibold mb-2">
                       {attraction.name}
                     </h3>
-                    <p className="text-gray-600 mb-2">
-                      {attraction.description}
-                    </p>
-                    <p className="text-gray-600 mb-4">
-                      <strong>อำเภอ:</strong> {attraction.district_name}
+                    <p className="text-orange-500 font-bold flex items-center">
+                      {attraction.district_name}
                     </p>
                   </div>
                   {/* average_rating display */}
