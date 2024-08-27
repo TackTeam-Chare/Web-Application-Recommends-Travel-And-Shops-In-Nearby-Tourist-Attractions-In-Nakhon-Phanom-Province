@@ -1,29 +1,10 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import {
   FaMapMarkerAlt,
-  FaMapPin,
-  FaInfoCircle,
-  FaRuler,
   FaSearch,
-  FaTree,
-  FaFish,
-  FaBrush,
-  FaAt,
-  FaBeer,
-  FaBus,
-  FaCoffee,
-  FaCampground,
-  FaChurch,
-  FaStore,
-  FaGasPump,
-  FaBed,
-  FaFilm,
-  FaLandmark,
-  FaParking,
-  FaUtensils,
-  FaShoppingCart,
-  FaSubway,
+  FaRuler
 } from "react-icons/fa";
 import { TbFileDescription } from "react-icons/tb";
 import { FallingLines } from "react-loader-spinner";
@@ -145,74 +126,6 @@ const GeocodingSearchPage: React.FC = () => {
     }
   };
 
-  const categoryNames = {
-    amusement_park: "สวนสนุก",
-    aquarium: "พิพิธภัณฑ์สัตว์น้ำ",
-    art_gallery: "หอศิลป์",
-    atm: "ตู้เอทีเอ็ม",
-    bar: "บาร์",
-    bus_station: "สถานีรถบัส",
-    cafe: "ร้านกาแฟ",
-    campground: "ที่ตั้งแคมป์",
-    church: "โบสถ์",
-    clothing_store: "ร้านเสื้อผ้า",
-    convenience_store: "ร้านสะดวกซื้อ",
-    department_store: "ห้างสรรพสินค้า",
-    florist: "ร้านดอกไม้",
-    gas_station: "ปั๊มน้ำมัน",
-    lodging: "ที่พัก",
-    movie_theater: "โรงภาพยนตร์",
-    museum: "พิพิธภัณฑ์",
-    park: "สวนสาธารณะ",
-    parking: "ที่จอดรถ",
-    restaurant: "ร้านอาหาร",
-    shopping_mall: "ห้างสรรพสินค้า",
-    spa: "สปา",
-    store: "ร้านค้า",
-    subway_station: "สถานีรถไฟใต้ดิน",
-    supermarket: "ซุปเปอร์มาร์เก็ต",
-  };
-
-  const categoryIcons = {
-    amusement_park: <FaTree />,
-    aquarium: <FaFish />,
-    art_gallery: <FaBrush />,
-    atm: <FaAt />,
-    bar: <FaBeer />,
-    bus_station: <FaBus />,
-    cafe: <FaCoffee />,
-    campground: <FaCampground />,
-    church: <FaChurch />,
-    clothing_store: <FaStore />,
-    convenience_store: <FaStore />,
-    department_store: <FaShoppingCart />,
-    florist: <FaStore />,
-    gas_station: <FaGasPump />,
-    lodging: <FaBed />,
-    movie_theater: <FaFilm />,
-    museum: <FaLandmark />,
-    park: <FaTree />,
-    parking: <FaParking />,
-    restaurant: <FaUtensils />,
-    shopping_mall: <FaShoppingCart />,
-    spa: <FaStore />,
-    store: <FaStore />,
-    subway_station: <FaSubway />,
-    supermarket: <FaStore />,
-  };
-
-  const formattedCategories = filters.categories.map((category) => {
-    // ใช้ค่าเริ่มต้นหากไม่พบไอคอนหรือชื่อ
-    const icon = categoryIcons[category.name as keyof typeof categoryIcons] || <FaMapPin />;
-    const name = categoryNames[category.name as keyof typeof categoryNames] || "ไม่ทราบประเภท";
-
-    return (
-      <option key={category.id} value={category.id}>
-        {name}
-      </option>
-    );
-  });
-
   return (
     <div className="container mx-auto p-4 relative">
       <h1 className="text-4xl font-bold text-center text-orange-500 mb-4">สถานที่ใกล้เคียง</h1>
@@ -239,26 +152,27 @@ const GeocodingSearchPage: React.FC = () => {
           />
         </div>
 
-        {/* Replace react-select with regular dropdown */}
         <div className="relative w-full max-w-xs">
-          <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
           <select
             value={searchParams.category || ""}
             onChange={(e) => handleSearchByField("category", Number(e.target.value))}
-            className="p-2 pl-10 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
+            className="p-2 pl-3 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
             aria-label="Select category"
           >
             <option value="">เลือกหมวดหมู่</option>
-            {formattedCategories}
+            {filters.categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
           </select>
         </div>
 
         <div className="relative w-full max-w-xs">
-          <FaMapMarkerAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
           <select
             value={searchParams.district || ""}
             onChange={(e) => handleSearchByField("district", Number(e.target.value))}
-            className="p-2 pl-10 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
+            className="p-2 pl-3 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
             aria-label="Select district"
           >
             <option value="">เลือกอำเภอ</option>
@@ -271,11 +185,10 @@ const GeocodingSearchPage: React.FC = () => {
         </div>
 
         <div className="relative w-full max-w-xs">
-          <FaInfoCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
           <select
             value={searchParams.season || ""}
             onChange={(e) => handleSearchByField("season", Number(e.target.value))}
-            className="p-2 pl-10 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
+            className="p-2 pl-3 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
             aria-label="Select season"
           >
             <option value="">เลือกฤดูกาล</option>
@@ -312,13 +225,14 @@ const GeocodingSearchPage: React.FC = () => {
           nearbyPlaces={nearbyPlaces}
           selectedPlace={selectedPlace}
           onSelectPlace={setSelectedPlace}
+          clearSearch={clearSearch}
         />
       </div>
 
       {/* Display search query and results count */}
       <div className="mt-4">
         {searchParams.q && (
-          <p className="text-lg font-bold text-center text-orange-500 mb-4 ">
+          <p className="text-lg font-bold text-center text-orange-500 mb-4">
             คำที่ค้นหา: &quot;{searchParams.q}&quot; (พบ {searchResults.length} ผลลัพธ์)
           </p>
         )}
@@ -351,11 +265,9 @@ const GeocodingSearchPage: React.FC = () => {
                   {place.description}
                 </p>
                 <p className="text-gray-600 flex items-center mb-2">
-                  <FaMapMarkerAlt className="mr-2 text-orange-500" />
                   {place.district_name}
                 </p>
                 <p className="text-gray-600 flex items-center mb-2">
-                  <FaMapPin className="mr-2 text-orange-500" />
                   {place.category_name}
                 </p>
                 {place.distance !== undefined && place.distance !== null ? (
@@ -371,7 +283,6 @@ const GeocodingSearchPage: React.FC = () => {
                 )}
                 {place.season_name && (
                   <p className="text-gray-600 flex items-center mb-2">
-                    <FaInfoCircle className="mr-2 text-orange-500" />
                     ฤดูกาล: {place.season_name}
                   </p>
                 )}
@@ -416,11 +327,9 @@ const GeocodingSearchPage: React.FC = () => {
                   {place.description}
                 </p>
                 <p className="text-gray-600 flex items-center mb-2">
-                  <FaMapMarkerAlt className="mr-2 text-orange-500" />
                   {place.district_name}
                 </p>
                 <p className="text-gray-600 flex items-center mb-2">
-                  <FaMapPin className="mr-2 text-orange-500" />
                   {place.category_name}
                 </p>
                 {place.distance !== undefined && place.distance !== null ? (
@@ -436,7 +345,6 @@ const GeocodingSearchPage: React.FC = () => {
                 )}
                 {place.season_name && (
                   <p className="text-gray-600 flex items-center mb-2">
-                    <FaInfoCircle className="mr-2 text-orange-500" />
                     ฤดูกาล: {place.season_name}
                   </p>
                 )}

@@ -7,7 +7,7 @@ export interface Place {
     image_path?: string | null;
     image_url?: string | string[] | null;
     images?: {
-      image_url: string | undefined; image_path: string 
+    image_url: string | undefined; image_path: string 
 }[];
     [key: string]: any;
 }

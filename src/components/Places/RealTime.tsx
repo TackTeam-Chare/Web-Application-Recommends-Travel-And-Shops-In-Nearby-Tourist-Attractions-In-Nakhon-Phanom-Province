@@ -6,6 +6,7 @@ import "react-multi-carousel/lib/styles.css";
 import { fetchRealTimeTouristAttractions } from "@/services/user/api";
 import Image from "next/image";
 import Link from "next/link";
+import { Place } from "@/models/interface";
 
 const responsive = {
   desktop: {
@@ -26,7 +27,7 @@ const responsive = {
 };
 
 const RealTimeSeasonalAttractions = () => {
-  const [attractions, setAttractions] = useState<any[]>([]);
+  const [attractions, setAttractions] = useState<Place[]>([]);
 
   useEffect(() => {
     const fetchAttractions = async () => {
@@ -55,7 +56,7 @@ const RealTimeSeasonalAttractions = () => {
           {attractions.map((attraction, index) => (
             <Link key={index} href={`/place/${attraction.id}`} className="p-4 block">
               <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full">
-                {attraction.images && attraction.images.length > 0 ? (
+                {attraction.images && attraction.images.length > 0 && attraction.images[0].image_url ? (
                   <Image
                     src={attraction.images[0].image_url}
                     alt={attraction.name}

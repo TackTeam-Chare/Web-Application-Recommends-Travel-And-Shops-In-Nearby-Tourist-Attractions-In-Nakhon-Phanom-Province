@@ -266,16 +266,23 @@ export const fetchRealTimeTouristAttractions = async (): Promise<Place[]> => {
     const response: AxiosResponse<Place[]> = await api.get('/seasons/real-time');
     const data = Array.isArray(response.data) ? response.data : [];
 
-    // Map images for each place to construct full URLs
+    // Properly format the images array to match the expected type
     return data.map(place => ({
       ...place,
-      image_url: place.images ? place.images.map(image => `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`) : []
+      images: place.images
+        ? place.images.map((image: { image_path: string }) => ({
+            image_path: image.image_path,
+            image_url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`
+          }))
+        : [] // Default to an empty array if no images
     }));
+
   } catch (error: any) {
     console.error('Error fetching real-time tourist attractions:', error);
     throw new Error(error.response?.data?.error || 'Error fetching real-time tourist attractions');
   }
 };
+
 
 
 // Function to search places
@@ -500,7 +507,7 @@ export const fetchPlacesNearbyByCoordinates = async (latitude: number, longitude
 // Unified search for all criteria
 export const searchTouristEntitiesUnified = async (params: Record<string, string | number>): Promise<Place[]> => {
   try {
-    const response: AxiosResponse<Place[]> = await api.get('/search/map', { params });
+    const response: AxiosResponse<Place[]> = await api.get('/search', { params });
     const data = Array.isArray(response.data) ? response.data : [];
 
     return data.map(place => ({

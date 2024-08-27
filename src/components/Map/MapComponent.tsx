@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { GoogleMap, Marker, InfoWindow, Polyline } from '@react-google-maps/api';
+import React, { useRef, useEffect, useState } from 'react';
+import { GoogleMap, Marker, InfoWindow, Polyline, DirectionsRenderer } from '@react-google-maps/api';
 import { Place } from '@/models/interface';
 
 interface MapComponentProps {
@@ -10,6 +10,7 @@ interface MapComponentProps {
   nearbyPlaces: Place[];
   selectedPlace: Place | null;
   onSelectPlace: (place: Place | null) => void;
+  clearSearch: () => void; // Function to clear search
 }
 
 const mapStyles = [
@@ -43,61 +44,61 @@ const MapComponent: React.FC<MapComponentProps> = ({
   nearbyPlaces,
   selectedPlace,
   onSelectPlace,
+  clearSearch,
 }) => {
   const mapRef = useRef<google.maps.Map | null>(null);
+  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+
+  useEffect(() => {
+    if (userLocation && (searchResults.length > 0 || nearbyPlaces.length > 0)) {
+      calculateRoutes(userLocation, searchResults, nearbyPlaces);
+    }
+  }, [userLocation, searchResults, nearbyPlaces]);
+
+  const calculateRoutes = (origin: { lat: number; lng: number }, searchResults: Place[], nearbyPlaces: Place[]) => {
+    if (!window.google || !window.google.maps) return;
+
+    const directionsService = new google.maps.DirectionsService();
+
+    const destinations = [...searchResults, ...nearbyPlaces];
+
+    directionsService.route(
+      {
+        origin,
+        destination: destinations[0] ? { lat: Number(destinations[0].latitude), lng: Number(destinations[0].longitude) } : origin,
+        travelMode: google.maps.TravelMode.DRIVING,
+        waypoints: destinations.slice(1).map(place => ({
+          location: { lat: Number(place.latitude), lng: Number(place.longitude) },
+          stopover: true
+        })),
+        optimizeWaypoints: true
+      },
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+          setDirections(result);
+        } else {
+          console.error(`Error fetching directions: ${status}`);
+        }
+      }
+    );
+  };
+
+  const handleClearSearch = () => {
+    setDirections(null); // Clear directions
+    mapRef.current?.setCenter(mapCenter); // Reset map center
+    clearSearch(); // Clear search results and other state
+  };
 
   const getIconForPlaceType = (type: string) => {
     switch (type) {
-      case 'amusement_park':
+      case 'สถานที่ท่องเที่ยว':
         return 'http://maps.google.com/mapfiles/kml/pal2/icon5.png';
-      case 'aquarium':
+      case 'ที่พัก':
         return 'http://maps.google.com/mapfiles/kml/pal2/icon13.png';
-      case 'art_gallery':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon12.png';
-      case 'atm':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon60.png';
-      case 'bar':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon27.png';
-      case 'bus_station':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon27.png';
-      case 'cafe':
+      case 'ร้านอาหาร':
         return 'http://maps.google.com/mapfiles/kml/pal2/icon19.png';
-      case 'campground':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon20.png';
-      case 'church':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon21.png';
-      case 'clothing_store':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon22.png';
-      case 'convenience_store':
+      case 'ร้านค้าของฝาก':
         return 'http://maps.google.com/mapfiles/kml/pal2/icon23.png';
-      case 'department_store':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon24.png';
-      case 'florist':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon27.png';
-      case 'gas_station':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon27.png';
-      case 'lodging':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon28.png';
-      case 'movie_theater':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon29.png';
-      case 'museum':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon30.png';
-      case 'park':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon31.png';
-      case 'parking':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon32.png';
-      case 'restaurant':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon33.png';
-      case 'shopping_mall':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon34.png';
-      case 'spa':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon35.png';
-      case 'store':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon36.png';
-      case 'subway_station':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon37.png';
-      case 'supermarket':
-        return 'http://maps.google.com/mapfiles/kml/pal2/icon38.png';
       default:
         return 'http://maps.google.com/mapfiles/kml/pal2/icon5.png';
     }
@@ -179,27 +180,18 @@ const MapComponent: React.FC<MapComponentProps> = ({
         );
       })}
 
-      {userLocation &&
-        searchResults.map((place) => (
-          <Polyline
-            key={`polyline-${place.id}`}
-            path={[
-              userLocation,
-              { lat: Number(place.latitude), lng: Number(place.longitude) },
-            ]}
-            options={{
-              ...polylineOptions,
-              icons: [
-                {
-                  icon: window.google && {
-                    path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                  },
-                  offset: '100%',
-                },
-              ],
-            }}
-          />
-        ))}
+      {directions && (
+        <DirectionsRenderer
+          directions={directions}
+          options={{
+            polylineOptions: {
+              strokeColor: '#FF5733',
+              strokeOpacity: 0.8,
+              strokeWeight: 6,
+            },
+          }}
+        />
+      )}
 
       {selectedPlace && (
         <InfoWindow

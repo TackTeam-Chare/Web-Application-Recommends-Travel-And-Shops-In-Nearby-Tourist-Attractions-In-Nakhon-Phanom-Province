@@ -89,10 +89,10 @@ const NearbyPlaces = () => {
                   <Image
                     src={place.image_url[0]}
                     alt={place.name}
-                    width={500}
-                    height={350}
-                    style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
-                    className="rounded-lg shadow-md"
+                    width={800}  // Adjust the width
+                    height={450} // Adjust the height
+                    style={{ objectFit: 'cover' }} // Cover ensures the image covers the container
+                    className="rounded-lg shadow-md w-full h-full" // Make sure width and height cover the container
                   />
                 ) : (
                   <div className="w-full h-56 flex items-center justify-center bg-gray-200">
