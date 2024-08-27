@@ -73,12 +73,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
     );
   };
 
-  const handleClearSearch = () => {
-    setDirections(null); // Clear directions
-    mapRef.current?.setCenter(mapCenter); // Reset map center
-    clearSearch(); // Clear search results and other state
-  };
-
   const getIconForPlaceType = (type: string) => {
     switch (type) {
       case 'สถานที่ท่องเที่ยว':
@@ -102,7 +96,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     <GoogleMap
       mapContainerStyle={{ width: '100%', height: '100%' }}
       center={mapCenter}
-      zoom={14}
+      zoom={20}
       options={{
         styles: mapStyles,
         zoomControl: true,

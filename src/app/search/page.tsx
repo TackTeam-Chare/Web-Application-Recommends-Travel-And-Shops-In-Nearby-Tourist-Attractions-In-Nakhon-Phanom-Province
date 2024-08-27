@@ -16,7 +16,7 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 import { FallingLines } from "react-loader-spinner";
-import Link from "next/link"; // Import Link from next/link
+import Link from "next/link";
 import "react-toastify/dist/ReactToastify.css";
 import {
   fetchPlacesNearbyByCoordinates,
@@ -27,7 +27,6 @@ import { Place, Season, District, Category } from "@/models/interface";
 import Image from "next/image";
 import { useJsApiLoader } from "@react-google-maps/api";
 
-// Load MapComponent dynamically
 const MapComponent = dynamic(() => import("@/components/Map/MapComponent"), {
   ssr: false,
 });
@@ -46,6 +45,8 @@ const GeocodingSearchPage: React.FC = () => {
     categories: [],
   });
   const [searchParams, setSearchParams] = useState<{ q?: string; category?: number; district?: number; season?: number }>({});
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
   const [isClient, setIsClient] = useState(false);
 
@@ -54,7 +55,7 @@ const GeocodingSearchPage: React.FC = () => {
   });
 
   useEffect(() => {
-    setIsClient(true); 
+    setIsClient(true);
     const loadFilters = async () => {
       try {
         const data = await fetchAllFilters();
@@ -68,7 +69,7 @@ const GeocodingSearchPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isClient) return; 
+    if (!isClient) return;
 
     const updateLocation = () => {
       setLoading(true);
@@ -124,6 +125,15 @@ const GeocodingSearchPage: React.FC = () => {
     const updatedParams = { q: undefined, category: undefined, district: undefined, season: undefined, [field]: value };
     setSearchParams(updatedParams);
     searchPlaces(updatedParams);
+    
+    if (field === "category") {
+      const categoryName = filters.categories.find(cat => cat.id === value)?.name || null;
+      setSelectedCategory(categoryName);
+    }
+    if (field === "season") {
+      const seasonName = filters.seasons.find(season => season.id === value)?.name || null;
+      setSelectedSeason(seasonName);
+    }
   };
 
   const handleCurrentLocationClick = () => {
@@ -137,6 +147,8 @@ const GeocodingSearchPage: React.FC = () => {
     setSearchParams({});
     setSearchResults([]);
     setNearbyPlaces([]);
+    setSelectedCategory(null);
+    setSelectedSeason(null);
     if (userLocation) {
       setMapCenter(userLocation);
     }
@@ -177,18 +189,17 @@ const GeocodingSearchPage: React.FC = () => {
     <div className="container mx-auto p-4 relative">
     
       {/* Search Bar and Buttons */}
-      <div className="flex items-center justify-center mb-6"> {/* Updated layout to center the search bar */}
-        
+      <div className="flex items-center justify-center mb-6">
         <div className="relative w-full max-w-md mx-auto flex items-center justify-center">
-        <button
-          onClick={handleCurrentLocationClick}
-          className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 transition duration-300"
-          aria-label="Check current location"
-        >
-          <FaMapMarkerAlt />
-        </button>
+          <button
+            onClick={handleCurrentLocationClick}
+            className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 transition duration-300"
+            aria-label="Check current location"
+          >
+            <FaMapMarkerAlt />
+          </button>
           
-          <div className="relative w-full max-w-md mx-4"> {/* Centered and added margin to align properly */}
+          <div className="relative w-full max-w-md mx-4">
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
             <input
               type="text"
@@ -209,33 +220,59 @@ const GeocodingSearchPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Category and Season Filters */}
-      <div className="flex flex-wrap gap-2 justify-center mb-4">
-        {filters.categories.map((category) => (
-          <button
-            key={category.id}
-            className={`border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center ${searchParams.category === category.id ? 'bg-orange-500 text-white' : ''}`}
-            onClick={() => handleSearchByField("category", category.id)}
-          >
-            {category.name === "สถานที่ท่องเที่ยว" && <FaTree className="mr-2" />}
-            {category.name === "ที่พัก" && <FaHotel className="mr-2" />}
-            {category.name === "ร้านอาหาร" && <FaUtensils className="mr-2" />}
-            {category.name === "ร้านค้าของฝาก" && <FaStore className="mr-2" />}
-            {category.name}
-          </button>
-        ))}
+      {/* Toggle Buttons for Categories and Seasons */}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={() => setSelectedCategory((prev) => (prev ? null : "category"))}
+          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 mr-2"
+        >
+          เลือกประเภทสถานที่
+        </button>
+        <button
+          onClick={() => setSelectedSeason((prev) => (prev ? null : "season"))}
+          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3"
+        >
+          เลือกสถานที่ตามฤดูกาล
+        </button>
       </div>
 
-      <div className="flex flex-wrap gap-2 justify-center mb-6">
-        {filters.seasons.map((season) => (
-          <button
-            key={season.id}
-            className={`border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center ${searchParams.season === season.id ? 'bg-orange-500 text-white' : ''}`}
-            onClick={() => handleSearchByField("season", season.id)}
-          >
-            {season.name}
-          </button>
-        ))}
+      {/* Category and Season Filters */}
+      {selectedCategory && (
+        <div className="flex flex-wrap gap-2 justify-center mb-4">
+          {filters.categories.map((category) => (
+            <button
+              key={category.id}
+              className={`border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center ${searchParams.category === category.id ? 'bg-orange-500 text-white' : ''}`}
+              onClick={() => handleSearchByField("category", category.id)}
+            >
+              {category.name === "สถานที่ท่องเที่ยว" && <FaTree className="mr-2" />}
+              {category.name === "ที่พัก" && <FaHotel className="mr-2" />}
+              {category.name === "ร้านอาหาร" && <FaUtensils className="mr-2" />}
+              {category.name === "ร้านค้าของฝาก" && <FaStore className="mr-2" />}
+              {category.name}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {selectedSeason && (
+        <div className="flex flex-wrap gap-2 justify-center mb-6">
+          {filters.seasons.map((season) => (
+            <button
+              key={season.id}
+              className={`border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center ${searchParams.season === season.id ? 'bg-orange-500 text-white' : ''}`}
+              onClick={() => handleSearchByField("season", season.id)}
+            >
+              {season.name}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Display selected category and season */}
+      <div className="text-center mb-4">
+        {selectedCategory && <p className="text-lg font-bold text-orange-500">หมวดหมู่ที่เลือก: {selectedCategory}</p>}
+        {selectedSeason && <p className="text-lg font-bold text-orange-500">ฤดูกาลที่เลือก: {selectedSeason}</p>}
       </div>
 
       {/* Loading Spinner */}
@@ -272,11 +309,11 @@ const GeocodingSearchPage: React.FC = () => {
         {/* Display search results using Slider */}
         {searchResults.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-orange-500 mb-4">ผลลัพธ์การค้นหา</h2>
+            <h2 className="text-2xl font-bold text-orange-500 mb-4">ผลลัพธ์การค้นหา ({searchResults.length} สถานที่)</h2>
             <Slider {...settings}>
               {searchResults.map((place) => (
-                <Link href={`/place/${place.id}`} key={place.id}> {/* Link to the place detail page */}
-                  <div className="p-4 cursor-pointer"> {/* Added cursor pointer for better UX */}
+                <Link href={`/place/${place.id}`} key={place.id}>
+                  <div className="p-4 cursor-pointer">
                     <div className="bg-white rounded-lg shadow-md overflow-hidden">
                       <Image
                         src={place.images && place.images[0]?.image_url ? place.images[0].image_url : "/default-image.jpg"}
@@ -299,34 +336,37 @@ const GeocodingSearchPage: React.FC = () => {
         )}
       </div>
 
-      {/* Display categorized places using sliders */}
-      {filters.categories.map((category) => (
-        <div key={category.id} className="mb-8">
-          <h2 className="text-2xl font-bold text-orange-500 mb-4">{category.name}</h2>
-          <Slider {...settings}>
-            {categorizePlaces(category.id).map((place) => (
-              <Link href={`/place/${place.id}`} key={place.id}> {/* Link to the place detail page */}
-                <div className="p-4 cursor-pointer"> {/* Added cursor pointer for better UX */}
-                  <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                    <Image
-                      src={place.images && place.images[0]?.image_url ? place.images[0].image_url : "/default-image.jpg"}
-                      alt={place.name}
-                      width={500}
-                      height={300}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-4">
-                      <h3 className="text-xl font-semibold mb-2">{place.name}</h3>
-                      <p className="text-gray-600 mb-2">{place.description}</p>
-                      <p className="text-orange-500 font-bold">{place.district_name}</p>
+      {/* Display categorized places using sliders with counts */}
+      {filters.categories.map((category) => {
+        const categorizedPlaces = categorizePlaces(category.id);
+        return (
+          <div key={category.id} className="mb-8">
+            <h2 className="text-2xl font-bold text-orange-500 mb-4">{category.name} ({categorizedPlaces.length} สถานที่ใกล้เคียง)</h2>
+            <Slider {...settings}>
+              {categorizedPlaces.map((place) => (
+                <Link href={`/place/${place.id}`} key={place.id}>
+                  <div className="p-4 cursor-pointer">
+                    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                      <Image
+                        src={place.images && place.images[0]?.image_url ? place.images[0].image_url : "/default-image.jpg"}
+                        alt={place.name}
+                        width={500}
+                        height={300}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="p-4">
+                        <h3 className="text-xl font-semibold mb-2">{place.name}</h3>
+                        <p className="text-gray-600 mb-2">{place.description}</p>
+                        <p className="text-orange-500 font-bold">{place.district_name}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </Slider>
-        </div>
-      ))}
+                </Link>
+              ))}
+            </Slider>
+          </div>
+        );
+      })}
     </div>
   );
 };
