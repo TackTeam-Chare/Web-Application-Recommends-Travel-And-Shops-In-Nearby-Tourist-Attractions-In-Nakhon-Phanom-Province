@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import Tooltip from "react-tooltip"; // Corrected import statement
 import {
   FaMapMarkerAlt,
   FaSearch,
@@ -16,7 +17,7 @@ import {
   FaClock,
   FaCalendarAlt, // New icon for days filter
   FaLayerGroup, // New icon for categories filter
-  FaLeaf
+  FaLeaf,
 } from "react-icons/fa";
 import { FallingLines } from "react-loader-spinner";
 import Link from "next/link";
@@ -138,7 +139,7 @@ const GeocodingSearchPage: React.FC = () => {
     const updatedParams = { ...searchParams, [field]: value };
     setSearchParams(updatedParams);
     searchPlaces(updatedParams);
-    
+
     if (field === "category") {
       const categoryName = filters.categories.find(cat => cat.id === value)?.name || null;
       setSelectedCategory(categoryName);
@@ -212,7 +213,6 @@ const GeocodingSearchPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 relative">
-    
       {/* Search Bar and Buttons */}
       <div className="flex items-center justify-center mb-6">
         <div className="relative w-full max-w-md mx-auto flex items-center justify-center">
@@ -220,10 +220,11 @@ const GeocodingSearchPage: React.FC = () => {
             onClick={handleCurrentLocationClick}
             className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 transition duration-300"
             aria-label="Check current location"
+            data-tip="เช็คพิกัดปัจจุบัน" // Tooltip text
           >
             <FaMapMarkerAlt />
           </button>
-          
+          <Tooltip place="top" type="dark" effect="solid" />
           <div className="relative w-full max-w-md mx-4">
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
             <input
@@ -263,7 +264,7 @@ const GeocodingSearchPage: React.FC = () => {
           }}
           className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 mr-2 flex items-center"
         >
-           <FaLeaf className="mr-2" /> เลือกสถานที่ตามฤดูกาล
+          <FaLeaf className="mr-2" /> เลือกสถานที่ตามฤดูกาล
         </button>
         <button
           onClick={() => {
@@ -309,51 +310,50 @@ const GeocodingSearchPage: React.FC = () => {
         </div>
       )}
 
-{isTimeFilterVisible && (
-  <div className="flex flex-col sm:flex-row justify-center items-center mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
-    <div className="flex items-center space-x-2">
-      <FaClock className="text-orange-500" />
-      <label className="text-orange-500 font-semibold">เลือกวัน:</label>
-      <select
-        className="border border-orange-500 text-orange-500 rounded-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-600"
-        onChange={(e) => handleSearchByField("day_of_week", e.target.value)}
-        value={searchParams.day_of_week || ""}
-      >
-        <option value="">วัน</option>
-        <option value="Sunday">วันอาทิตย์</option>
-        <option value="Monday">วันจันทร์</option>
-        <option value="Tuesday">วันอังคาร</option>
-        <option value="Wednesday">วันพุธ</option>
-        <option value="Thursday">วันพฤหัสบดี</option>
-        <option value="Friday">วันศุกร์</option>
-        <option value="Saturday">วันเสาร์</option>
-      </select>
-    </div>
+      {isTimeFilterVisible && (
+        <div className="flex flex-col sm:flex-row justify-center items-center mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="flex items-center space-x-2">
+            <FaClock className="text-orange-500" />
+            <label className="text-orange-500 font-semibold">เลือกวัน:</label>
+            <select
+              className="border border-orange-500 text-orange-500 rounded-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-600"
+              onChange={(e) => handleSearchByField("day_of_week", e.target.value)}
+              value={searchParams.day_of_week || ""}
+            >
+              <option value="">วัน</option>
+              <option value="Sunday">วันอาทิตย์</option>
+              <option value="Monday">วันจันทร์</option>
+              <option value="Tuesday">วันอังคาร</option>
+              <option value="Wednesday">วันพุธ</option>
+              <option value="Thursday">วันพฤหัสบดี</option>
+              <option value="Friday">วันศุกร์</option>
+              <option value="Saturday">วันเสาร์</option>
+            </select>
+          </div>
 
-    <div className="flex items-center space-x-2">
-      <FaClock className="text-orange-500" />
-      <label className="text-orange-500 font-semibold">เวลาเปิด:</label>
-      <input
-        type="time"
-        className="border border-orange-500 text-orange-500 rounded-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-600"
-        onChange={(e) => handleSearchByField("opening_time", e.target.value)}
-        value={searchParams.opening_time || ""}
-      />
-    </div>
+          <div className="flex items-center space-x-2">
+            <FaClock className="text-orange-500" />
+            <label className="text-orange-500 font-semibold">เวลาเปิด:</label>
+            <input
+              type="time"
+              className="border border-orange-500 text-orange-500 rounded-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-600"
+              onChange={(e) => handleSearchByField("opening_time", e.target.value)}
+              value={searchParams.opening_time || ""}
+            />
+          </div>
 
-    <div className="flex items-center space-x-2">
-      <FaClock className="text-orange-500" />
-      <label className="text-orange-500 font-semibold">เวลาปิด:</label>
-      <input
-        type="time"
-        className="border border-orange-500 text-orange-500 rounded-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-600"
-        onChange={(e) => handleSearchByField("closing_time", e.target.value)}
-        value={searchParams.closing_time || ""}
-      />
-    </div>
-  </div>
-)}
-
+          <div className="flex items-center space-x-2">
+            <FaClock className="text-orange-500" />
+            <label className="text-orange-500 font-semibold">เวลาปิด:</label>
+            <input
+              type="time"
+              className="border border-orange-500 text-orange-500 rounded-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-600"
+              onChange={(e) => handleSearchByField("closing_time", e.target.value)}
+              value={searchParams.closing_time || ""}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Display selected filters */}
       <div className="text-center mb-4">
@@ -396,7 +396,9 @@ const GeocodingSearchPage: React.FC = () => {
         {/* Display search results using Slider */}
         {searchResults.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-orange-500 mb-4">ผลลัพธ์การค้นหา ({searchResults.length} สถานที่)</h2>
+            <h2 className="text-2xl font-bold text-orange-500 mb-4">
+              ผลลัพธ์การค้นหา ({searchResults.length} สถานที่)
+            </h2>
             <Slider {...settings}>
               {searchResults.map((place) => (
                 <Link href={`/place/${place.id}`} key={place.id}>
@@ -428,7 +430,9 @@ const GeocodingSearchPage: React.FC = () => {
         const categorizedPlaces = categorizePlaces(category.id);
         return (
           <div key={category.id} className="mb-8">
-            <h2 className="text-2xl font-bold text-orange-500 mb-4">{category.name} ({categorizedPlaces.length} สถานที่ใกล้เคียง)</h2>
+            <h2 className="text-2xl font-bold text-orange-500 mb-4">
+              {category.name} ({categorizedPlaces.length} สถานที่ใกล้เคียง)
+            </h2>
             <Slider {...settings}>
               {categorizedPlaces.map((place) => (
                 <Link href={`/place/${place.id}`} key={place.id}>
