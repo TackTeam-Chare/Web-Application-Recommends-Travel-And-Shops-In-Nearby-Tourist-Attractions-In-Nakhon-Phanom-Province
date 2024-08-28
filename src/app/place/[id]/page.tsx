@@ -1,23 +1,15 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
 import Link from "next/link";
-import { GoogleMap, MarkerF, InfoWindowF, useLoadScript } from "@react-google-maps/api";
+import { useLoadScript } from "@react-google-maps/api";
 import { getNearbyFetchTourismData } from "@/services/user/api";
-import Swal from "sweetalert2"; // Import SweetAlert2 for alerts
+import Swal from "sweetalert2";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
- {/* InfoWindow for Selected Place */}
- import { FaMapMarkerAlt, FaStoreAlt, FaInfoCircle, FaMapSigns, FaExternalLinkAlt } from 'react-icons/fa'; // Import necessary icons
- 
-// Ensure TypeScript knows about google.maps types
-declare global {
-  interface Window {
-    google: any;
-  }
-}
+import MapComponent from "@/components/Map/MapNearbyPlaces";
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string;
 
@@ -31,81 +23,14 @@ const removeDuplicateImages = (images: any[]) => {
   return Array.from(uniqueImages.values());
 };
 
-// Function to map place types to their corresponding icons
-const getIconForPlaceType = (type: string) => {
-  switch (type) {
-    case "amusement_park":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon5.png";
-    case "aquarium":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon13.png";
-    case "art_gallery":
-      return "http://maps.google.com/mapfiles/kml/pal3/icon21.png";
-    case "atm":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon56.png";
-    case "bar":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon49.png";
-    case "bus_station":
-      return "http://maps.google.com/mapfiles/kml/pal3/icon33.png";
-    case "cafe":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon23.png";
-    case "campground":
-      return "http://maps.google.com/mapfiles/kml/pal4/icon7.png";
-    case "church":
-      return "http://maps.google.com/mapfiles/kml/pal3/icon38.png";
-    case "clothing_store":
-      return "http://maps.google.com/mapfiles/kml/pal4/icon15.png";
-    case "convenience_store":
-      return "http://maps.google.com/mapfiles/kml/pal3/icon20.png";
-    case "department_store":
-      return "http://maps.google.com/mapfiles/kml/pal4/icon19.png";
-    case "florist":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon58.png";
-    case "gas_station":
-      return "http://maps.google.com/mapfiles/kml/pal4/icon14.png";
-    case "lodging":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon63.png";
-    case "movie_theater":
-      return "http://maps.google.com/mapfiles/kml/pal4/icon34.png";
-    case "museum":
-      return "http://maps.google.com/mapfiles/kml/pal3/icon45.png";
-    case "park":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon6.png";
-    case "parking":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon15.png";
-    case "restaurant":
-      return "http://maps.google.com/mapfiles/kml/pal3/icon56.png";
-    case "shopping_mall":
-      return "http://maps.google.com/mapfiles/kml/pal4/icon12.png";
-    case "spa":
-      return "http://maps.google.com/mapfiles/kml/pal3/icon27.png";
-    case "store":
-      return "http://maps.google.com/mapfiles/kml/pal3/icon10.png";
-    case "subway_station":
-      return "http://maps.google.com/mapfiles/kml/pal3/icon34.png";
-    case "supermarket":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon45.png";
-    case "tourist_attraction":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon39.png";
-    case "train_station":
-      return "http://maps.google.com/mapfiles/kml/pal4/icon33.png";
-    case "zoo":
-      return "http://maps.google.com/mapfiles/kml/pal2/icon31.png";
-    default:
-      return "http://maps.google.com/mapfiles/kml/pal2/icon5.png";
-  }
-};
-
 const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const [tourismData, setTourismData] = useState<any>(null);
   const [nearbyEntities, setNearbyEntities] = useState<any[]>([]);
-  const [selectedEntity, setSelectedEntity] = useState<any>(null); // State for selected marker
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
   });
-
-  const mapRef = useRef<google.maps.Map | null>(null);
 
   useEffect(() => {
     const fetchTourismData = async () => {
@@ -126,7 +51,6 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
           setTourismData(data.entity);
           setNearbyEntities(data.nearbyEntities);
 
-          // Show alert if no nearby places found
           if (!data.nearbyEntities || data.nearbyEntities.length === 0) {
             Swal.fire("No Nearby Places", "ไม่พบสถานที่ใกล้เคียง", "info");
           }
@@ -139,10 +63,6 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
 
     fetchTourismData();
   }, [id]);
-
-  const onMapLoad = useCallback((map: google.maps.Map) => {
-    mapRef.current = map;
-  }, []);
 
   if (!isLoaded) {
     return <div>Loading Maps...</div>;
@@ -178,13 +98,6 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
       default:
         return "bg-gray-500";
     }
-  };
-
-  const mapContainerStyle = {
-    width: "100%",
-    height: "400px",
-    borderRadius: "10px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   };
 
   const center = {
@@ -235,121 +148,12 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
           </p>
         </div>
         {isValidCoordinates && (
-          <GoogleMap
-            mapContainerStyle={mapContainerStyle}
+          <MapComponent
             center={center}
-            zoom={14}
-            options={{
-              disableDefaultUI: true,
-              zoomControl: true,
-              styles: [],
-            }}
-            onLoad={onMapLoad}
-          >
-            {/* Main Place Marker with distinct icon */}
-            <MarkerF 
-              position={center} 
-              title={tourismData.name} 
-              icon={{
-                url: "http://maps.google.com/mapfiles/kml/pal2/icon56.png", // Main place icon
-                scaledSize: new window.google.maps.Size(50, 50),
-              }}
-              onClick={() => setSelectedEntity(tourismData)}
-            />
-
-            {/* Markers for Nearby Places */}
-            {nearbyEntities.map((entity: any) => (
-              <MarkerF
-                key={entity.id}
-                position={{ lat: Number(entity.latitude), lng: Number(entity.longitude) }}
-                title={entity.name}
-                icon={{
-                  url: getIconForPlaceType(entity.category_name),
-                  scaledSize: new window.google.maps.Size(40, 40), // Adjust size as needed
-                }}
-                onClick={() => setSelectedEntity(entity)}
-              />
-            ))}
-
-{/* InfoWindow for Selected Place */}
-
-{/* InfoWindow for Selected Place */}
-{selectedEntity && (
-  <InfoWindowF
-    position={{ lat: Number(selectedEntity.latitude), lng: Number(selectedEntity.longitude) }}
-    onCloseClick={() => setSelectedEntity(null)}
-    options={{ maxWidth: 350 }} // Adjust the max width for a more compact layout
-  >
-    <div className="max-w-md w-full bg-white rounded-lg shadow-lg flex flex-col">
-      {/* Image and Info Section */}
-      <div className="flex flex-col items-start">
-        {/* Image Section */}
-        {selectedEntity.images && selectedEntity.images[0] ? (
-          <Image
-            src={selectedEntity.images[0].image_url}
-            alt={selectedEntity.name}
-            width={350} // Set width equal to the max width of the InfoWindow
-            height={150} // Adjust height as necessary to maintain aspect ratio
-            className="rounded-t-lg mb-2 object-cover"
+            places={nearbyEntities}
+            mainPlace={tourismData}
+            isLoaded={isLoaded}
           />
-        ) : (
-          <div className="w-full h-24 bg-gray-200 flex items-center justify-center rounded-t-lg">
-            <span className="text-gray-500">ไม่มีรูปภาพ</span>
-          </div>
-        )}
-
-        {/* Info Content */}
-        <div className="p-3 w-full flex flex-col">
-          {/* Place Name and Description */}
-          <h3 className="text-orange-500 font-bold mt-2">{selectedEntity.name}</h3>
-          <p className="text-gray-700 text-sm flex items-center mb-1">
-            <FaInfoCircle className="text-blue-500 mr-2" />
-            {selectedEntity.description || 'ไม่มีคำอธิบาย'}
-          </p>
-
-          {/* Location and Distance */}
-          <div className="flex items-center mb-1">
-            <FaMapMarkerAlt className="text-green-500 w-4 h-4 mr-2" />
-            <div className="text-xs">
-              <p className="text-gray-900 leading-none">{selectedEntity.district_name}</p>
-              <p className="text-gray-600">{selectedEntity.distance?.toFixed(2) || 0} กม. จากคุณ</p>
-            </div>
-          </div>
-
-          {/* Navigation Links */}
-          <div className="flex items-center mb-1">
-            <FaMapSigns className="text-blue-500 w-4 h-4 mr-2" />
-            <a
-              href={`https://www.google.com/maps/dir/?api=1&destination=${selectedEntity.latitude},${selectedEntity.longitude}&travelmode=driving`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 text-xs underline"
-            >
-              นำทางไปยังสถานที่นี้
-            </a>
-          </div>
-
-          {/* View on Google Maps */}
-          <div className="flex items-center">
-            <FaExternalLinkAlt className="text-blue-500 w-4 h-4 mr-2" />
-            <a
-              href={`https://www.google.com/maps/place/${encodeURIComponent(selectedEntity.name)}/@${selectedEntity.latitude},${selectedEntity.longitude},17z`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 text-xs underline"
-            >
-              ดูบน Google Maps
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </InfoWindowF>
-)}
-
-
-
-          </GoogleMap>
         )}
       </div>
 

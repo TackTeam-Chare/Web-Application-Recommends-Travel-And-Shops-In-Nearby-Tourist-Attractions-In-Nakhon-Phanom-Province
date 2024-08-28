@@ -31,7 +31,7 @@ import { Place, Season, District, Category } from "@/models/interface";
 import Image from "next/image";
 import { useJsApiLoader } from "@react-google-maps/api";
 
-const MapComponent = dynamic(() => import("@/components/Map/MapComponent"), {
+const MapComponent = dynamic(() => import("@/components/Map/MapSearch"), {
   ssr: false,
 });
 
@@ -403,7 +403,7 @@ const GeocodingSearchPage: React.FC = () => {
               {searchResults.map((place) => (
                 <Link href={`/place/${place.id}`} key={place.id}>
                   <div className="p-4 cursor-pointer">
-                    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full">
                       <Image
                         src={place.images && place.images[0]?.image_url ? place.images[0].image_url : "/default-image.jpg"}
                         alt={place.name}
@@ -437,7 +437,7 @@ const GeocodingSearchPage: React.FC = () => {
               {categorizedPlaces.map((place) => (
                 <Link href={`/place/${place.id}`} key={place.id}>
                   <div className="p-4 cursor-pointer">
-                    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-95 transition duration-300 ease-in-out flex flex-col h-full">
                       <Image
                         src={place.images && place.images[0]?.image_url ? place.images[0].image_url : "/default-image.jpg"}
                         alt={place.name}

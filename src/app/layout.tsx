@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals.css"; // ต้องมีการอ้างอิงไปยังไฟล์ globals.css ที่เราปรับแต่ง
+import "./globals.css";
 import Layout from "@/components/Layout";
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans"> {/* ใช้ utility class 'font-sans' ที่เราเพิ่มใน Tailwind */}
+      <body className="font-sans">
         <Layout>
           {children}
         </Layout>
