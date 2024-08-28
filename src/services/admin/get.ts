@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import { Image,Season,District,Category} from '@/models/model';
+import { Image,Season,District,Category} from '@/models/interface';
 
 
 const auth: AxiosInstance = axios.create({

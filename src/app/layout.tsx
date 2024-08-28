@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Thai } from "next/font/google";
-import "./globals.css";
+import "./globals.css"; // ต้องมีการอ้างอิงไปยังไฟล์ globals.css ที่เราปรับแต่ง
 import Layout from "@/components/Layout";
-
-const ibmPlexSansThai = IBM_Plex_Sans_Thai({ 
-  subsets: ["thai", "latin"], 
-  weight: ["100", "200", "300", "400", "500", "600", "700"] 
-});
 
 export const metadata: Metadata = {
   title: "เว็บไซต์เเนะนำการท่องเที่ยว",
@@ -20,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={ibmPlexSansThai.className}>
+      <body className="font-sans"> {/* ใช้ utility class 'font-sans' ที่เราเพิ่มใน Tailwind */}
         <Layout>
           {children}
         </Layout>
