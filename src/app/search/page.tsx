@@ -8,12 +8,15 @@ import "slick-carousel/slick/slick-theme.css";
 import {
   FaMapMarkerAlt,
   FaSearch,
-  FaRuler,
   FaHotel,
   FaUtensils,
   FaStore,
   FaTree,
   FaTimesCircle,
+  FaClock,
+  FaCalendarAlt, // New icon for days filter
+  FaLayerGroup, // New icon for categories filter
+  FaLeaf
 } from "react-icons/fa";
 import { FallingLines } from "react-loader-spinner";
 import Link from "next/link";
@@ -44,9 +47,19 @@ const GeocodingSearchPage: React.FC = () => {
     districts: [],
     categories: [],
   });
-  const [searchParams, setSearchParams] = useState<{ q?: string; category?: number; district?: number; season?: number }>({});
+  const [searchParams, setSearchParams] = useState<{
+    q?: string;
+    category?: number;
+    district?: number;
+    season?: number;
+    day_of_week?: string;
+    opening_time?: string;
+    closing_time?: string;
+  }>({});
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [isTimeFilterVisible, setIsTimeFilterVisible] = useState(false); // State to show opening hours input
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
   const [isClient, setIsClient] = useState(false);
 
@@ -122,7 +135,7 @@ const GeocodingSearchPage: React.FC = () => {
   };
 
   const handleSearchByField = (field: keyof typeof searchParams, value: string | number) => {
-    const updatedParams = { q: undefined, category: undefined, district: undefined, season: undefined, [field]: value };
+    const updatedParams = { ...searchParams, [field]: value };
     setSearchParams(updatedParams);
     searchPlaces(updatedParams);
     
@@ -133,6 +146,9 @@ const GeocodingSearchPage: React.FC = () => {
     if (field === "season") {
       const seasonName = filters.seasons.find(season => season.id === value)?.name || null;
       setSelectedSeason(seasonName);
+    }
+    if (field === "day_of_week") {
+      setSelectedDay(value as string);
     }
   };
 
@@ -149,9 +165,18 @@ const GeocodingSearchPage: React.FC = () => {
     setNearbyPlaces([]);
     setSelectedCategory(null);
     setSelectedSeason(null);
+    setSelectedDay(null);
+    setIsTimeFilterVisible(false); // Reset opening hours display
     if (userLocation) {
       setMapCenter(userLocation);
     }
+  };
+
+  const resetTogglesAndSearch = () => {
+    setSelectedCategory(null);
+    setSelectedSeason(null);
+    setIsTimeFilterVisible(false);
+    clearSearch();
   };
 
   const settings = {
@@ -220,23 +245,38 @@ const GeocodingSearchPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Toggle Buttons for Categories and Seasons */}
+      {/* Toggle Buttons for Categories, Seasons, and Days */}
       <div className="flex justify-center mb-4">
         <button
-          onClick={() => setSelectedCategory((prev) => (prev ? null : "category"))}
-          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 mr-2"
+          onClick={() => {
+            resetTogglesAndSearch();
+            setSelectedCategory((prev) => (prev ? null : "category"));
+          }}
+          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 mr-2 flex items-center"
         >
-          เลือกประเภทสถานที่
+          <FaLayerGroup className="mr-2" /> เลือกประเภทสถานที่
         </button>
         <button
-          onClick={() => setSelectedSeason((prev) => (prev ? null : "season"))}
-          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3"
+          onClick={() => {
+            resetTogglesAndSearch();
+            setSelectedSeason((prev) => (prev ? null : "season"));
+          }}
+          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 mr-2 flex items-center"
         >
-          เลือกสถานที่ตามฤดูกาล
+           <FaLeaf className="mr-2" /> เลือกสถานที่ตามฤดูกาล
+        </button>
+        <button
+          onClick={() => {
+            resetTogglesAndSearch();
+            setIsTimeFilterVisible((prev) => !prev);
+          }}
+          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center"
+        >
+          <FaCalendarAlt className="mr-2" /> เลือกตามวันและเวลา
         </button>
       </div>
 
-      {/* Category and Season Filters */}
+      {/* Category, Season, and Time Filters */}
       {selectedCategory && (
         <div className="flex flex-wrap gap-2 justify-center mb-4">
           {filters.categories.map((category) => (
@@ -256,7 +296,7 @@ const GeocodingSearchPage: React.FC = () => {
       )}
 
       {selectedSeason && (
-        <div className="flex flex-wrap gap-2 justify-center mb-6">
+        <div className="flex flex-wrap gap-2 justify-center mb-4">
           {filters.seasons.map((season) => (
             <button
               key={season.id}
@@ -269,10 +309,57 @@ const GeocodingSearchPage: React.FC = () => {
         </div>
       )}
 
-      {/* Display selected category and season */}
+{isTimeFilterVisible && (
+  <div className="flex flex-col sm:flex-row justify-center items-center mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
+    <div className="flex items-center space-x-2">
+      <FaClock className="text-orange-500" />
+      <label className="text-orange-500 font-semibold">เลือกวัน:</label>
+      <select
+        className="border border-orange-500 text-orange-500 rounded-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-600"
+        onChange={(e) => handleSearchByField("day_of_week", e.target.value)}
+        value={searchParams.day_of_week || ""}
+      >
+        <option value="">วัน</option>
+        <option value="Sunday">วันอาทิตย์</option>
+        <option value="Monday">วันจันทร์</option>
+        <option value="Tuesday">วันอังคาร</option>
+        <option value="Wednesday">วันพุธ</option>
+        <option value="Thursday">วันพฤหัสบดี</option>
+        <option value="Friday">วันศุกร์</option>
+        <option value="Saturday">วันเสาร์</option>
+      </select>
+    </div>
+
+    <div className="flex items-center space-x-2">
+      <FaClock className="text-orange-500" />
+      <label className="text-orange-500 font-semibold">เวลาเปิด:</label>
+      <input
+        type="time"
+        className="border border-orange-500 text-orange-500 rounded-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-600"
+        onChange={(e) => handleSearchByField("opening_time", e.target.value)}
+        value={searchParams.opening_time || ""}
+      />
+    </div>
+
+    <div className="flex items-center space-x-2">
+      <FaClock className="text-orange-500" />
+      <label className="text-orange-500 font-semibold">เวลาปิด:</label>
+      <input
+        type="time"
+        className="border border-orange-500 text-orange-500 rounded-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-600"
+        onChange={(e) => handleSearchByField("closing_time", e.target.value)}
+        value={searchParams.closing_time || ""}
+      />
+    </div>
+  </div>
+)}
+
+
+      {/* Display selected filters */}
       <div className="text-center mb-4">
         {selectedCategory && <p className="text-lg font-bold text-orange-500">หมวดหมู่ที่เลือก: {selectedCategory}</p>}
         {selectedSeason && <p className="text-lg font-bold text-orange-500">ฤดูกาลที่เลือก: {selectedSeason}</p>}
+        {selectedDay && <p className="text-lg font-bold text-orange-500">วันที่เลือก: {selectedDay}</p>}
       </div>
 
       {/* Loading Spinner */}
