@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import { Image,Season,District,Category} from '@/models/interface';
+import { Image,Season,District,Category} from '@/models/interfaces';
 
 
 const auth: AxiosInstance = axios.create({
@@ -24,11 +24,11 @@ const getToken = (): string | null => localStorage.getItem('token');
 interface Place {
     id: number;
     name: string;
-    image_path?: string | null; // Allow null as well as undefined
+    image_path?: string | null;
     image_url?: string | null;
     [key: string]: any;
-}
-
+  }
+  
 // Function to fetch all places
 export const getPlaces = async (): Promise<Place[]> => {
     try {
