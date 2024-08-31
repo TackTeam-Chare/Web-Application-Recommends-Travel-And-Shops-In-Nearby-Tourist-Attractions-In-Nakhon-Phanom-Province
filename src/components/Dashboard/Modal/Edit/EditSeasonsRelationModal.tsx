@@ -1,0 +1,169 @@
+'use client';
+
+import React, { useEffect, useState, FC, Fragment } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { Dialog, Transition } from '@headlessui/react';
+import { useRouter } from 'next/navigation';
+import { getSeasonsRelationById, getSeasons, getPlaceById} from '@/services/admin/get';
+import { updateSeasonsRelation } from '@/services/admin/edit';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { FaSave, FaSpinner } from 'react-icons/fa';
+
+interface FormData {
+  season_id: string;
+  tourism_entities_id: string;
+}
+
+interface EditSeasonsRelationModalProps {
+  id: string;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const EditSeasonsRelationModal: FC<EditSeasonsRelationModalProps> = ({ id, isOpen, onClose }) => {
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [seasons, setSeasons] = useState<Array<{ id: string; name: string }>>([]);
+  const [placeName, setPlaceName] = useState<string>("");
+
+  useEffect(() => {
+    const fetchRelation = async () => {
+      try {
+        const [relation, seasonsData] = await Promise.all([
+          getSeasonsRelationById(id),
+          getSeasons()
+        ]);
+        setValue('season_id', relation.season_id);
+        setValue('tourism_entities_id', relation.tourism_entities_id);
+
+        const placeData = await getPlaceById(relation.tourism_entities_id);
+        setPlaceName(`ID: ${placeData.id} - ${placeData.name}`);
+
+        setSeasons(seasonsData);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการดึงข้อมูล:', error);
+        setIsLoading(false);
+        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
+      }
+    };
+
+    if (id) {
+      fetchRelation();
+    }
+  }, [id, setValue]);
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setIsSubmitting(true);
+    try {
+      await updateSeasonsRelation(id, data);
+      toast.success('อัปเดตความสัมพันธ์ฤดูกาลสำเร็จ');
+      setTimeout(() => {
+        onClose();
+        router.push('/dashboard/table/seasons-relation');
+      }, 2000);
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการอัปเดตความสัมพันธ์ฤดูกาล:', error);
+      toast.error('เกิดข้อผิดพลาดในการอัปเดตความสัมพันธ์ฤดูกาล');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={onClose}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  {isLoading ? (
+                    <div className="flex justify-center items-center">
+                      <FaSpinner className="animate-spin text-indigo-600 text-3xl" />
+                    </div>
+                  ) : (
+                    <>
+                      <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                        แก้ไขความสัมพันธ์ฤดูกาล
+                      </Dialog.Title>
+                      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
+                        <div className="relative z-0 w-full mb-6 group">
+                          <label htmlFor="season_id" className="block text-sm font-medium text-gray-700">ฤดูกาล</label>
+                          <select
+                            id="season_id"
+                            {...register('season_id', { required: 'กรุณาเลือกฤดูกาล' })}
+                            className="block mt-1 w-full py-2 px-3 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          >
+                            <option value="">เลือกฤดูกาล</option>
+                            {seasons.map(season => (
+                              <option key={season.id} value={season.id}>{season.name}</option>
+                            ))}
+                          </select>
+                          {errors.season_id && <p className="text-red-500 text-xs mt-1">{errors.season_id.message}</p>}
+                        </div>
+                        <div className="relative z-0 w-full mb-6 group">
+                          <label htmlFor="tourism_entities_id" className="block text-sm font-medium text-gray-700">สถานที่ท่องเที่ยว</label>
+                          <input
+                            id="tourism_entities_id"
+                            type="text"
+                            value={placeName}
+                            readOnly
+                            className="block mt-1 w-full py-2 px-3 bg-gray-200 border border-gray-300 rounded-md shadow-sm sm:text-sm cursor-not-allowed"
+                          />
+                        </div>
+                        <div className="flex justify-end space-x-2">
+                          <button
+                            type="button"
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={onClose}
+                          >
+                            ยกเลิก
+                          </button>
+                          <button
+                            type="submit"
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? <FaSpinner className="animate-spin" /> : <FaSave />}
+                            <span className="ml-2">{isSubmitting ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง'}</span>
+                          </button>
+                        </div>
+                      </form>
+                    </>
+                  )}
+                  <ToastContainer />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </>
+  );
+};
+
+export default EditSeasonsRelationModal;
