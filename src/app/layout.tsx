@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Layout from "@/components/Layout";
+import LayoutWrapper from "./layoutWrapper";
 
 export const metadata: Metadata = {
   title: "เว็บไซต์เเนะนำการท่องเที่ยว",
@@ -15,9 +15,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans">
-        <Layout>
-          {children}
-        </Layout>
+        {/* Use a client component wrapper to handle conditional rendering */}
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );
