@@ -3,9 +3,10 @@
 import React, { FC, Fragment } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
-import { createDistrict } from '@/services/admin/insert';  // Update the import based on your service
+import { createDistrict } from '@/services/admin/insert';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaPlus, FaTimes } from 'react-icons/fa';
 
 interface FormData {
   name: string;
@@ -13,7 +14,7 @@ interface FormData {
 
 interface AddDistrictModalProps {
   isOpen: boolean;
-  onClose: () => void;  // Make sure onClose is typed as a function
+  onClose: () => void;
 }
 
 const AddDistrictModal: FC<AddDistrictModalProps> = ({ isOpen, onClose }) => {
@@ -21,11 +22,11 @@ const AddDistrictModal: FC<AddDistrictModalProps> = ({ isOpen, onClose }) => {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      await createDistrict(data);  // Replace with your createDistrict function
-      toast.success('District added successfully!');
-      onClose();  // Close the modal after success
+      await createDistrict(data);
+      toast.success('เพิ่มเขตสำเร็จ!');
+      onClose();
     } catch (error) {
-      toast.error('Failed to add district. Please try again.');
+      toast.error('ไม่สามารถเพิ่มเขตได้ กรุณาลองใหม่อีกครั้ง.');
     }
   };
 
@@ -61,13 +62,13 @@ const AddDistrictModal: FC<AddDistrictModalProps> = ({ isOpen, onClose }) => {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Add New District
+                    เพิ่มเขตใหม่
                   </Dialog.Title>
                   <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
                     <div>
                       <input
-                        {...register('name', { required: 'District name is required' })}
-                        placeholder="District Name"
+                        {...register('name', { required: 'กรุณากรอกชื่อเขต' })}
+                        placeholder="ชื่อเขต"
                         className={`w-full border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
                       />
                       {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
@@ -75,16 +76,18 @@ const AddDistrictModal: FC<AddDistrictModalProps> = ({ isOpen, onClose }) => {
                     <div className="mt-4 flex justify-end gap-2">
                       <button
                         type="button"
-                        className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
+                        className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 flex items-center gap-2"
                         onClick={onClose}
                       >
-                        Cancel
+                        <FaTimes />
+                        ยกเลิก
                       </button>
                       <button
                         type="submit"
-                        className="bg-Orange-600 text-white px-4 py-2 rounded-md hover:bg-Orange-700"
+                        className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 flex items-center gap-2"
                       >
-                        Add
+                        <FaPlus />
+                        เพิ่ม
                       </button>
                     </div>
                   </form>

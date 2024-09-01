@@ -7,6 +7,7 @@ import { createOperatingHours } from '@/services/admin/insert';
 import { getPlaces } from '@/services/admin/get';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaClock, FaCalendarDay, FaMapMarkerAlt, FaPlus, FaTimes } from 'react-icons/fa';
 
 interface Place {
   id: number;
@@ -58,7 +59,7 @@ const AddOperatingHoursModal: FC<AddOperatingHoursModalProps> = ({ isOpen, onClo
         draggable: true,
         progress: undefined,
       });
-      onClose(); // Close modal on success
+      onClose();
     } catch (error) {
       console.error('Error creating operating hours:', error);
       toast.error('เกิดข้อผิดพลาดในการสร้างเวลาเปิดทำการ', {
@@ -110,63 +111,84 @@ const AddOperatingHoursModal: FC<AddOperatingHoursModalProps> = ({ isOpen, onClo
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
                     <div className="relative z-0 w-full mb-6 group">
                       <label htmlFor="place_id" className="block text-sm font-medium text-gray-700">สถานที่</label>
-                      <select
-                        id="place_id"
-                        {...register('place_id', { required: 'กรุณาเลือกสถานที่' })}
-                        className={`mt-1 block w-full border ${errors.place_id ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
-                      >
-                        <option value="">เลือกสถานที่</option>
-                        {places.map((place) => (
-                          <option key={place.id} value={place.id}>
-                            (ID: {place.id}) {place.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="mt-1 flex items-center">
+                        <FaMapMarkerAlt className="mr-2 text-gray-500" />
+                        <select
+                          id="place_id"
+                          {...register('place_id', { required: 'กรุณาเลือกสถานที่' })}
+                          className={`mt-1 block w-full border ${errors.place_id ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
+                        >
+                          <option value="">เลือกสถานที่</option>
+                          {places.map((place) => (
+                            <option key={place.id} value={place.id}>
+                              (ID: {place.id}) {place.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                       {errors.place_id && <p className="text-red-500 text-xs mt-1">{errors.place_id.message}</p>}
                     </div>
                     <div className="relative z-0 w-full mb-6 group">
                       <label htmlFor="day_of_week" className="block text-sm font-medium text-gray-700">วันในสัปดาห์</label>
-                      <select
-                        id="day_of_week"
-                        {...register('day_of_week', { required: 'กรุณาเลือกวันในสัปดาห์' })}
-                        className={`mt-1 block w-full border ${errors.day_of_week ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
-                      >
-                        <option value="">เลือกวัน</option>
-                        <option value="Sunday">วันอาทิตย์</option>
-                        <option value="Monday">วันจันทร์</option>
-                        <option value="Tuesday">วันอังคาร</option>
-                        <option value="Wednesday">วันพุธ</option>
-                        <option value="Thursday">วันพฤหัสบดี</option>
-                        <option value="Friday">วันศุกร์</option>
-                        <option value="Saturday">วันเสาร์</option>
-                      </select>
+                      <div className="mt-1 flex items-center">
+                        <FaCalendarDay className="mr-2 text-gray-500" />
+                        <select
+                          id="day_of_week"
+                          {...register('day_of_week', { required: 'กรุณาเลือกวันในสัปดาห์' })}
+                          className={`mt-1 block w-full border ${errors.day_of_week ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
+                        >
+                          <option value="">เลือกวัน</option>
+                          <option value="Sunday">วันอาทิตย์</option>
+                          <option value="Monday">วันจันทร์</option>
+                          <option value="Tuesday">วันอังคาร</option>
+                          <option value="Wednesday">วันพุธ</option>
+                          <option value="Thursday">วันพฤหัสบดี</option>
+                          <option value="Friday">วันศุกร์</option>
+                          <option value="Saturday">วันเสาร์</option>
+                        </select>
+                      </div>
                       {errors.day_of_week && <p className="text-red-500 text-xs mt-1">{errors.day_of_week.message}</p>}
                     </div>
                     <div className="relative z-0 w-full mb-6 group">
                       <label htmlFor="opening_time" className="block text-sm font-medium text-gray-700">เวลาเปิด</label>
-                      <input
-                        id="opening_time"
-                        type="time"
-                        {...register('opening_time', { required: 'กรุณาระบุเวลาเปิด' })}
-                        className={`mt-1 block w-full border ${errors.opening_time ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
-                      />
+                      <div className="mt-1 flex items-center">
+                        <FaClock className="mr-2 text-gray-500" />
+                        <input
+                          id="opening_time"
+                          type="time"
+                          {...register('opening_time', { required: 'กรุณาระบุเวลาเปิด' })}
+                          className={`mt-1 block w-full border ${errors.opening_time ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
+                        />
+                      </div>
                       {errors.opening_time && <p className="text-red-500 text-xs mt-1">{errors.opening_time.message}</p>}
                     </div>
                     <div className="relative z-0 w-full mb-6 group">
                       <label htmlFor="closing_time" className="block text-sm font-medium text-gray-700">เวลาปิด</label>
-                      <input
-                        id="closing_time"
-                        type="time"
-                        {...register('closing_time', { required: 'กรุณาระบุเวลาปิด' })}
-                        className={`mt-1 block w-full border ${errors.closing_time ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
-                      />
+                      <div className="mt-1 flex items-center">
+                        <FaClock className="mr-2 text-gray-500" />
+                        <input
+                          id="closing_time"
+                          type="time"
+                          {...register('closing_time', { required: 'กรุณาระบุเวลาปิด' })}
+                          className={`mt-1 block w-full border ${errors.closing_time ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
+                        />
+                      </div>
                       {errors.closing_time && <p className="text-red-500 text-xs mt-1">{errors.closing_time.message}</p>}
                     </div>
-                    <div>
+                    <div className="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 flex items-center gap-2"
+                        onClick={onClose}
+                      >
+                        <FaTimes />
+                        ยกเลิก
+                      </button>
                       <button
                         type="submit"
-                        className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-Orange-600 hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
+                        className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 flex items-center gap-2"
                       >
+                        <FaPlus />
                         เพิ่มเวลาเปิดทำการ
                       </button>
                     </div>

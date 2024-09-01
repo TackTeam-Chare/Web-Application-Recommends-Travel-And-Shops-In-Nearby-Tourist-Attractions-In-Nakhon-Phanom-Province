@@ -7,6 +7,7 @@ import { createSeasonsRelation } from '@/services/admin/insert';
 import { getSeasons, getPlaces } from '@/services/admin/get';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaMapMarkerAlt, FaCalendarAlt, FaPlus, FaTimes } from 'react-icons/fa'; // Import icons
 
 interface FormData {
   tourism_entities_id: number; 
@@ -112,46 +113,54 @@ const AddSeasonsRelationModal: FC<AddSeasonsRelationModalProps> = ({ isOpen, onC
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
                     <div className="relative z-0 w-full mb-6 group">
                       <label htmlFor="tourism_entities_id" className="block text-sm font-medium text-gray-700">สถานที่ท่องเที่ยว</label>
-                      <select
-                        id="tourism_entities_id"
-                        {...register('tourism_entities_id', { required: 'กรุณาเลือกสถานที่ท่องเที่ยว', valueAsNumber: true })}
-                        className="block mt-1 w-full py-2 px-3 bg-white border border-gray-300 rounded-md shadow-sm focus:border-Orange-500 focus:ring-Orange-500 sm:text-sm"
-                      >
-                        <option value="">เลือกสถานที่ท่องเที่ยว</option>
-                        {touristEntities.map(entity => (
-                          <option key={entity.id} value={entity.id}>{entity.name}</option>
-                        ))}
-                      </select>
+                      <div className="mt-1 flex items-center">
+                        <FaMapMarkerAlt className="mr-2 text-gray-500" />
+                        <select
+                          id="tourism_entities_id"
+                          {...register('tourism_entities_id', { required: 'กรุณาเลือกสถานที่ท่องเที่ยว', valueAsNumber: true })}
+                          className="block w-full py-2 px-3 bg-white border border-gray-300 rounded-md shadow-sm focus:border-Orange-500 focus:ring-Orange-500 sm:text-sm"
+                        >
+                          <option value="">เลือกสถานที่ท่องเที่ยว</option>
+                          {touristEntities.map(entity => (
+                            <option key={entity.id} value={entity.id}>{entity.name}</option>
+                          ))}
+                        </select>
+                      </div>
                       {errors.tourism_entities_id && <p className="text-red-500 text-xs mt-1">{errors.tourism_entities_id.message}</p>}
                     </div>
                     <div className="relative z-0 w-full mb-6 group">
                       <label htmlFor="season_id" className="block text-sm font-medium text-gray-700">ฤดูกาล</label>
-                      <select
-                        id="season_id"
-                        {...register('season_id', { required: 'กรุณาเลือกฤดูกาล', valueAsNumber: true })}
-                        className="block mt-1 w-full py-2 px-3 bg-white border border-gray-300 rounded-md shadow-sm focus:border-Orange-500 focus:ring-Orange-500 sm:text-sm"
-                      >
-                        <option value="">เลือกฤดูกาล</option>
-                        {seasons.map(season => (
-                          <option key={season.id} value={season.id}>
-                            {season.name} (ID: {season.id})
-                          </option>
-                        ))}
-                      </select>
+                      <div className="mt-1 flex items-center">
+                        <FaCalendarAlt className="mr-2 text-gray-500" />
+                        <select
+                          id="season_id"
+                          {...register('season_id', { required: 'กรุณาเลือกฤดูกาล', valueAsNumber: true })}
+                          className="block w-full py-2 px-3 bg-white border border-gray-300 rounded-md shadow-sm focus:border-Orange-500 focus:ring-Orange-500 sm:text-sm"
+                        >
+                          <option value="">เลือกฤดูกาล</option>
+                          {seasons.map(season => (
+                            <option key={season.id} value={season.id}>
+                              {season.name} (ID: {season.id})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                       {errors.season_id && <p className="text-red-500 text-xs mt-1">{errors.season_id.message}</p>}
                     </div>
                     <div className="flex justify-end">
                       <button
                         type="button"
-                        className="mr-2 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out"
+                        className="mr-2 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out flex items-center gap-2"
                         onClick={onClose}
                       >
+                        <FaTimes />
                         ยกเลิก
                       </button>
                       <button
                         type="submit"
-                        className="bg-Orange-600 text-white px-4 py-2 rounded-md hover:bg-Orange-700 transition duration-300 ease-in-out"
+                        className="bg-Orange-600 text-white px-4 py-2 rounded-md hover:bg-Orange-700 transition duration-300 ease-in-out flex items-center gap-2"
                       >
+                        <FaPlus />
                         เพิ่มความสัมพันธ์
                       </button>
                     </div>

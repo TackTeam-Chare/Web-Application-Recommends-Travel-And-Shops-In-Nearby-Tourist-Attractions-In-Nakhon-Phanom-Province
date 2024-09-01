@@ -6,6 +6,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { createSeason } from '@/services/admin/insert';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaPlus, FaTimes } from 'react-icons/fa';
 
 interface FormData {
   name: string;
@@ -137,15 +138,17 @@ const AddSeasonModal: FC<AddSeasonModalProps> = ({ isOpen, onClose }) => {
                     <div className="flex justify-end">
                       <button
                         type="button"
-                        className="mr-2 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out"
+                        className="mr-2 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out flex items-center gap-2"
                         onClick={onClose}
                       >
+                        <FaTimes />
                         ยกเลิก
                       </button>
                       <button
                         type="submit"
-                        className="bg-Orange-600 text-white px-4 py-2 rounded-md hover:bg-Orange-700 transition duration-300 ease-in-out"
+                        className="bg-Orange-600 text-white px-4 py-2 rounded-md hover:bg-Orange-700 transition duration-300 ease-in-out flex items-center gap-2"
                       >
+                        <FaPlus />
                         เพิ่มฤดูกาล
                       </button>
                     </div>

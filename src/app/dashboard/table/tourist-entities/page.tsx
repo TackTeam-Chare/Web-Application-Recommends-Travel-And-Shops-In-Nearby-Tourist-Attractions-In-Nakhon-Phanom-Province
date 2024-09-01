@@ -40,7 +40,7 @@ const PlaceIndexPage: FC = () => {
   const [places, setPlaces] = useState<Place[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [editPlaceId, setEditPlaceId] = useState<string | null>(null); // เก็บ ID ที่ต้องการแก้ไข
+  const [editPlaceId, setEditPlaceId] = useState<string | null>(null); // Store the ID to edit
   const router = useRouter();
 
   useEffect(() => {
@@ -49,40 +49,40 @@ const PlaceIndexPage: FC = () => {
         const result: Place[] = await getPlaces();
         setPlaces(result);
       } catch (err) {
-        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูลสถานที่');
+        toast.error('Error fetching places');
       }
     };
 
     fetchPlaces();
   }, []);
 
-  // ใช้ useCallback เพื่อป้องกันการสร้าง handleDelete ใหม่ในทุกครั้งที่ render
+  // Use useCallback to prevent recreation of handleDelete on every render
   const handleDelete = useCallback(async (id: number): Promise<void> => {
     toast(
       ({ closeToast }) => (
         <div>
-          <p>คุณแน่ใจหรือไม่ว่าต้องการลบสถานที่นี้?</p>
+          <p>Are you sure you want to delete this place?</p>
           <button
             onClick={async () => {
               try {
                 await deletePlace(id);
                 setPlaces((prevPlaces) => prevPlaces.filter((place) => place.id !== id));
-                toast.success('ลบสถานที่สำเร็จ!');
+                toast.success('Place deleted successfully!');
                 closeToast();
               } catch (error) {
-                console.error(`เกิดข้อผิดพลาดในการลบสถานที่ที่มี ID ${id}:`, error);
-                toast.error('เกิดข้อผิดพลาดในการลบสถานที่ กรุณาลองใหม่อีกครั้ง');
+                console.error(`Error deleting place with ID ${id}:`, error);
+                toast.error('Error deleting place. Please try again.');
               }
             }}
             className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
           >
-            ใช่
+            Yes
           </button>
           <button
             onClick={closeToast}
             className="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition duration-300 ease-in-out"
           >
-            ไม่
+            No
           </button>
         </div>
       ),
@@ -93,34 +93,34 @@ const PlaceIndexPage: FC = () => {
   const columns: Column<Place>[] = useMemo(
     () => [
       {
-        Header: 'รูปภาพ',
+        Header: 'Image',
         accessor: 'image_url',
         Cell: ({ cell: { value } }: { cell: { value: string } }) => (
-          value ? <Image src={value} alt="Place" width={50} height={50} className="object-cover rounded" /> : 'ไม่มีรูปภาพ'
+          value ? <Image src={value} alt="Place" width={50} height={50} className="object-cover rounded" /> : 'No Image'
         ),
       },
       {
-        Header: 'ชื่อ',
+        Header: 'Name',
         accessor: 'name',
       },
       {
-        Header: 'รายละเอียด',
+        Header: 'Description',
         accessor: 'description',
       },
       {
-        Header: 'ที่ตั้ง',
+        Header: 'Location',
         accessor: 'location',
       },
       {
-        Header: 'ละติจูด',
+        Header: 'Latitude',
         accessor: 'latitude',
       },
       {
-        Header: 'ลองจิจูด',
+        Header: 'Longitude',
         accessor: 'longitude',
       },
       {
-        Header: 'การดำเนินการ',
+        Header: 'Actions',
         Cell: ({ row }: { row: Row<Place> }) => (
           <div className="flex space-x-2">
             <button
@@ -128,15 +128,15 @@ const PlaceIndexPage: FC = () => {
                 setEditPlaceId(row.original.id.toString());
                 setIsEditModalOpen(true);
               }}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out"
+              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out"
             >
-              แก้ไข
+              Edit
             </button>
             <button
               onClick={() => handleDelete(row.original.id)}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
             >
-              ลบ
+              Delete
             </button>
           </div>
         ),
@@ -162,28 +162,28 @@ const PlaceIndexPage: FC = () => {
     {
       columns,
       data: places,
-      initialState: { pageIndex: 0 }, // ตั้งค่าการเริ่มต้นที่ถูกต้องสำหรับการแบ่งหน้า
+      initialState: { pageIndex: 0 }, // Proper initial state setup for pagination
     },
     useGlobalFilter,
     useSortBy,
     usePagination
-  ) as TableInstanceWithPagination<Place>; // ใช้ประเภทที่ขยายเพื่อรองรับการแบ่งหน้าและตัวกรองทั่วไป
+  ) as TableInstanceWithPagination<Place>; // Use extended type to support pagination and global filter
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-8 text-center text-blue-600">สถานที่ท่องเที่ยว</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-indigo-600">Tourist Places</h1>
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
           >
-            เพิ่มสถานที่ใหม่
+            Add New Place
           </button>
           <input
             value={globalFilter || ''}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            placeholder="ค้นหา..."
+            placeholder="Search..."
             className="p-2 border border-gray-300 rounded-md"
           />
         </div>
@@ -225,16 +225,16 @@ const PlaceIndexPage: FC = () => {
         </div>
         <div className="flex justify-between items-center mt-4">
           <button onClick={() => previousPage()} disabled={!canPreviousPage} className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">
-            ก่อนหน้า
+            Previous
           </button>
           <span>
-            หน้า{' '}
+            Page{' '}
             <strong>
-              {pageIndex + 1} จาก {pageOptions.length}
+              {pageIndex + 1} of {pageOptions.length}
             </strong>
           </span>
           <button onClick={() => nextPage()} disabled={!canNextPage} className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">
-            ถัดไป
+            Next
           </button>
         </div>
         <ToastContainer />

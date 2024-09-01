@@ -6,7 +6,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { createCategory } from '@/services/admin/insert';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaFolderPlus } from 'react-icons/fa';
+import { FaFolderPlus, FaTimes, FaCheck, FaPlus } from 'react-icons/fa'; // Import icons for Cancel and Submit
 import { useRouter } from 'next/navigation';
 
 interface FormData {
@@ -15,7 +15,7 @@ interface FormData {
 
 export default function CreateCategory() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
-  const [isOpen, setIsOpen] = useState(true); // Set to true to open modal by default
+  const [isOpen, setIsOpen] = useState(true);
   const router = useRouter();
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
@@ -30,8 +30,8 @@ export default function CreateCategory() {
         draggable: true,
         progress: undefined,
       });
-      setIsOpen(false); // Close modal on success
-      router.push('/dashboard/table/categories'); // Redirect after creation
+      setIsOpen(false);
+      router.push('/dashboard/table/categories');
     } catch (error) {
       toast.error('เกิดข้อผิดพลาดในการสร้างหมวดหมู่', {
         position: 'top-right',
@@ -77,7 +77,7 @@ export default function CreateCategory() {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900 flex items-center gap-2"
                   >
-                    <FaFolderPlus className="text-Orange-600" />
+                    <FaFolderPlus className="text-orange-600" />
                     สร้างหมวดหมู่ใหม่
                   </Dialog.Title>
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
@@ -88,7 +88,7 @@ export default function CreateCategory() {
                       <input
                         type="text"
                         {...register('name', { required: 'กรุณากรอกชื่อหมวดหมู่' })}
-                        className={`pl-4 pr-4 py-2 w-full border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-Orange-500`}
+                        className={`pl-4 pr-4 py-2 w-full border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500`}
                         placeholder="กรอกชื่อหมวดหมู่"
                       />
                       {errors.name && (
@@ -98,15 +98,17 @@ export default function CreateCategory() {
                     <div className="mt-4 flex justify-end gap-2">
                       <button
                         type="button"
-                        className="py-2 px-4 bg-gray-300 text-gray-700 rounded-md shadow-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        className="py-2 px-4 bg-gray-300 text-gray-700 rounded-md shadow-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 flex items-center gap-1"
                         onClick={() => setIsOpen(false)}
                       >
+                        <FaTimes />
                         ยกเลิก
                       </button>
                       <button
                         type="submit"
-                        className="py-2 px-4 bg-Orange-600 text-white rounded-md shadow-md hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
+                        className="py-2 px-4 bg-orange-600 text-white rounded-md shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 flex items-center gap-1"
                       >
+                        <FaPlus />
                         สร้างหมวดหมู่
                       </button>
                     </div>
