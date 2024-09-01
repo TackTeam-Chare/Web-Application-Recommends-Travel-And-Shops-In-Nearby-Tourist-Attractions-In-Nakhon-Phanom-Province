@@ -1,4 +1,4 @@
- "use client"
+'use client';
 import React, { useEffect, useState, useMemo, FC } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -31,8 +31,8 @@ const ImagesIndexPage: FC = () => {
         const imagesData: ImageData[] = await getPlaceImages();
         setImages(imagesData);
       } catch (error) {
-        console.error('Error fetching images:', error);
-        toast.error('Error fetching images');
+        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลรูปภาพ:', error);
+        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูลรูปภาพ');
       }
     };
 
@@ -43,28 +43,28 @@ const ImagesIndexPage: FC = () => {
     toast(
       ({ closeToast }) => (
         <div>
-          <p>Are you sure you want to delete this place?</p>
+          <p>คุณแน่ใจหรือไม่ว่าต้องการลบรูปภาพนี้?</p>
           <button
             onClick={async () => {
               try {
                 await deletePlaceImage(id);
                 setImages((prevImages) => prevImages.filter((image) => image.id !== id));
-                toast.success('Place deleted successfully!');
+                toast.success('ลบรูปภาพสำเร็จ!');
                 closeToast();
               } catch (error) {
-                console.error(`Error deleting place with ID ${id}:`, error);
-                toast.error('Error deleting place. Please try again.');
+                console.error(`เกิดข้อผิดพลาดในการลบรูปภาพที่มี ID ${id}:`, error);
+                toast.error('เกิดข้อผิดพลาดในการลบรูปภาพ กรุณาลองอีกครั้ง');
               }
             }}
             className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
           >
-            Yes
+            ใช่
           </button>
           <button
             onClick={closeToast}
             className="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition duration-300 ease-in-out"
           >
-            No
+            ไม่
           </button>
         </div>
       ),
@@ -80,11 +80,11 @@ const ImagesIndexPage: FC = () => {
   const columns = useMemo(
     () => [
       {
-        Header: 'ID',
+        Header: 'รหัส',
         accessor: 'id',
       },
       {
-        Header: 'Image',
+        Header: 'รูปภาพ',
         accessor: 'image_url',
         Cell: ({ cell: { value }, row }: { cell: { value: string }; row: { original: ImageData } }) => (
           <Image
@@ -98,27 +98,27 @@ const ImagesIndexPage: FC = () => {
         ),
       },
       {
-        Header: 'Tourism Entity',
+        Header: 'หน่วยงานท่องเที่ยว',
         accessor: 'tourism_entities_id',
         Cell: ({ cell: { value }, row }: { cell: { value: string }; row: { original: ImageData } }) => (
-          <span>{`ID: ${value}, Name: ${row.original.tourism_entity_name}`}</span>
+          <span>{`ID: ${value}, ชื่อ: ${row.original.tourism_entity_name}`}</span>
         ),
       },
       {
-        Header: 'Actions',
+        Header: 'การกระทำ',
         Cell: ({ row }: { row: { original: ImageData } }) => (
           <div className="flex space-x-2">
             <button
               onClick={() => openEditModal(row.original.id)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out"
             >
-              Edit
+              แก้ไข
             </button>
             <button
               onClick={() => handleDelete(row.original.id)}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
             >
-              Delete
+              ลบ
             </button>
           </div>
         ),
@@ -155,18 +155,18 @@ const ImagesIndexPage: FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-4">All Images</h1>
+        <h1 className="text-2xl font-bold mb-4">รูปภาพทั้งหมด</h1>
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
           >
-            Add New Images
+            เพิ่มรูปภาพใหม่
           </button>
           <input
             value={globalFilter || ''}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            placeholder="Search..."
+            placeholder="ค้นหา..."
             className="p-2 border border-gray-300 rounded-md"
           />
         </div>
@@ -208,30 +208,28 @@ const ImagesIndexPage: FC = () => {
         </div>
         <div className="flex justify-between items-center mt-4">
           <button onClick={() => previousPage()} disabled={!canPreviousPage} className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">
-            Previous
+            ก่อนหน้า
           </button>
           <span>
-            Page{' '}
+            หน้า{' '}
             <strong>
-              {pageIndex + 1} of {pageOptions.length}
+              {pageIndex + 1} จาก {pageOptions.length}
             </strong>
           </span>
           <button onClick={() => nextPage()} disabled={!canNextPage} className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">
-            Next
+            ถัดไป
           </button>
         </div>
         <ToastContainer />
       </div>
 
-      {/* Modal components */}
-     {/* Modal components */}
-{isAddModalOpen && (
-  <AddImagesModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
-)}
-{isEditModalOpen && editImageId && (
-  <EditImagesModal id={editImageId} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} />
-)}
+      {isAddModalOpen && (
+        <AddImagesModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+      )}
 
+      {isEditModalOpen && editImageId && (
+        <EditImagesModal id={editImageId} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} />
+      )}
     </div>
   );
 };

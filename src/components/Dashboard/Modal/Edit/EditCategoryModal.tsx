@@ -91,7 +91,7 @@ const EditCategoryModal: FC<EditCategoryModalProps> = ({ id, isOpen, onClose }) 
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   {isLoading ? (
                     <div className="flex justify-center items-center">
-                      <FaSpinner className="animate-spin text-indigo-600 text-3xl" />
+                      <FaSpinner className="animate-spin text-Orange-600 text-3xl" />
                     </div>
                   ) : (
                     <>
@@ -104,12 +104,12 @@ const EditCategoryModal: FC<EditCategoryModalProps> = ({ id, isOpen, onClose }) 
                             id="name"
                             type="text"
                             {...register('name', { required: 'กรุณากรอกชื่อหมวดหมู่' })}
-                            className="block py-2.5 px-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer"
+                            className="block py-2.5 px-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-Orange-600 peer"
                             placeholder=" "
                           />
                           <label
                             htmlFor="name"
-                            className={`absolute text-sm text-gray-500 bg-white px-1 transform duration-300 -translate-y-6 scale-75 top-0 left-3 -z-10 origin-[0] peer-focus:left-3 peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-6 ${
+                            className={`absolute text-sm text-gray-500 bg-white px-1 transform duration-300 -translate-y-6 scale-75 top-0 left-3 -z-10 origin-[0] peer-focus:left-3 peer-focus:text-Orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-6 ${
                               errors.name ? 'text-red-500' : ''
                             }`}
                           >
@@ -120,14 +120,14 @@ const EditCategoryModal: FC<EditCategoryModalProps> = ({ id, isOpen, onClose }) 
                         <div className="flex justify-end space-x-2">
                           <button
                             type="button"
-                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                             onClick={onClose}
                           >
                             ยกเลิก
                           </button>
                           <button
                             type="submit"
-                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-Orange-600 border border-transparent rounded-md shadow-sm hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                             disabled={isSubmitting}
                           >
                             {isSubmitting ? <FaSpinner className="animate-spin" /> : <FaSave />}

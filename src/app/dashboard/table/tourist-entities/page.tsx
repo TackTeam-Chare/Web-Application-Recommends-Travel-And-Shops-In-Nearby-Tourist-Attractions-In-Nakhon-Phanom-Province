@@ -1,16 +1,18 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState, useMemo, FC, useCallback } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { getPlaces } from '@/services/admin/get';
-import { deletePlace } from '@/services/admin/delete';
-import { useTable, useSortBy, usePagination, useGlobalFilter, Column, HeaderGroup, Row, TableInstance } from 'react-table';
-import { ToastContainer, toast } from 'react-toastify';
+import React, { useEffect, useState, useMemo, FC, useCallback, Fragment } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { getPlaces } from "@/services/admin/get";
+import { deletePlace } from "@/services/admin/delete";
+import { useTable, useSortBy, usePagination, useGlobalFilter, Column, HeaderGroup, Row, TableInstance } from "react-table";
+import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import AddPlacesModal from "@/components/Dashboard/Modal/Add/AddPlacesModal"; 
+import EditPlaceModal from "@/components/Dashboard/Modal/Edit/EditPlaceModal";
 
 interface Place {
-  id: number;  // Changed to number to match the expected type
+  id: number;
   image_url: string;
   name: string;
   description: string;
@@ -36,6 +38,9 @@ interface TableInstanceWithPagination<T extends object> extends TableInstance<T>
 
 const PlaceIndexPage: FC = () => {
   const [places, setPlaces] = useState<Place[]>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [editPlaceId, setEditPlaceId] = useState<string | null>(null); // เก็บ ID ที่ต้องการแก้ไข
   const router = useRouter();
 
   useEffect(() => {
@@ -44,40 +49,40 @@ const PlaceIndexPage: FC = () => {
         const result: Place[] = await getPlaces();
         setPlaces(result);
       } catch (err) {
-        toast.error('Error fetching places');
+        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูลสถานที่');
       }
     };
 
     fetchPlaces();
   }, []);
 
-  // Use useCallback to prevent recreation of handleDelete on every render
+  // ใช้ useCallback เพื่อป้องกันการสร้าง handleDelete ใหม่ในทุกครั้งที่ render
   const handleDelete = useCallback(async (id: number): Promise<void> => {
     toast(
       ({ closeToast }) => (
         <div>
-          <p>Are you sure you want to delete this place?</p>
+          <p>คุณแน่ใจหรือไม่ว่าต้องการลบสถานที่นี้?</p>
           <button
             onClick={async () => {
               try {
                 await deletePlace(id);
                 setPlaces((prevPlaces) => prevPlaces.filter((place) => place.id !== id));
-                toast.success('Place deleted successfully!');
+                toast.success('ลบสถานที่สำเร็จ!');
                 closeToast();
               } catch (error) {
-                console.error(`Error deleting place with ID ${id}:`, error);
-                toast.error('Error deleting place. Please try again.');
+                console.error(`เกิดข้อผิดพลาดในการลบสถานที่ที่มี ID ${id}:`, error);
+                toast.error('เกิดข้อผิดพลาดในการลบสถานที่ กรุณาลองใหม่อีกครั้ง');
               }
             }}
             className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
           >
-            Yes
+            ใช่
           </button>
           <button
             onClick={closeToast}
             className="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition duration-300 ease-in-out"
           >
-            No
+            ไม่
           </button>
         </div>
       ),
@@ -88,47 +93,50 @@ const PlaceIndexPage: FC = () => {
   const columns: Column<Place>[] = useMemo(
     () => [
       {
-        Header: 'Image',
+        Header: 'รูปภาพ',
         accessor: 'image_url',
         Cell: ({ cell: { value } }: { cell: { value: string } }) => (
-          value ? <Image src={value} alt="Place" width={50} height={50} className="object-cover rounded" /> : 'No Image'
+          value ? <Image src={value} alt="Place" width={50} height={50} className="object-cover rounded" /> : 'ไม่มีรูปภาพ'
         ),
       },
       {
-        Header: 'Name',
+        Header: 'ชื่อ',
         accessor: 'name',
       },
       {
-        Header: 'Description',
+        Header: 'รายละเอียด',
         accessor: 'description',
       },
       {
-        Header: 'Location',
+        Header: 'ที่ตั้ง',
         accessor: 'location',
       },
       {
-        Header: 'Latitude',
+        Header: 'ละติจูด',
         accessor: 'latitude',
       },
       {
-        Header: 'Longitude',
+        Header: 'ลองจิจูด',
         accessor: 'longitude',
       },
       {
-        Header: 'Actions',
+        Header: 'การดำเนินการ',
         Cell: ({ row }: { row: Row<Place> }) => (
           <div className="flex space-x-2">
             <button
-              onClick={() => router.push(`/dashboard/table/place/edit/${row.original.id}`)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out"
+              onClick={() => {
+                setEditPlaceId(row.original.id.toString());
+                setIsEditModalOpen(true);
+              }}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out"
             >
-              Edit
+              แก้ไข
             </button>
             <button
               onClick={() => handleDelete(row.original.id)}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
             >
-              Delete
+              ลบ
             </button>
           </div>
         ),
@@ -154,28 +162,28 @@ const PlaceIndexPage: FC = () => {
     {
       columns,
       data: places,
-      initialState: { pageIndex: 0 }, // Proper initial state setup for pagination
+      initialState: { pageIndex: 0 }, // ตั้งค่าการเริ่มต้นที่ถูกต้องสำหรับการแบ่งหน้า
     },
     useGlobalFilter,
     useSortBy,
     usePagination
-  ) as TableInstanceWithPagination<Place>; // Use extended type to support pagination and global filter
+  ) as TableInstanceWithPagination<Place>; // ใช้ประเภทที่ขยายเพื่อรองรับการแบ่งหน้าและตัวกรองทั่วไป
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-8 text-center text-indigo-600">Tourist Places</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-blue-600">สถานที่ท่องเที่ยว</h1>
         <div className="flex justify-between items-center mb-4">
           <button
-            onClick={() => router.push('/dashboard/table/place/add')}
+            onClick={() => setIsAddModalOpen(true)}
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
           >
-            Add New Place
+            เพิ่มสถานที่ใหม่
           </button>
           <input
             value={globalFilter || ''}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            placeholder="Search..."
+            placeholder="ค้นหา..."
             className="p-2 border border-gray-300 rounded-md"
           />
         </div>
@@ -217,20 +225,30 @@ const PlaceIndexPage: FC = () => {
         </div>
         <div className="flex justify-between items-center mt-4">
           <button onClick={() => previousPage()} disabled={!canPreviousPage} className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">
-            Previous
+            ก่อนหน้า
           </button>
           <span>
-            Page{' '}
+            หน้า{' '}
             <strong>
-              {pageIndex + 1} of {pageOptions.length}
+              {pageIndex + 1} จาก {pageOptions.length}
             </strong>
           </span>
           <button onClick={() => nextPage()} disabled={!canNextPage} className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">
-            Next
+            ถัดไป
           </button>
         </div>
         <ToastContainer />
       </div>
+
+      {/* Add Modal */}
+      {isAddModalOpen && (
+        <AddPlacesModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+      )}
+
+      {/* Edit Modal */}
+      {isEditModalOpen && editPlaceId && (
+        <EditPlaceModal id={editPlaceId} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} />
+      )}
     </div>
   );
 };

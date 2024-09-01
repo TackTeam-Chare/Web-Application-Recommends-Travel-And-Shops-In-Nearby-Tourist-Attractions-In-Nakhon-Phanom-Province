@@ -113,7 +113,7 @@ const AddOperatingHoursModal: FC<AddOperatingHoursModalProps> = ({ isOpen, onClo
                       <select
                         id="place_id"
                         {...register('place_id', { required: 'กรุณาเลือกสถานที่' })}
-                        className={`mt-1 block w-full border ${errors.place_id ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                        className={`mt-1 block w-full border ${errors.place_id ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
                       >
                         <option value="">เลือกสถานที่</option>
                         {places.map((place) => (
@@ -129,7 +129,7 @@ const AddOperatingHoursModal: FC<AddOperatingHoursModalProps> = ({ isOpen, onClo
                       <select
                         id="day_of_week"
                         {...register('day_of_week', { required: 'กรุณาเลือกวันในสัปดาห์' })}
-                        className={`mt-1 block w-full border ${errors.day_of_week ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                        className={`mt-1 block w-full border ${errors.day_of_week ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
                       >
                         <option value="">เลือกวัน</option>
                         <option value="Sunday">วันอาทิตย์</option>
@@ -148,7 +148,7 @@ const AddOperatingHoursModal: FC<AddOperatingHoursModalProps> = ({ isOpen, onClo
                         id="opening_time"
                         type="time"
                         {...register('opening_time', { required: 'กรุณาระบุเวลาเปิด' })}
-                        className={`mt-1 block w-full border ${errors.opening_time ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                        className={`mt-1 block w-full border ${errors.opening_time ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
                       />
                       {errors.opening_time && <p className="text-red-500 text-xs mt-1">{errors.opening_time.message}</p>}
                     </div>
@@ -158,14 +158,14 @@ const AddOperatingHoursModal: FC<AddOperatingHoursModalProps> = ({ isOpen, onClo
                         id="closing_time"
                         type="time"
                         {...register('closing_time', { required: 'กรุณาระบุเวลาปิด' })}
-                        className={`mt-1 block w-full border ${errors.closing_time ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                        className={`mt-1 block w-full border ${errors.closing_time ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm`}
                       />
                       {errors.closing_time && <p className="text-red-500 text-xs mt-1">{errors.closing_time.message}</p>}
                     </div>
                     <div>
                       <button
                         type="submit"
-                        className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-Orange-600 hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                       >
                         เพิ่มเวลาเปิดทำการ
                       </button>

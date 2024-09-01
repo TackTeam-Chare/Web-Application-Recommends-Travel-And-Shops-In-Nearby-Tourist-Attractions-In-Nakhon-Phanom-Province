@@ -77,23 +77,20 @@ export default function CreateCategory() {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900 flex items-center gap-2"
                   >
-                    <FaFolderPlus className="text-indigo-600" />
+                    <FaFolderPlus className="text-Orange-600" />
                     สร้างหมวดหมู่ใหม่
                   </Dialog.Title>
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
                     <div className="relative flex flex-col mb-4">
-                      <label className="flex items-center text-gray-700 text-sm font-medium mb-2">
-                        <FaFolderPlus className="mr-2 text-indigo-600" /> ชื่อหมวดหมู่
+                      <label className="text-gray-700 text-sm font-medium mb-2">
+                        ชื่อหมวดหมู่
                       </label>
-                      <div className="relative">
-                        <FaFolderPlus className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <input
-                          type="text"
-                          {...register('name', { required: 'กรุณากรอกชื่อหมวดหมู่' })}
-                          className={`pl-10 pr-4 py-2 w-full border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                          placeholder="กรอกชื่อหมวดหมู่"
-                        />
-                      </div>
+                      <input
+                        type="text"
+                        {...register('name', { required: 'กรุณากรอกชื่อหมวดหมู่' })}
+                        className={`pl-4 pr-4 py-2 w-full border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-Orange-500`}
+                        placeholder="กรอกชื่อหมวดหมู่"
+                      />
                       {errors.name && (
                         <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
                       )}
@@ -108,7 +105,7 @@ export default function CreateCategory() {
                       </button>
                       <button
                         type="submit"
-                        className="py-2 px-4 bg-indigo-600 text-white rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="py-2 px-4 bg-Orange-600 text-white rounded-md shadow-md hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                       >
                         สร้างหมวดหมู่
                       </button>

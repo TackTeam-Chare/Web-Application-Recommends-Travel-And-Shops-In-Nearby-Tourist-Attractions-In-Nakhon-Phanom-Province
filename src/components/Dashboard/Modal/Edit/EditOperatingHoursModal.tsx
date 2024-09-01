@@ -114,7 +114,7 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   {isLoading ? (
                     <div className="flex justify-center items-center">
-                      <FaSpinner className="animate-spin text-indigo-600 text-3xl" />
+                      <FaSpinner className="animate-spin text-Orange-600 text-3xl" />
                     </div>
                   ) : (
                     <>
@@ -128,7 +128,7 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
                             id="place_id"
                             value={placeName}
                             readOnly
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-200 cursor-not-allowed"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm bg-gray-200 cursor-not-allowed"
                           />
                           <input
                             type="hidden"
@@ -141,7 +141,7 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
                           <select
                             id="day_of_week"
                             {...register('day_of_week', { required: 'กรุณาเลือกวันในสัปดาห์' })}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm"
                           >
                             <option value="Sunday">วันอาทิตย์</option>
                             <option value="Monday">วันจันทร์</option>
@@ -160,7 +160,7 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
                             name="opening_time"
                             type="time"
                             {...register('opening_time', { required: 'กรุณาเลือกเวลาเปิด' })}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm"
                           />
                           {errors.opening_time && <p className="text-red-500 text-xs mt-1">{errors.opening_time.message}</p>}
                         </div>
@@ -171,21 +171,21 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
                             name="closing_time"
                             type="time"
                             {...register('closing_time', { required: 'กรุณาเลือกเวลาปิด' })}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm"
                           />
                           {errors.closing_time && <p className="text-red-500 text-xs mt-1">{errors.closing_time.message}</p>}
                         </div>
                         <div className="flex justify-end space-x-2">
                           <button
                             type="button"
-                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                             onClick={onClose}
                           >
                             ยกเลิก
                           </button>
                           <button
                             type="submit"
-                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-Orange-600 border border-transparent rounded-md shadow-sm hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                             disabled={isSubmitting}
                           >
                             {isSubmitting ? <FaSpinner className="animate-spin" /> : <FaSave />}

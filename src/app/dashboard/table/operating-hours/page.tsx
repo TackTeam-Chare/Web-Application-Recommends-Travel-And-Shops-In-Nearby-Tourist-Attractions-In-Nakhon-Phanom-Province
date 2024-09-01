@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import React, { useEffect, useState, useMemo, FC } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAllOperatingHours } from '@/services/admin/get';
@@ -31,7 +32,7 @@ const OperatingHoursPage: FC = () => {
         const result: OperatingHour[] = await getAllOperatingHours();
         setOperatingHours(result);
       } catch (err) {
-        toast.error('Error fetching operating hours');
+        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูลเวลาทำการ');
       }
     };
 
@@ -42,28 +43,28 @@ const OperatingHoursPage: FC = () => {
     toast(
       ({ closeToast }) => (
         <div>
-          <p>Are you sure you want to delete this operating hour?</p>
+          <p>คุณแน่ใจหรือไม่ว่าต้องการลบเวลาทำการนี้?</p>
           <button
             onClick={async () => {
               try {
                 await deleteOperatingHours(id);
                 setOperatingHours((prevHours) => prevHours.filter((hour) => hour.id !== id));
-                toast.success('Operating hour deleted successfully!');
+                toast.success('ลบเวลาทำการสำเร็จ!');
                 closeToast();
               } catch (error) {
-                console.error(`Error deleting operating hour with ID ${id}:`, error);
-                toast.error('Error deleting operating hour. Please try again.');
+                console.error(`เกิดข้อผิดพลาดในการลบเวลาทำการที่มี ID ${id}:`, error);
+                toast.error('เกิดข้อผิดพลาดในการลบเวลาทำการ กรุณาลองอีกครั้ง');
               }
             }}
             className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
           >
-            Yes
+            ใช่
           </button>
           <button
             onClick={closeToast}
             className="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition duration-300 ease-in-out"
           >
-            No
+            ไม่
           </button>
         </div>
       ),
@@ -87,43 +88,43 @@ const OperatingHoursPage: FC = () => {
   const columns = useMemo(
     () => [
       {
-        Header: 'ID',
+        Header: 'รหัส',
         accessor: 'id',
       },
       {
-        Header: 'Place',
+        Header: 'สถานที่',
         accessor: 'place_name',
         Cell: ({ row }: { row: { original: OperatingHour } }) => (
-          <span>{`ID: ${row.original.place_id}, Name: ${row.original.place_name}`}</span>
+          <span>{`ID: ${row.original.place_id}, ชื่อ: ${row.original.place_name}`}</span>
         ),
       },
       {
-        Header: 'Day of Week',
+        Header: 'วันในสัปดาห์',
         accessor: 'day_of_week',
       },
       {
-        Header: 'Opening Time',
+        Header: 'เวลาเปิด',
         accessor: 'opening_time',
       },
       {
-        Header: 'Closing Time',
+        Header: 'เวลาปิด',
         accessor: 'closing_time',
       },
       {
-        Header: 'Actions',
+        Header: 'การกระทำ',
         Cell: ({ row }: { row: { original: OperatingHour } }) => (
           <div className="flex space-x-2">
             <button
               onClick={() => openEditModal(row.original)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out"
             >
-              Edit
+              แก้ไข
             </button>
             <button
               onClick={() => handleDelete(row.original.id)}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
             >
-              Delete
+              ลบ
             </button>
           </div>
         ),
@@ -160,18 +161,18 @@ const OperatingHoursPage: FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-8 text-center text-indigo-600">Operating Hours</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-blue-600">เวลาทำการ</h1>
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={openAddModal}
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
           >
-            Add New Operating Hour
+            เพิ่มเวลาทำการใหม่
           </button>
           <input
             value={globalFilter || ''}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            placeholder="Search..."
+            placeholder="ค้นหา..."
             className="p-2 border border-gray-300 rounded-md"
           />
         </div>
@@ -213,26 +214,26 @@ const OperatingHoursPage: FC = () => {
         </div>
         <div className="flex justify-between items-center mt-4">
           <button onClick={() => previousPage()} disabled={!canPreviousPage} className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">
-            Previous
+            ก่อนหน้า
           </button>
           <span>
-            Page{' '}
+            หน้า{' '}
             <strong>
-              {pageIndex + 1} of {pageOptions.length}
+              {pageIndex + 1} จาก {pageOptions.length}
             </strong>
           </span>
           <button onClick={() => nextPage()} disabled={!canNextPage} className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">
-            Next
+            ถัดไป
           </button>
         </div>
         <ToastContainer />
 
-        {/* Add Operating Hours Modal */}
+        {/* เพิ่ม Modal เวลาทำการ */}
         {isAddModalOpen && (
           <AddOperatingHoursForm isOpen={isAddModalOpen} onClose={closeAddModal} />
         )}
 
-        {/* Edit Operating Hours Modal */}
+        {/* แก้ไข Modal เวลาทำการ */}
         {isEditModalOpen && selectedOperatingHour && (
           <EditOperatingHoursModal
             id={selectedOperatingHour.id}

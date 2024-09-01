@@ -120,7 +120,7 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
                       <label className="block text-sm font-medium text-gray-700">สถานที่ท่องเที่ยว</label>
                       <select
                         {...register('tourism_entities_id', { required: 'กรุณาเลือกสถานที่' })}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm"
                       >
                         <option value="">เลือกสถานที่</option>
                         {places.map((place) => (
@@ -137,7 +137,7 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
                         type="file"
                         {...register('image_paths', { required: 'กรุณาเลือกรูปภาพ' })}
                         multiple
-                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-Orange-50 file:text-Orange-700 hover:file:bg-Orange-100"
                       />
                       {errors.image_paths && (
                         <p className="text-red-500 text-xs mt-1">{errors.image_paths.message}</p>
@@ -145,7 +145,7 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
                     </div>
                     <button
                       type="submit"
-                      className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-Orange-600 hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                     >
                       อัปโหลด
                     </button>

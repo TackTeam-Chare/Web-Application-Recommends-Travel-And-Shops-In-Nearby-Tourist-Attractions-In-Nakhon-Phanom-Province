@@ -6,7 +6,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
 import { getPlaceImagesById, getPlaceById} from '@/services/admin/get';
-import {  updateTourismImages } from '@/services/admin/edit';
+import { updateTourismImages } from '@/services/admin/edit';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaSave, FaSpinner } from 'react-icons/fa';
@@ -120,7 +120,7 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   {isLoading ? (
                     <div className="flex justify-center items-center">
-                      <FaSpinner className="animate-spin text-indigo-600 text-3xl" />
+                      <FaSpinner className="animate-spin text-Orange-600 text-3xl" />
                     </div>
                   ) : (
                     <>
@@ -134,21 +134,22 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
                             type="text"
                             {...register('tourism_entities_id')}
                             readOnly
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-200 cursor-not-allowed"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm bg-gray-200 cursor-not-allowed"
                           />
                         </div>
                         <div className="relative z-0 w-full mb-6 group">
                           <label className="block text-sm font-medium text-gray-700">รูปภาพที่มีอยู่</label>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 gap-4">
                             {existingImages.length > 0 ? (
                               existingImages.map((image) => (
                                 <Image
                                   key={image.id}
                                   src={image.image_url}
                                   alt={image.image_path}
-                                  width={100}
-                                  height={100}
-                                  className="w-full h-24 object-cover rounded-lg"
+                                  layout="responsive"
+                                  width={700}
+                                  height={400}
+                                  className="w-full h-auto object-cover rounded-lg"
                                   priority
                                 />
                               ))
@@ -170,14 +171,14 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
                         <div className="flex justify-end space-x-2">
                           <button
                             type="button"
-                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                             onClick={onClose}
                           >
                             ยกเลิก
                           </button>
                           <button
                             type="submit"
-                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-Orange-600 border border-transparent rounded-md shadow-sm hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                             disabled={isSubmitting}
                           >
                             {isSubmitting ? <FaSpinner className="animate-spin" /> : <FaSave />}

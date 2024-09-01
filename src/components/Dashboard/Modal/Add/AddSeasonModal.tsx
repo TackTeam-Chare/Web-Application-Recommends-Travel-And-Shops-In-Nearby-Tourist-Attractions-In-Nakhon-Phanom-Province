@@ -85,12 +85,12 @@ const AddSeasonModal: FC<AddSeasonModalProps> = ({ isOpen, onClose }) => {
                         id="name"
                         {...register('name', { required: 'กรุณากรอกชื่อฤดูกาล' })}
                         type="text"
-                        className={`block py-2.5 px-4 w-full text-sm text-gray-900 bg-transparent border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer`}
+                        className={`block py-2.5 px-4 w-full text-sm text-gray-900 bg-transparent border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-Orange-600 peer`}
                         placeholder=" "
                       />
                       <label
                         htmlFor="name"
-                        className={`absolute text-sm text-gray-500 bg-white px-1 transform duration-300 -translate-y-6 scale-75 top-0 left-3 -z-10 origin-[0] peer-focus:left-3 peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-6 ${
+                        className={`absolute text-sm text-gray-500 bg-white px-1 transform duration-300 -translate-y-6 scale-75 top-0 left-3 -z-10 origin-[0] peer-focus:left-3 peer-focus:text-Orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-6 ${
                           errors.name ? 'text-red-500' : ''
                         }`}
                       >
@@ -103,12 +103,12 @@ const AddSeasonModal: FC<AddSeasonModalProps> = ({ isOpen, onClose }) => {
                         id="date_start"
                         {...register('date_start', { required: 'กรุณาระบุวันที่เริ่มต้น' })}
                         type="date"
-                        className={`block py-2.5 px-4 w-full text-sm text-gray-900 bg-transparent border ${errors.date_start ? 'border-red-500' : 'border-gray-300'} rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer`}
+                        className={`block py-2.5 px-4 w-full text-sm text-gray-900 bg-transparent border ${errors.date_start ? 'border-red-500' : 'border-gray-300'} rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-Orange-600 peer`}
                         placeholder=" "
                       />
                       <label
                         htmlFor="date_start"
-                        className={`absolute text-sm text-gray-500 bg-white px-1 transform duration-300 -translate-y-6 scale-75 top-0 left-3 -z-10 origin-[0] peer-focus:left-3 peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-6 ${
+                        className={`absolute text-sm text-gray-500 bg-white px-1 transform duration-300 -translate-y-6 scale-75 top-0 left-3 -z-10 origin-[0] peer-focus:left-3 peer-focus:text-Orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-6 ${
                           errors.date_start ? 'text-red-500' : ''
                         }`}
                       >
@@ -121,12 +121,12 @@ const AddSeasonModal: FC<AddSeasonModalProps> = ({ isOpen, onClose }) => {
                         id="date_end"
                         {...register('date_end', { required: 'กรุณาระบุวันที่สิ้นสุด' })}
                         type="date"
-                        className={`block py-2.5 px-4 w-full text-sm text-gray-900 bg-transparent border ${errors.date_end ? 'border-red-500' : 'border-gray-300'} rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer`}
+                        className={`block py-2.5 px-4 w-full text-sm text-gray-900 bg-transparent border ${errors.date_end ? 'border-red-500' : 'border-gray-300'} rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-Orange-600 peer`}
                         placeholder=" "
                       />
                       <label
                         htmlFor="date_end"
-                        className={`absolute text-sm text-gray-500 bg-white px-1 transform duration-300 -translate-y-6 scale-75 top-0 left-3 -z-10 origin-[0] peer-focus:left-3 peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-6 ${
+                        className={`absolute text-sm text-gray-500 bg-white px-1 transform duration-300 -translate-y-6 scale-75 top-0 left-3 -z-10 origin-[0] peer-focus:left-3 peer-focus:text-Orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-6 ${
                           errors.date_end ? 'text-red-500' : ''
                         }`}
                       >
@@ -144,7 +144,7 @@ const AddSeasonModal: FC<AddSeasonModalProps> = ({ isOpen, onClose }) => {
                       </button>
                       <button
                         type="submit"
-                        className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out"
+                        className="bg-Orange-600 text-white px-4 py-2 rounded-md hover:bg-Orange-700 transition duration-300 ease-in-out"
                       >
                         เพิ่มฤดูกาล
                       </button>

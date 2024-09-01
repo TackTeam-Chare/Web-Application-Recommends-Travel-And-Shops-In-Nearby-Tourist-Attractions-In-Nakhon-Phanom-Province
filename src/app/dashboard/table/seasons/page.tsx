@@ -99,7 +99,7 @@ const SeasonsPage: FC = () => {
           <div className="flex space-x-2">
             <button
               onClick={() => handleEdit(row.original.id)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out"
             >
               แก้ไข
             </button>
@@ -144,7 +144,7 @@ const SeasonsPage: FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-8 text-center text-indigo-600">จัดการฤดูกาล</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-blue-600">จัดการฤดูกาล</h1>
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={() => setIsAddModalOpen(true)}

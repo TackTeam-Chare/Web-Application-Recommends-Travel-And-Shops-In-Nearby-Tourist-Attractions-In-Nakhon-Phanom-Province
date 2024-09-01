@@ -103,7 +103,7 @@ const EditSeasonsRelationModal: FC<EditSeasonsRelationModalProps> = ({ id, isOpe
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   {isLoading ? (
                     <div className="flex justify-center items-center">
-                      <FaSpinner className="animate-spin text-indigo-600 text-3xl" />
+                      <FaSpinner className="animate-spin text-Orange-600 text-3xl" />
                     </div>
                   ) : (
                     <>
@@ -116,7 +116,7 @@ const EditSeasonsRelationModal: FC<EditSeasonsRelationModalProps> = ({ id, isOpe
                           <select
                             id="season_id"
                             {...register('season_id', { required: 'กรุณาเลือกฤดูกาล' })}
-                            className="block mt-1 w-full py-2 px-3 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="block mt-1 w-full py-2 px-3 bg-white border border-gray-300 rounded-md shadow-sm focus:border-Orange-500 focus:ring-Orange-500 sm:text-sm"
                           >
                             <option value="">เลือกฤดูกาล</option>
                             {seasons.map(season => (
@@ -138,14 +138,14 @@ const EditSeasonsRelationModal: FC<EditSeasonsRelationModalProps> = ({ id, isOpe
                         <div className="flex justify-end space-x-2">
                           <button
                             type="button"
-                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                             onClick={onClose}
                           >
                             ยกเลิก
                           </button>
                           <button
                             type="submit"
-                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-Orange-600 border border-transparent rounded-md shadow-sm hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                             disabled={isSubmitting}
                           >
                             {isSubmitting ? <FaSpinner className="animate-spin" /> : <FaSave />}

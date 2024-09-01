@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import React, { useEffect, useState, useMemo, FC } from 'react';
 import { useRouter } from 'next/navigation';
 import { getDistricts } from '@/services/admin/get';
@@ -27,7 +28,7 @@ const DistrictsPage: FC = () => {
         const result: District[] = await getDistricts();
         setDistricts(result);
       } catch (err) {
-        toast.error('Error fetching districts');
+        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูลอำเภอ');
       }
     };
 
@@ -38,28 +39,28 @@ const DistrictsPage: FC = () => {
     toast(
       ({ closeToast }) => (
         <div>
-          <p>Are you sure you want to delete this district?</p>
+          <p>คุณแน่ใจหรือไม่ว่าต้องการลบอำเภอนี้?</p>
           <button
             onClick={async () => {
               try {
                 await deleteDistrict(id);
                 setDistricts((prevDistricts) => prevDistricts.filter((district) => district.id !== id));
-                toast.success('District deleted successfully!');
+                toast.success('ลบอำเภอสำเร็จ!');
                 closeToast();
               } catch (error) {
-                console.error(`Error deleting district with ID ${id}:`, error);
-                toast.error('Error deleting district. Please try again.');
+                console.error(`เกิดข้อผิดพลาดในการลบอำเภอที่มี ID ${id}:`, error);
+                toast.error('เกิดข้อผิดพลาดในการลบอำเภอ กรุณาลองอีกครั้ง');
               }
             }}
             className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
           >
-            Yes
+            ใช่
           </button>
           <button
             onClick={closeToast}
             className="bg-gray-600 text-white px-4 py-2 rounded-md ml-2 hover:bg-gray-700 transition duration-300 ease-in-out"
           >
-            No
+            ไม่
           </button>
         </div>
       ),
@@ -83,28 +84,28 @@ const DistrictsPage: FC = () => {
   const columns = useMemo(
     () => [
       {
-        Header: 'ID',
+        Header: 'รหัส',
         accessor: 'id',
       },
       {
-        Header: 'Name',
+        Header: 'ชื่อ',
         accessor: 'name',
       },
       {
-        Header: 'Actions',
+        Header: 'การกระทำ',
         Cell: ({ row }: { row: { original: District } }) => (
           <div className="flex space-x-2">
             <button
               onClick={() => openEditModal(row.original)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out"
             >
-              Edit
+              แก้ไข
             </button>
             <button
               onClick={() => handleDelete(row.original.id)}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
             >
-              Delete
+              ลบ
             </button>
           </div>
         ),
@@ -141,18 +142,18 @@ const DistrictsPage: FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-8 text-center text-indigo-600">Districts</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-blue-600">จัดการอำเภอ</h1>
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={openAddModal}
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
           >
-            Add New District
+            เพิ่มอำเภอใหม่
           </button>
           <input
             value={globalFilter || ''}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            placeholder="Search..."
+            placeholder="ค้นหา..."
             className="p-2 border border-gray-300 rounded-md"
           />
         </div>
@@ -194,31 +195,31 @@ const DistrictsPage: FC = () => {
         </div>
         <div className="flex justify-between items-center mt-4">
           <button onClick={() => previousPage()} disabled={!canPreviousPage} className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">
-            Previous
+            ก่อนหน้า
           </button>
           <span>
-            Page{' '}
+            หน้า{' '}
             <strong>
-              {pageIndex + 1} of {pageOptions.length}
+              {pageIndex + 1} จาก {pageOptions.length}
             </strong>
           </span>
           <button onClick={() => nextPage()} disabled={!canNextPage} className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">
-            Next
+            ถัดไป
           </button>
         </div>
         <ToastContainer />
 
-        {/* Add District Modal */}
+        {/* เพิ่ม Modal อำเภอ */}
         {isAddModalOpen && (
           <AddDistrictModal isOpen={isAddModalOpen} onClose={closeAddModal} />
         )}
 
-        {/* Edit District Modal */}
+        {/* แก้ไข Modal อำเภอ */}
         {isEditModalOpen && selectedDistrict && (
           <EditDistrictModal
             isOpen={isEditModalOpen}
             onClose={closeEditModal}
-            district={selectedDistrict}  // Ensure the district prop is passed correctly
+            district={selectedDistrict}  // ตรวจสอบให้แน่ใจว่ามีการส่ง prop เขตอย่างถูกต้อง
           />
         )}
       </div>

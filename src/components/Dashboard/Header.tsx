@@ -124,7 +124,7 @@ export default function Header() {
                   { href: "/dashboard/table/seasons", icon: StarIcon, text: "ตารางฤดูกาล" },
                   { href: "/dashboard/table/seasons-relation", icon: MapIcon, text: "ตารางความสัมพันธ์ฤดูกาล" },
                   { href: "/dashboard/table/tourism-entities-images", icon: CalendarIcon, text: "ตารางรููปภาพของสถานที่" },
-                  { href: "/dashboard/table/tourist-entities", icon: BuildingOfficeIcon, text: "ตารางอำเภอ" },
+                  { href: "/dashboard/table/tourist-entities", icon: BuildingOfficeIcon, text: "ตารางสถานที่" },
                 ].map((item, index) => (
                   <a
                     key={index}
@@ -243,7 +243,7 @@ export default function Header() {
                   { href: "/dashboard/table/seasons", icon: StarIcon, text: "ตารางฤดูกาล" },
                   { href: "/dashboard/table/seasons-relation", icon: MapIcon, text: "ตารางความสัมพันธ์ฤดูกาล" },
                   { href: "/dashboard/table/tourism-entities-images", icon: CalendarIcon, text: "ตารางรููปภาพของสถานที่" },
-                  { href: "/dashboard/table/tourist-entities", icon: BuildingOfficeIcon, text: "ตารางอำเภอ" },
+                  { href: "/dashboard/table/tourist-entities", icon: BuildingOfficeIcon, text: "ตารางสถานที่" },
                 ].map((item, index) => (
                   <a
                     key={index}
