@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 import React, { FC, Fragment, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
-import { updateDistrict } from '@/services/admin/edit';  // Update the import based on your service
+import { updateDistrict } from '@/services/admin/edit';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -15,7 +15,7 @@ interface District {
 interface EditDistrictModalProps {
   isOpen: boolean;
   onClose: () => void;
-  district: District;  // Ensure district is typed correctly
+  district: District;
 }
 
 interface FormData {
@@ -26,7 +26,6 @@ const EditDistrictModal: FC<EditDistrictModalProps> = ({ isOpen, onClose, distri
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
 
   useEffect(() => {
-    // Set form values when modal opens
     if (district) {
       setValue('name', district.name);
     }
@@ -34,9 +33,9 @@ const EditDistrictModal: FC<EditDistrictModalProps> = ({ isOpen, onClose, distri
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      await updateDistrict(district.id, data);  // Replace with your updateDistrict function
+      await updateDistrict(Number(district.id), data);
       toast.success('District updated successfully!');
-      onClose();  // Close the modal after success
+      onClose();
     } catch (error) {
       toast.error('Failed to update district. Please try again.');
     }

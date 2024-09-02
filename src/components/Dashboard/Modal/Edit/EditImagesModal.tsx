@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
-import { getPlaceImagesById, getPlaceById} from '@/services/admin/get';
+import { getPlaceImagesById, getPlaceById } from '@/services/admin/get';
 import { updateTourismImages } from '@/services/admin/edit';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -43,15 +43,27 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
   useEffect(() => {
     const fetchEntity = async () => {
       try {
-        const image: ImageData = await getPlaceImagesById(numericId);
-        const place = await getPlaceById(image.tourism_entities_id);
-        setValue('tourism_entities_id', `Id:${image.tourism_entities_id} ${place.name}`);
-        setPlaceName(place.name);
-        setExistingImages([image]);
+
+        const image = await getPlaceImagesById(numericId);
+
+        if (image.tourism_entities_id) {
+          const place = await getPlaceById(image.tourism_entities_id);
+          setValue('tourism_entities_id', `Id:${image.tourism_entities_id} ${place.name}`);
+          setPlaceName(place.name);
+          setExistingImages([{
+            id: image.id,
+            image_url: image.image_url || '',
+            image_path: image.image_path || '',
+            tourism_entities_id: image.tourism_entities_id,
+          }]);
+        } else {
+          throw new Error('tourism_entities_id is missing in the fetched image data.');
+        }
+
         setIsLoading(false);
       } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการดึงข้อมูล:', error);
-        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
+        console.error('Error fetching data:', error);
+        toast.error('Error fetching data');
         setIsLoading(false);
       }
     };
@@ -71,14 +83,14 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
 
     try {
       await updateTourismImages(numericId, formData);
-      toast.success('อัปเดตรูปภาพสำเร็จ');
+      toast.success('Images updated successfully');
       setTimeout(() => {
         onClose();
         router.push('/dashboard/table/images');
       }, 2000);
     } catch (error) {
-      console.error('เกิดข้อผิดพลาดในการอัปเดตรูปภาพ:', error);
-      toast.error('เกิดข้อผิดพลาดในการอัปเดตรูปภาพ');
+      console.error('Error updating images:', error);
+      toast.error('Error updating images');
     } finally {
       setIsSubmitting(false);
     }
@@ -125,11 +137,11 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
                   ) : (
                     <>
                       <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                        แก้ไขรูปภาพสำหรับ {placeName}
+                        Edit Images for {placeName}
                       </Dialog.Title>
                       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
                         <div className="relative z-0 w-full mb-6 group">
-                          <label className="block text-sm font-medium text-gray-700">สถานที่ท่องเที่ยว</label>
+                          <label className="block text-sm font-medium text-gray-700">Tourism Entity</label>
                           <input
                             type="text"
                             {...register('tourism_entities_id')}
@@ -138,7 +150,7 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
                           />
                         </div>
                         <div className="relative z-0 w-full mb-6 group">
-                          <label className="block text-sm font-medium text-gray-700">รูปภาพที่มีอยู่</label>
+                          <label className="block text-sm font-medium text-gray-700">Existing Images</label>
                           <div className="grid grid-cols-1 gap-4">
                             {existingImages.length > 0 ? (
                               existingImages.map((image) => (
@@ -154,12 +166,12 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
                                 />
                               ))
                             ) : (
-                              <p className="text-gray-500">ไม่มีรูปภาพ</p>
+                              <p className="text-gray-500">No images available</p>
                             )}
                           </div>
                         </div>
                         <div className="relative z-0 w-full mb-6 group">
-                          <label className="block text-sm font-medium text-gray-700">เพิ่มรูปภาพใหม่</label>
+                          <label className="block text-sm font-medium text-gray-700">Add New Images</label>
                           <input
                             type="file"
                             {...register('image_paths')}
@@ -174,7 +186,7 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
                             className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500"
                             onClick={onClose}
                           >
-                            ยกเลิก
+                            Cancel
                           </button>
                           <button
                             type="submit"
@@ -182,7 +194,7 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
                             disabled={isSubmitting}
                           >
                             {isSubmitting ? <FaSpinner className="animate-spin" /> : <FaSave />}
-                            <span className="ml-2">{isSubmitting ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง'}</span>
+                            <span className="ml-2">{isSubmitting ? 'Saving...' : 'Save Changes'}</span>
                           </button>
                         </div>
                       </form>

@@ -25,7 +25,7 @@ interface FormData {
 }
 
 interface EditOperatingHoursModalProps {
-  id: string;
+  id: string;  // id is of type string
   isOpen: boolean;
   onClose: () => void;
 }
@@ -38,10 +38,12 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [placeName, setPlaceName] = useState<string>('');
 
+  const numericId = Number(id);
+
   useEffect(() => {
     const fetchOperatingHour = async () => {
       try {
-        const operatingHour: OperatingHour = await getOperatingHoursById(id);
+        const operatingHour: OperatingHour = await getOperatingHoursById(numericId);
         setValue('place_id', operatingHour.place_id);
         setValue('day_of_week', operatingHour.day_of_week);
         setValue('opening_time', operatingHour.opening_time);
@@ -50,7 +52,7 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
         const placesData = await getPlaces();
         setPlaces(placesData);
 
-        const place = placesData.find(p => p.id === operatingHour.place_id);
+        const place = placesData.find(p => p.id.toString() === operatingHour.place_id);
         if (place) {
           setPlaceName(`ID: ${place.id} - ${place.name}`);
         }
@@ -62,15 +64,15 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
       }
     };
 
-    if (id) {
+    if (numericId) {
       fetchOperatingHour();
     }
-  }, [id, setValue]);
+  }, [numericId, setValue]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
     try {
-      await updateOperatingHours(id, data);
+      await updateOperatingHours(numericId, data);
       toast.success('อัปเดตเวลาทำการสำเร็จ');
       setTimeout(() => {
         onClose();
@@ -157,7 +159,6 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
                           <label htmlFor="opening_time" className="block text-sm font-medium text-gray-700">เวลาเปิด</label>
                           <input
                             id="opening_time"
-                            name="opening_time"
                             type="time"
                             {...register('opening_time', { required: 'กรุณาเลือกเวลาเปิด' })}
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm"
@@ -168,7 +169,6 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
                           <label htmlFor="closing_time" className="block text-sm font-medium text-gray-700">เวลาปิด</label>
                           <input
                             id="closing_time"
-                            name="closing_time"
                             type="time"
                             {...register('closing_time', { required: 'กรุณาเลือกเวลาปิด' })}
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm"

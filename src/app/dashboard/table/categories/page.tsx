@@ -9,12 +9,7 @@ import {
   useSortBy,
   usePagination,
   useGlobalFilter,
-  Column,
-  TableInstance,
-  UsePaginationInstanceProps,
-  UseGlobalFiltersInstanceProps,
-  UseSortByInstanceProps,
-  TableState,
+  Column
 } from 'react-table';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -27,22 +22,11 @@ interface Category {
   name: string;
 }
 
-type TableInstanceWithPlugins<T extends object> = TableInstance<T> &
-  UsePaginationInstanceProps<T> &
-  UseGlobalFiltersInstanceProps<T> &
-  UseSortByInstanceProps<T>;
-
-type TableStateWithPlugins<T extends object> = TableState<T> & {
-  pageIndex: number;
-  globalFilter: string;
-};
-
 const CategoriesPage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -129,7 +113,7 @@ const CategoriesPage: React.FC = () => {
         ),
       },
     ],
-    [router]
+    []
   );
 
   const {
@@ -149,13 +133,14 @@ const CategoriesPage: React.FC = () => {
     {
       columns,
       data: categories,
+      initialState: { pageIndex: 0 },
     },
     useGlobalFilter,
     useSortBy,
     usePagination
-  ) as TableInstanceWithPlugins<Category>;
+  );
 
-  const { globalFilter, pageIndex } = state as TableStateWithPlugins<Category>;
+  const { globalFilter, pageIndex } = state as any;
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">

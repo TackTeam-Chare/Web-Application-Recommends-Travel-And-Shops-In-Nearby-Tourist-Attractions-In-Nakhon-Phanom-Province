@@ -2,14 +2,13 @@
 
 import React, { useEffect, useState, useMemo, FC, useCallback } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getPlaces } from "@/services/admin/get";
 import { deletePlace } from "@/services/admin/delete";
 import { useTable, useSortBy, usePagination, useGlobalFilter, Column, HeaderGroup, Row, TableInstance } from "react-table";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
-import AddPlacesModal from "@/components/Dashboard/Modal/Add/AddPlacesModal"; 
+import "react-toastify/dist/ReactToastify.css";
+import AddPlacesModal from "@/components/Dashboard/Modal/Add/AddPlacesModal";
 import EditPlaceModal from "@/components/Dashboard/Modal/Edit/EditPlaceModal";
 
 // Dynamically import FontAwesomeIcon to prevent SSR mismatch
@@ -19,12 +18,12 @@ import { faPlus, faEdit, faTrash, faSearch, faArrowLeft, faArrowRight } from '@f
 
 interface Place {
   id: number;
-  image_url: string;
   name: string;
   description: string;
   location: string;
   latitude: number;
   longitude: number;
+  published: number; // Add published status
 }
 
 // Extend TableInstance interface to support pagination and global filter
@@ -62,7 +61,6 @@ const PlaceIndexPage: FC = () => {
     fetchPlaces();
   }, []);
 
-  // Use useCallback to prevent recreation of handleDelete on every render
   const handleDelete = useCallback(async (id: number): Promise<void> => {
     toast(
       ({ closeToast }) => (
@@ -99,11 +97,8 @@ const PlaceIndexPage: FC = () => {
   const columns: Column<Place>[] = useMemo(
     () => [
       {
-        Header: 'รูปภาพ',
-        accessor: 'image_url',
-        Cell: ({ cell: { value } }: { cell: { value: string } }) => (
-          value ? <Image src={value} alt="Place" width={50} height={50} className="object-cover rounded" /> : 'ไม่มีรูปภาพ'
-        ),
+        Header: 'รหัส',
+        accessor: 'id', // Display the ID of the place
       },
       {
         Header: 'ชื่อ',
@@ -124,6 +119,15 @@ const PlaceIndexPage: FC = () => {
       {
         Header: 'ลองจิจูด',
         accessor: 'longitude',
+      },
+      {
+        Header: 'สถานะ',
+        accessor: 'published',
+        Cell: ({ cell: { value } }: { cell: { value: number } }) => (
+          <span className={value ? 'text-green-600' : 'text-red-600'}>
+            {value ? 'เผยแพร่' : 'ไม่เผยแพร่'}
+          </span>
+        ),
       },
       {
         Header: 'การดำเนินการ',
@@ -180,7 +184,7 @@ const PlaceIndexPage: FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-8 text-center text-blue-600">สถานที่ท่องเที่ยว</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-orange-600">สถานที่ท่องเที่ยว</h1>
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={() => setIsAddModalOpen(true)}

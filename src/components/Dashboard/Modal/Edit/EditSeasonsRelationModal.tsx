@@ -4,7 +4,7 @@ import React, { useEffect, useState, FC, Fragment } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
-import { getSeasonsRelationById, getSeasons, getPlaceById} from '@/services/admin/get';
+import { getSeasonsRelationById, getSeasons, getPlaceById } from '@/services/admin/get';
 import { updateSeasonsRelation } from '@/services/admin/edit';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,6 +13,11 @@ import { FaSave, FaSpinner } from 'react-icons/fa';
 interface FormData {
   season_id: string;
   tourism_entities_id: string;
+}
+
+interface Season {
+  id: number;
+  name: string;
 }
 
 interface EditSeasonsRelationModalProps {
@@ -29,20 +34,27 @@ const EditSeasonsRelationModal: FC<EditSeasonsRelationModalProps> = ({ id, isOpe
   const [seasons, setSeasons] = useState<Array<{ id: string; name: string }>>([]);
   const [placeName, setPlaceName] = useState<string>("");
 
+  const numericId = Number(id);
+
   useEffect(() => {
     const fetchRelation = async () => {
       try {
         const [relation, seasonsData] = await Promise.all([
-          getSeasonsRelationById(id),
+          getSeasonsRelationById(numericId),
           getSeasons()
         ]);
-        setValue('season_id', relation.season_id);
-        setValue('tourism_entities_id', relation.tourism_entities_id);
 
-        const placeData = await getPlaceById(relation.tourism_entities_id);
+        setValue('season_id', relation.season_id.toString());
+        setValue('tourism_entities_id', relation.tourism_entities_id.toString());
+
+        const placeData = await getPlaceById(Number(relation.tourism_entities_id));
         setPlaceName(`ID: ${placeData.id} - ${placeData.name}`);
 
-        setSeasons(seasonsData);
+        setSeasons(seasonsData.map((season: Season) => ({
+          id: season.id.toString(),
+          name: season.name
+        })));
+
         setIsLoading(false);
       } catch (error) {
         console.error('เกิดข้อผิดพลาดในการดึงข้อมูล:', error);
@@ -54,12 +66,12 @@ const EditSeasonsRelationModal: FC<EditSeasonsRelationModalProps> = ({ id, isOpe
     if (id) {
       fetchRelation();
     }
-  }, [id, setValue]);
+  }, [id, numericId, setValue]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
     try {
-      await updateSeasonsRelation(id, data);
+      await updateSeasonsRelation(numericId, data);
       toast.success('อัปเดตความสัมพันธ์ฤดูกาลสำเร็จ');
       setTimeout(() => {
         onClose();
