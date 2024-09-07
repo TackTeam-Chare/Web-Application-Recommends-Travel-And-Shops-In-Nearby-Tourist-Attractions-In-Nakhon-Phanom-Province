@@ -132,7 +132,7 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
       toast.success("อัปเดตสถานที่สำเร็จ!");
       setTimeout(() => {
         onClose();
-        router.push("/dashboard/table/place");
+        router.push("/dashboard/table/tourist-entities");
       }, 2000);
     } catch (error) {
       console.error("ไม่สามารถอัปเดตสถานที่ได้", error);
@@ -392,6 +392,29 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
                     {/* Image Upload Section */}
                     <div className="relative z-0 w-full mb-6 group">
                       <label htmlFor="image_paths" className="block text-sm font-medium leading-6 text-gray-900">รูปภาพปก</label>
+
+                  {/* Existing Images Section */}
+                  {existingImages.length > 0 && (
+                      <div className="relative z-0 w-full mb-6 group">
+                        <h3 className="text-lg font-medium text-gray-700">รูปภาพที่มีอยู่:</h3>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                          {existingImages.map((image, index) => (
+                            <Image
+                              key={index}
+                              src={image.image_url}
+                              alt={`Existing Image ${index + 1}`}
+                              width={200}
+                              height={200}
+                              className="object-cover rounded-lg cursor-pointer"
+                              onClick={() => {
+                                setSelectedImage(image.image_url);
+                                setImageModalOpen(true);
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                       <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                         <div className="text-center">
                           <FontAwesomeIcon icon={faImage} className="mx-auto h-12 w-12 text-gray-300" />

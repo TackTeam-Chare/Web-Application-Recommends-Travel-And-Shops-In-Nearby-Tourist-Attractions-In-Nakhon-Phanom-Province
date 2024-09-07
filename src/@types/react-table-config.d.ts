@@ -1,36 +1,37 @@
 import {
     UseSortByColumnProps,
     UsePaginationInstanceProps,
+    UsePaginationState,
     UseGlobalFiltersInstanceProps,
+    UseGlobalFiltersState,
     UseSortByInstanceProps,
-    UseGroupByInstanceProps,
-    UseExpandedInstanceProps,
-    UseRowSelectInstanceProps,
-    UseRowSelectRowProps,
-    UseRowStateInstanceProps,
-    UseRowStateRowProps,
+    UseSortByState,
+    TableInstance,
+    TableOptions,
+    TableState,
+    Column,
+    Row,
   } from 'react-table';
-
+  
   declare module 'react-table' {
     export interface TableOptions<D extends Record<string, unknown>>
       extends UsePaginationInstanceProps<D>,
         UseGlobalFiltersInstanceProps<D>,
         UseSortByInstanceProps<D> {}
-
+  
     export interface TableInstance<D extends Record<string, unknown> = {}>
       extends UsePaginationInstanceProps<D>,
         UseGlobalFiltersInstanceProps<D>,
         UseSortByInstanceProps<D> {}
-
+  
     export interface TableState<D extends Record<string, unknown> = {}>
-      extends UsePaginationInstanceProps<D>,
-        UseGlobalFiltersInstanceProps<D>,
-        UseSortByInstanceProps<D> {}
-
+      extends UsePaginationState<D>,
+        UseGlobalFiltersState<D>,
+        UseSortByState<D> {}
+  
     export interface ColumnInterface<D extends Record<string, unknown> = {}>
       extends UseSortByColumnProps<D> {}
-
-    export interface Row<D extends Record<string, unknown> = {}>
-      extends UseRowSelectRowProps<D>,
-        UseRowStateRowProps<D> {}
+  
+    export interface Row<D extends Record<string, unknown> = {}> {}
   }
+  

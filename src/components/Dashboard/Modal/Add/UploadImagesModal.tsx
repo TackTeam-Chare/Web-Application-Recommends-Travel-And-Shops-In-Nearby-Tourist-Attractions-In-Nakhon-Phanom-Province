@@ -151,7 +151,7 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
                     </div>
                     <button
                       type="submit"
-                      className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-Orange-600 hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500 flex items-center gap-2"
+                      className="w-full justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-Orange-600 hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500 flex items-center gap-2"
                     >
                       <FaUpload />
                       อัปโหลด

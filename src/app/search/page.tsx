@@ -220,7 +220,7 @@ const GeocodingSearchPage: React.FC = () => {
             onClick={handleCurrentLocationClick}
             className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 transition duration-300"
             aria-label="Check current location"
-            data-tip="เช็คพิกัดปัจจุบัน" // Tooltip text
+            data-tip="เช็คพิกัดปัจจุบัน"
           >
             <FaMapMarkerAlt />
           </button>

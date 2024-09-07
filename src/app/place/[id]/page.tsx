@@ -9,6 +9,7 @@ import { getNearbyFetchTourismData } from "@/services/user/api";
 import Swal from "sweetalert2";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { ClipLoader } from "react-spinners";
 import MapComponent from "@/components/Map/MapNearbyPlaces";
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string;
@@ -63,14 +64,24 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
 
     fetchTourismData();
   }, [id]);
-
   if (!isLoaded) {
-    return <div>Loading Maps...</div>;
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <ClipLoader size={50} color={"#123abc"} loading={!isLoaded} />
+        <p className="mt-4 text-gray-600">กำลังโหลดแผนที่...</p>
+      </div>
+    );
   }
 
   if (!tourismData) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <ClipLoader size={50} color={"#123abc"} loading={!tourismData} />
+        <p className="mt-4 text-gray-600">กำลังโหลดข้อมูลสถานที่ท่องเที่ยว...</p>
+      </div>
+    );
   }
+
 
   const isValidCoordinates = !isNaN(Number(tourismData.latitude)) && !isNaN(Number(tourismData.longitude));
 
@@ -134,6 +145,9 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
         </Slider>
         <div className="mt-8 mb-10">
           <h1 className="text-4xl font-bold text-gray-800">{tourismData.name}</h1>
+          <p className="text-gray-600 mt-2">
+            <strong>หมวดหมู่:</strong> {tourismData.category_name}
+          </p>
           <p className="text-gray-600 mt-4">
             <strong>เกี่ยวกับ:</strong> {tourismData.description}
           </p>
@@ -141,11 +155,20 @@ const PlaceNearbyPage = ({ params }: { params: { id: string } }) => {
             <strong>ที่อยู่:</strong> {tourismData.location}
           </p>
           <p className="text-gray-600 mt-2">
-            <strong>หมวดหมู่:</strong> {tourismData.category_name}
-          </p>
-          <p className="text-gray-600 mt-2">
             <strong>อำเภอ:</strong> {tourismData.district_name}
           </p>
+           {/* ตรวจสอบและแสดงข้อมูลวันและเวลาทำการ */}
+  {tourismData.days_of_week && tourismData.opening_times && tourismData.closing_times && (
+    <div className="mt-4">
+      <h2 className="text-xl font-bold text-gray-800">เวลาทำการ:</h2>
+      {tourismData.days_of_week.split(',').map((day: string, index: number) => (
+        <div key={index} className="text-gray-700">
+          <span className="mr-2">{day}:</span>
+          <span>{tourismData.opening_times.split(',')[index]} - {tourismData.closing_times.split(',')[index] || 'ไม่ระบุ'}</span>
+        </div>
+      ))}
+    </div>
+  )}
         </div>
         {isValidCoordinates && (
           <MapComponent

@@ -353,7 +353,7 @@ export const getNearbyFetchTourismData = async (id: number, radius = 5000): Prom
 export const getFetchTourismDataByCategory = async (categoryId: number): Promise<Place[]> => {
     try {
         const token = getToken();
-        const response: AxiosResponse<Place[]> = await auth.get(`/admin/category/${categoryId}/place`, {
+        const response: AxiosResponse<Place[]> = await auth.get(`/admin/categories/${categoryId}/place`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

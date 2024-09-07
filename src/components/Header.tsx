@@ -8,8 +8,8 @@ import {
   ChevronDownIcon,
   XMarkIcon,
   HomeIcon,
-  MagnifyingGlassIcon,
   MapIcon,
+  MagnifyingGlassIcon,
   ClockIcon,
   SunIcon,
   StarIcon,
@@ -18,6 +18,7 @@ import {
   ShoppingBagIcon,
   BuildingStorefrontIcon,
   XCircleIcon,
+  UserIcon, // Import the UserIcon from Heroicons
 } from "@heroicons/react/20/solid";
 
 export default function Header() {
@@ -85,8 +86,9 @@ export default function Header() {
           ))}
           <Popover className="relative">
             <Popover.Button className="flex items-center text-lg hover:text-white hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 rounded-lg px-3 py-2">
+              <MapIcon className="h-5 w-5 mr-2" />
               สถานที่
-              <ChevronDownIcon className="ml-1 h-5 w-5" />
+              <ChevronDownIcon className="h-5 w-5 group-data-[open]:rotate-180 transition duration-300 ease-in-out" />
             </Popover.Button>
             <Popover.Panel className="absolute left-0 z-10 mt-2 w-56 rounded-lg bg-orange-500 text-white shadow-lg">
               <div className="py-2">
@@ -103,7 +105,7 @@ export default function Header() {
                   <a
                     key={index}
                     href={item.href}
-                    className="flex items-center block px-4 py-2 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out"
+                    className="flex items-center  px-4 py-2 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out"
                   >
                     <item.icon className="h-5 w-5 mr-2" />
                     {item.text}
@@ -112,6 +114,15 @@ export default function Header() {
               </div>
             </Popover.Panel>
           </Popover>
+
+          {/* Admin Login Button */}
+          <a
+            href="/auth/login"
+            className="flex items-center text-lg hover:text-white text-white border border-white-500 bg-transparent hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 rounded-lg px-3 py-2"
+          >
+            <UserIcon className="h-5 w-5 mr-2" />
+            เข้าสู่ระบบเเอดมิน
+          </a>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -154,14 +165,17 @@ export default function Header() {
               <a
                 key={index}
                 href={item.href}
-                className="flex items-center block text-lg text-white hover:bg-orange-600 rounded-md px-4 py-2 transition duration-300 ease-in-out transform hover:scale-105"
+                className="flex items-center text-lg text-white hover:bg-orange-600 rounded-md px-4 py-2 transition duration-300 ease-in-out transform hover:scale-105"
               >
                 <item.icon className="h-5 w-5 mr-2" />
                 {item.text}
               </a>
             ))}
+
+            {/* Mobile "สถานที่" with MapIcon */}
             <Disclosure as="div">
               <Disclosure.Button className="group flex w-full items-center justify-between rounded-lg py-2 px-4 text-lg hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105">
+                <MapIcon className="h-5 w-5 mr-2" />
                 สถานที่
                 <ChevronDownIcon className="h-5 w-5 group-data-[open]:rotate-180 transition duration-300 ease-in-out" />
               </Disclosure.Button>
@@ -179,7 +193,7 @@ export default function Header() {
                   <a
                     key={index}
                     href={item.href}
-                    className="flex items-center block rounded-lg py-2 px-4 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
+                    className="flex items-center rounded-lg py-2 px-4 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
                   >
                     <item.icon className="h-5 w-5 mr-2" />
                     {item.text}
@@ -187,6 +201,15 @@ export default function Header() {
                 ))}
               </Disclosure.Panel>
             </Disclosure>
+
+            {/* Mobile Admin Login */}
+            <a
+              href="/auth/login"
+              className="flex items-center text-lg hover:text-white text-white border border-white-500 bg-transparent hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 rounded-lg px-3 py-2"
+            >
+              <UserIcon className="h-5 w-5 mr-2" />
+              เข้าสู่ระบบเเอดมิน
+            </a>
           </div>
         </Dialog.Panel>
       </Dialog>

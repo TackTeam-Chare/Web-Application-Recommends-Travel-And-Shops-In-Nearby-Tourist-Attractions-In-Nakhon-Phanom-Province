@@ -200,7 +200,7 @@ export default function Header() {
 
             {/* Mobile Place Management Dropdown */}
             <Disclosure as="div">
-              <Disclosure.Button className="group flex w-full items-center justify-between rounded-lg py-2 px-4 text-lg hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105">
+              <Disclosure.Button className="group flex w-full items-center justify-between rounded-lg py-2 px-4 text-lg hover:text-white text-white border border-white-500 bg-transparent hover:bg-orange-600  duration-300 ease-in-out transform hover:scale-105">
                 <MapIcon className="h-5 w-5 mr-2" />
                 สถานที่
                 <ChevronDownIcon className="h-5 w-5 group-data-[open]:rotate-180 transition duration-300 ease-in-out" />
@@ -230,7 +230,7 @@ export default function Header() {
 
             {/* Mobile Data Management Dropdown */}
             <Disclosure as="div">
-              <Disclosure.Button className="group flex w-full items-center justify-between rounded-lg py-2 px-4 text-lg hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105">
+              <Disclosure.Button className="group flex w-full items-center justify-between rounded-lg py-2 px-4 text-lg hover:text-white text-white border border-white-500 bg-transparent hover:bg-orange-600  duration-300 ease-in-out transform hover:scale-105">
                 <CalendarIcon className="h-5 w-5 mr-2" />
                 การจัดการข้อมูล
                 <ChevronDownIcon className="h-5 w-5 group-data-[open]:rotate-180 transition duration-300 ease-in-out" />

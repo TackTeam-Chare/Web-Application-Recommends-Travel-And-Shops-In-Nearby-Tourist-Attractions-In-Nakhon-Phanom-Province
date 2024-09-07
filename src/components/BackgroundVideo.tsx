@@ -13,10 +13,6 @@ const BackgroundVideo = () => {
         muted
         playsInline
       />
-      <div className="relative z-10 flex items-center justify-center w-full h-full bg-black bg-opacity-50">
-        {/* Content over the video, like headers, buttons, etc. */}
-        <h1 className="text-white text-3xl md:text-5xl font-bold">นครพนม</h1>
-      </div>
     </div>
   );
 };

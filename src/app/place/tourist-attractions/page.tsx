@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Place, District } from '@/models/interface';
 import { PaginationProps } from "@/models/interface";
-import { ChevronRightIcon } from '@heroicons/react/20/solid'; // Importing icon from Heroicons
+import { ChevronRightIcon } from '@heroicons/react/20/solid';
 
 const TouristAttractionsPage: React.FC = () => {
   const [attractions, setAttractions] = useState<Place[]>([]);

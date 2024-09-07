@@ -34,10 +34,10 @@ const EditDistrictModal: FC<EditDistrictModalProps> = ({ isOpen, onClose, distri
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       await updateDistrict(Number(district.id), data);
-      toast.success('District updated successfully!');
+      toast.success('อัปเดตอำเภอสำเร็จ!');
       onClose();
     } catch (error) {
-      toast.error('Failed to update district. Please try again.');
+      toast.error('การอัปเดตอำเภอล้มเหลว กรุณาลองใหม่อีกครั้ง.');
     }
   };
 
@@ -73,13 +73,13 @@ const EditDistrictModal: FC<EditDistrictModalProps> = ({ isOpen, onClose, distri
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Edit District
+                    แก้ไขอำเภอ
                   </Dialog.Title>
                   <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
                     <div>
                       <input
-                        {...register('name', { required: 'District name is required' })}
-                        placeholder="District Name"
+                        {...register('name', { required: 'กรุณากรอกชื่ออำเภอ' })}
+                        placeholder="ชื่ออำเภอ"
                         className={`w-full border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
                       />
                       {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
@@ -90,13 +90,13 @@ const EditDistrictModal: FC<EditDistrictModalProps> = ({ isOpen, onClose, distri
                         className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
                         onClick={onClose}
                       >
-                        Cancel
+                        ยกเลิก
                       </button>
                       <button
                         type="submit"
                         className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
                       >
-                        Update
+                        อัปเดต
                       </button>
                     </div>
                   </form>
