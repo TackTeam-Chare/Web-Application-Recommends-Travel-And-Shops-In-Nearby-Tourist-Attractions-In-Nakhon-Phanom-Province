@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState, FC, Fragment } from "react";
 import Image from "next/image";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -33,6 +31,11 @@ interface FormData {
   image_paths: FileList;
 }
 
+interface UploadedFile {
+  fileName: string;
+  previewUrl: string;
+}
+
 interface EditPlaceModalProps {
   id: string;
   isOpen: boolean;
@@ -42,8 +45,10 @@ interface EditPlaceModalProps {
 const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
   const router = useRouter();
   const [error, setError] = useState<string>("");
-  const [imageModalOpen, setImageModalOpen] = useState<boolean>(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [existingImagesModalOpen, setExistingImagesModalOpen] = useState<boolean>(false);
+  const [uploadedImagesModalOpen, setUploadedImagesModalOpen] = useState<boolean>(false);
+  const [selectedExistingImage, setSelectedExistingImage] = useState<string | null>(null);
+  const [selectedUploadedImage, setSelectedUploadedImage] = useState<string | null>(null);
   const { register, handleSubmit, setValue, control, formState: { isDirty } } = useForm<FormData>({
     defaultValues: {
       operating_hours: [{ day_of_week: "", opening_time: "", closing_time: "" }],
@@ -59,7 +64,7 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [seasons, setSeasons] = useState<{ id: number; name: string }[]>([]);
   const [existingImages, setExistingImages] = useState<{ image_url: string }[]>([]);
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
@@ -99,7 +104,11 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setUploadedFiles(files.map((file) => file.name));
+    const uploaded = files.map((file) => ({
+      fileName: file.name,
+      previewUrl: URL.createObjectURL(file),
+    }));
+    setUploadedFiles(uploaded);
   };
 
   const onSubmit = async (data: FormData) => {
@@ -144,8 +153,8 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
 
   const handleClose = () => {
     if (isDirty) {
-      toast.warn("คุณต้องการปิดโดยไม่บันทึกการเปลี่ยนแปลงหรือไม่?", {
-        autoClose: 3000,
+      toast.warn("ปิดโดยไม่บันทึกการเปลี่ยนแปลง", {
+        autoClose: 1000,
         onClose: () => onClose(),
       });
     } else {
@@ -185,7 +194,7 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
                     แก้ไขสถานที่
                   </Dialog.Title>
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
-                    <div className="relative z-0 w-full mb-6 group">
+                  <div className="relative z-0 w-full mb-6 group">
                       <FontAwesomeIcon icon={faGlobe} className="absolute left-3 top-3 text-gray-400" />
                       <input
                         type="text"
@@ -389,32 +398,32 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
                       </button>
                     </div>
                     
-                    {/* Image Upload Section */}
                     <div className="relative z-0 w-full mb-6 group">
-                      <label htmlFor="image_paths" className="block text-sm font-medium leading-6 text-gray-900">รูปภาพปก</label>
+                      <label htmlFor="image_paths" className="block text-lg font-medium leading-6 text-gray-900">รูปภาพสถานที่</label>
 
-                  {/* Existing Images Section */}
-                  {existingImages.length > 0 && (
-                      <div className="relative z-0 w-full mb-6 group">
-                        <h3 className="text-lg font-medium text-gray-700">รูปภาพที่มีอยู่:</h3>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                          {existingImages.map((image, index) => (
-                            <Image
-                              key={index}
-                              src={image.image_url}
-                              alt={`Existing Image ${index + 1}`}
-                              width={200}
-                              height={200}
-                              className="object-cover rounded-lg cursor-pointer"
-                              onClick={() => {
-                                setSelectedImage(image.image_url);
-                                setImageModalOpen(true);
-                              }}
-                            />
-                          ))}
+                      {/* Existing Images Section */}
+                      {existingImages.length > 0 && (
+                        <div className="relative z-0 w-full mb-6 group">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            {existingImages.map((image, index) => (
+                              <Image
+                                key={index}
+                                src={image.image_url}
+                                alt={`Existing Image ${index + 1}`}
+                                width={200}
+                                height={200}
+                                className="object-cover rounded-lg cursor-pointer"
+                                onClick={() => {
+                                  setSelectedExistingImage(image.image_url);
+                                  setExistingImagesModalOpen(true);
+                                }}
+                              />
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+
+                      {/* Upload Images Section */}
                       <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                         <div className="text-center">
                           <FontAwesomeIcon icon={faImage} className="mx-auto h-12 w-12 text-gray-300" />
@@ -438,17 +447,32 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
                           <p className="text-xs leading-5 text-red-600">คุณสามารถอัพโหลดภาพได้ไม่เกิน 10 ภาพ</p>
                         </div>
                       </div>
+
                       {uploadedFiles.length > 0 && (
                         <div className="mt-4">
                           <h3 className="text-lg font-medium text-gray-700">ไฟล์ที่อัปโหลด:</h3>
-                          <ul className="list-disc list-inside text-sm text-gray-700">
-                            {uploadedFiles.map((fileName, index) => (
-                              <li key={index}>{fileName}</li>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            {uploadedFiles.map((file, index) => (
+                              <div key={index} className="relative">
+                                <Image
+                                  src={file.previewUrl}
+                                  alt={`Uploaded ${index}`}
+                                  width={200}
+                                  height={200}
+                                  className="object-cover w-full h-32 rounded-md cursor-pointer"
+                                  onClick={() => {
+                                    setSelectedUploadedImage(file.previewUrl);
+                                    setUploadedImagesModalOpen(true);
+                                  }}
+                                />
+                                <p className="text-xs text-center mt-2">{file.fileName}</p>
+                              </div>
                             ))}
-                          </ul>
+                          </div>
                         </div>
                       )}
                     </div>
+
                     <div className="relative z-0 w-full mb-6 group">
                       <input
                         type="checkbox"
@@ -463,6 +487,7 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
                         เผยแพร่
                       </label>
                     </div>
+
                     {error && <p className="text-red-500 text-center">{error}</p>}
                     <div className="flex justify-end space-x-2">
                       <button
@@ -491,9 +516,9 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
         </Dialog>
       </Transition>
 
-      {/* Image View Modal */}
-      <Transition appear show={imageModalOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => setImageModalOpen(false)}>
+      {/* Modal for existing images */}
+      <Transition appear show={existingImagesModalOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => setExistingImagesModalOpen(false)}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -517,15 +542,68 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="max-w-lg transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
-                {selectedImage && (
+                {selectedExistingImage && (
                   <Image
-                    src={selectedImage}
-                    alt="Selected image"
+                    src={selectedExistingImage}
+                    alt="Existing image"
                     width={500}
                     height={500}
                     className="object-cover rounded-md"
                   />
                 )}
+                <button
+                  className="mt-4 bg-red-500 text-white px-4 py-2 rounded w-full"
+                  onClick={() => setExistingImagesModalOpen(false)}
+                >
+                  ปิด
+                </button>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* Modal for uploaded images */}
+      <Transition appear show={uploadedImagesModalOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => setUploadedImagesModalOpen(false)}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-75" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="max-w-lg transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
+                {selectedUploadedImage && (
+                  <Image
+                    src={selectedUploadedImage}
+                    alt="Uploaded image"
+                    width={500}
+                    height={500}
+                    className="object-cover rounded-md"
+                  />
+                )}
+                <button
+                  className="mt-4 bg-red-500 text-white px-4 py-2 rounded w-full"
+                  onClick={() => setUploadedImagesModalOpen(false)}
+                >
+                  ปิด
+                </button>
               </Dialog.Panel>
             </Transition.Child>
           </div>
