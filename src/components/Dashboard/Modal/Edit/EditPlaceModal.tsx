@@ -7,8 +7,10 @@ import { getPlaceById, getDistricts, getCategories, getSeasons } from "@/service
 import { updateTouristEntity } from "@/services/admin/edit";
 import { ToastContainer, toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faPlus, faMapMarkerAlt, faTags, faSnowflake, faGlobe, faUpload, faClock } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faPlus, faMapMarkerAlt, faTags, faSnowflake, faGlobe, faUpload, faClock, } from "@fortawesome/free-solid-svg-icons";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
+import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import "react-toastify/dist/ReactToastify.css";
 
 interface OperatingHour {
@@ -26,8 +28,9 @@ interface FormData {
   district_name: string;
   category_name: string;
   season_id: string;
-  operating_hours: OperatingHour[];
+  operating_hours?: OperatingHour[];
   published: number;
+  rating: number;
   image_paths: FileList;
 }
 
@@ -49,10 +52,12 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
   const [uploadedImagesModalOpen, setUploadedImagesModalOpen] = useState<boolean>(false);
   const [selectedExistingImage, setSelectedExistingImage] = useState<string | null>(null);
   const [selectedUploadedImage, setSelectedUploadedImage] = useState<string | null>(null);
+  const [rating, setRating] = useState<number>(0);
   const { register, handleSubmit, setValue, control, formState: { isDirty } } = useForm<FormData>({
     defaultValues: {
-      operating_hours: [{ day_of_week: "", opening_time: "", closing_time: "" }],
+      operating_hours: [],
       published: 0,
+      rating: 0,
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -90,6 +95,8 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
         setValue("season_id", placeData.season_id || "");
         setValue("operating_hours", placeData.operating_hours || []);
         setValue("published", placeData.published === 1 ? 1 : 0);
+        setValue("rating", placeData.rating || 0);
+        setRating(placeData.rating || 0);
         setExistingImages(placeData.images || []);
       } catch (error) {
         console.error("ไม่สามารถดึงข้อมูลได้", error);
@@ -101,6 +108,11 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
       fetchData();
     }
   }, [id, setValue]);
+
+  const handleRatingClick = (value: number) => {
+    setRating(value);
+    setValue("rating", value);
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -126,8 +138,8 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
           for (let i = 0; i < files.length; i++) {
             formDataToSend.append(key, files[i]);
           }
-        } else if (key === "operating_hours") {
-          formDataToSend.append(key, JSON.stringify(data[key]));
+        } else if (key === "operating_hours" && data.operating_hours?.length) {
+          formDataToSend.append(key, JSON.stringify(data.operating_hours));
         } else {
           formDataToSend.append(key, data[key as keyof FormData] as string);
         }
@@ -342,61 +354,66 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
                       </div>
                     </div>
                     
-                    {/* Operating Hours Section */}
-                    <div className="relative z-0 w-full mb-6 group">
-                      <label htmlFor="operating_hours" className="block text-sm font-medium text-gray-700">เวลาทำการ</label>
-                      {fields.map((item, index) => (
-                        <div key={item.id} className="grid grid-cols-4 gap-4 mb-4 items-center">
-                          <div className="relative">
-                            <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
-                            <select
-                              {...register(`operating_hours.${index}.day_of_week`)}
-                              className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer"
-                            >
-                              <option value="">วันในสัปดาห์</option>
-                              <option value="Sunday">วันอาทิตย์</option>
-                              <option value="Monday">วันจันทร์</option>
-                              <option value="Tuesday">วันอังคาร</option>
-                              <option value="Wednesday">วันพุธ</option>
-                              <option value="Thursday">วันพฤหัสบดี</option>
-                              <option value="Friday">วันศุกร์</option>
-                              <option value="Saturday">วันเสาร์</option>
-                            </select>
-                          </div>
-                          <div className="relative">
-                            <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
-                            <input
-                              type="time"
-                              {...register(`operating_hours.${index}.opening_time`)}
-                              className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer"
-                            />
-                          </div>
-                          <div className="relative">
-                            <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
-                            <input
-                              type="time"
-                              {...register(`operating_hours.${index}.closing_time`)}
-                              className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-indigo-600 peer"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => remove(index)}
-                            className="text-red-500 hover:text-red-700 focus:outline-none"
+                   {/* Operating Hours Section */}
+                {fields.length > 0 && (
+                  <div className="relative z-0 w-full mb-6 group">
+                    <label htmlFor="operating_hours" className="block text-sm font-medium text-gray-700">
+                      เวลาทำการ
+                    </label>
+                    {fields.map((item, index) => (
+                      <div key={item.id} className="grid grid-cols-4 gap-4 mb-4 items-center">
+                        <div className="relative">
+                          <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
+                          <select
+                            {...register(`operating_hours.${index}.day_of_week`)}
+                            className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md"
                           >
-                            <FontAwesomeIcon icon={faTrash} />
-                          </button>
+                            <option value="">วันในสัปดาห์</option>
+                            <option value="Sunday">วันอาทิตย์</option>
+                            <option value="Monday">วันจันทร์</option>
+                            <option value="Tuesday">วันอังคาร</option>
+                            <option value="Wednesday">วันพุธ</option>
+                            <option value="Thursday">วันพฤหัสบดี</option>
+                            <option value="Friday">วันศุกร์</option>
+                            <option value="Saturday">วันเสาร์</option>
+                          </select>
                         </div>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={() => append({ day_of_week: "", opening_time: "", closing_time: "" })}
-                        className="col-span-3 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center"
-                      >
-                        <FontAwesomeIcon icon={faPlus} className="mr-2" />
-                        เพิ่มเวลาทำการ
-                      </button>
-                    </div>
+                        <div className="relative">
+                          <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
+                          <input
+                            type="time"
+                            {...register(`operating_hours.${index}.opening_time`)}
+                            className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md"
+                          />
+                        </div>
+                        <div className="relative">
+                          <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
+                          <input
+                            type="time"
+                            {...register(`operating_hours.${index}.closing_time`)}
+                            className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => append({ day_of_week: "", opening_time: "", closing_time: "" })}
+                      className="col-span-3 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center"
+                    >
+                      <FontAwesomeIcon icon={faPlus} className="mr-2" />
+                      เพิ่มเวลาทำการ
+                    </button>
+                  </div>
+                )}
+
                     
                     <div className="relative z-0 w-full mb-6 group">
                       <label htmlFor="image_paths" className="block text-lg font-medium leading-6 text-gray-900">รูปภาพสถานที่</label>
@@ -472,7 +489,23 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
                         </div>
                       )}
                     </div>
-
+                    <div className="relative z-0 w-full mb-6 group">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    ให้คะแนนสถานที่ (สูงสุด 5 ดาว)
+                  </label>
+                  <div className="flex space-x-1">
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <FontAwesomeIcon
+                        key={value}
+                        icon={value <= rating ? faStarSolid : faStarRegular}
+                        className="text-yellow-500 cursor-pointer"
+                        onClick={() => handleRatingClick(value)} // กดเพื่อเปลี่ยนค่าคะแนน
+                        size="2x"
+                      />
+                    ))}
+                  </div>
+                  <input type="hidden" {...register("rating", { required: "กรุณาให้คะแนน" })} />
+                </div>
                     <div className="relative z-0 w-full mb-6 group">
                       <input
                         type="checkbox"

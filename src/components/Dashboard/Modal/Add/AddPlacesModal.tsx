@@ -9,7 +9,9 @@ import { getDistricts, getCategories, getSeasons } from '@/services/admin/get';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPlus, faMapMarkerAlt, faTags, faSnowflake, faGlobe, faUpload, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPlus, faMapMarkerAlt, faTags, faSnowflake, faGlobe, faUpload, faClock, } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 
 interface OperatingHour {
@@ -27,6 +29,7 @@ interface FormData {
   district_name: string;
   category_name: string;
   season_id: string;
+  rating: number;
   operating_hours: OperatingHour[];
   image_paths: FileList;
   published: boolean;
@@ -38,10 +41,11 @@ interface CreateProjectModalProps {
 }
 
 const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) => {
-  const { register, handleSubmit, control, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, control,setValue, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       operating_hours: [{ day_of_week: "", opening_time: "", closing_time: "" }],
-      published: false
+      published: false,
+      rating: 0
     }
   });
   const { fields, append, remove } = useFieldArray({
@@ -53,8 +57,9 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [seasons, setSeasons] = useState<{ id: number; name: string }[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // For previewing images
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [rating, setRating] = useState<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,6 +131,11 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleRatingClick = (value: number) => {
+    setRating(value);
+    setValue("rating", value);
   };
 
   return (
@@ -467,6 +477,26 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
     </Dialog>
   </Transition>
 )}
+{/* ฟิลด์สำหรับให้ผู้ใช้เลือก Rating */}
+<div className="relative z-0 w-full mb-6 group">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    ให้คะแนนสถานที่ (สูงสุด 5 ดาว)
+                  </label>
+                  <div className="flex space-x-1">
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <FontAwesomeIcon
+                        key={value}
+                        icon={value <= rating ? faStarSolid : faStarRegular}
+                        className="text-yellow-500 cursor-pointer"
+                        onClick={() => handleRatingClick(value)} // กดเพื่อเปลี่ยนค่าคะแนน
+                        size="2x"
+                      />
+                    ))}
+                  </div>
+                  <input type="hidden" {...register("rating", { required: "กรุณาให้คะแนน" })} />
+                  {errors.rating && <p className="text-red-500 text-xs mt-1">{errors.rating.message}</p>}
+                </div>
+
                     <div className="relative z-0 w-full mb-6 group">
                     <div className="flex items-center mb-6">
   <FontAwesomeIcon icon={faUpload} className="mr-2 text-gray-500" />

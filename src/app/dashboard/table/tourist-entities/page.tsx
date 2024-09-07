@@ -296,4 +296,4 @@ const PlaceIndexPage: FC = () => {
   );
 };
 
-export default PlaceIndexPage;
+export default PlaceIndexPage; 
