@@ -354,65 +354,78 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
                       </div>
                     </div>
                     
-                   {/* Operating Hours Section */}
-                {fields.length > 0 && (
-                  <div className="relative z-0 w-full mb-6 group">
-                    <label htmlFor="operating_hours" className="block text-sm font-medium text-gray-700">
-                      เวลาทำการ
-                    </label>
-                    {fields.map((item, index) => (
-                      <div key={item.id} className="grid grid-cols-4 gap-4 mb-4 items-center">
-                        <div className="relative">
-                          <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
-                          <select
-                            {...register(`operating_hours.${index}.day_of_week`)}
-                            className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md"
-                          >
-                            <option value="">วันในสัปดาห์</option>
-                            <option value="Sunday">วันอาทิตย์</option>
-                            <option value="Monday">วันจันทร์</option>
-                            <option value="Tuesday">วันอังคาร</option>
-                            <option value="Wednesday">วันพุธ</option>
-                            <option value="Thursday">วันพฤหัสบดี</option>
-                            <option value="Friday">วันศุกร์</option>
-                            <option value="Saturday">วันเสาร์</option>
-                          </select>
-                        </div>
-                        <div className="relative">
-                          <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
-                          <input
-                            type="time"
-                            {...register(`operating_hours.${index}.opening_time`)}
-                            className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md"
-                          />
-                        </div>
-                        <div className="relative">
-                          <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
-                          <input
-                            type="time"
-                            {...register(`operating_hours.${index}.closing_time`)}
-                            className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md"
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => remove(index)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => append({ day_of_week: "", opening_time: "", closing_time: "" })}
-                      className="col-span-3 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center"
-                    >
-                      <FontAwesomeIcon icon={faPlus} className="mr-2" />
-                      เพิ่มเวลาทำการ
-                    </button>
-                  </div>
-                )}
+         {/* Operating Hours Section */}
+{fields.length > 0 && (
+  <div className="relative z-0 w-full mb-6 group">
+    <label htmlFor="operating_hours" className="block text-sm font-medium text-gray-700 mb-2">
+      เวลาทำการ
+    </label>
+    {fields.map((item, index) => (
+      <div key={item.id} className="grid grid-cols-4 gap-4 mb-6 items-center"> {/* เพิ่ม mb-6 เพื่อเพิ่ม margin */}
+        <div className="relative">
+          <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
+          <select
+            {...register(`operating_hours.${index}.day_of_week`)}
+            className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md"
+          >
+            <option value="">วันในสัปดาห์</option>
+            <option value="Sunday">วันอาทิตย์</option>
+            <option value="Monday">วันจันทร์</option>
+            <option value="Tuesday">วันอังคาร</option>
+            <option value="Wednesday">วันพุธ</option>
+            <option value="Thursday">วันพฤหัสบดี</option>
+            <option value="Friday">วันศุกร์</option>
+            <option value="Saturday">วันเสาร์</option>
+          </select>
+        </div>
+        <div className="relative">
+          <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
+          <input
+            type="time"
+            {...register(`operating_hours.${index}.opening_time`)}
+            className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md"
+          />
+          <label
+            htmlFor={`operating_hours.${index}.opening_time`}
+            className="absolute text-sm text-gray-500 bg-white px-1 transform duration-300 -translate-y-6 scale-75 top-0 left-10 -z-10 origin-[0] peer-focus:left-10 peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-6"
+          >
+            เวลาเปิด
+          </label>
+        </div>
+        <div className="relative">
+          <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-400" />
+          <input
+            type="time"
+            {...register(`operating_hours.${index}.closing_time`)}
+            className="block py-2 pl-10 pr-4 w-full text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md"
+          />
+          <label
+            htmlFor={`operating_hours.${index}.closing_time`}
+            className="absolute text-sm text-gray-500 bg-white px-1 transform duration-300 -translate-y-6 scale-75 top-0 left-10 -z-10 origin-[0] peer-focus:left-10 peer-focus:text-indigo-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-6"
+          >
+            เวลาปิด
+          </label>
+        </div>
+        <button
+          type="button"
+          onClick={() => remove(index)}
+          className="text-red-500 hover:text-red-700"
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
+      </div>
+    ))}
+    <button
+      type="button"
+      onClick={() => append({ day_of_week: "", opening_time: "", closing_time: "" })}
+      className="col-span-3 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center"
+    >
+      <FontAwesomeIcon icon={faPlus} className="mr-2" />
+      เพิ่มเวลาทำการ
+    </button>
+  </div>
+)}
+
 
                     
                     <div className="relative z-0 w-full mb-6 group">
