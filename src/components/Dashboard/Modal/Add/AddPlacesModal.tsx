@@ -1,6 +1,7 @@
 'use client';
 
 import React, { FC, Fragment, useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { createTouristEntity } from '@/services/admin/insert';
@@ -8,7 +9,7 @@ import { getDistricts, getCategories, getSeasons } from '@/services/admin/get';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPlus, faMapMarkerAlt, faTags, faSnowflake, faGlobe, faUpload,faClock} from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPlus, faMapMarkerAlt, faTags, faSnowflake, faGlobe, faUpload, faClock } from '@fortawesome/free-solid-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 
 interface OperatingHour {
@@ -51,7 +52,8 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
   const [districts, setDistricts] = useState<{ id: number; name: string }[]>([]);
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [seasons, setSeasons] = useState<{ id: number; name: string }[]>([]);
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // For previewing images
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
@@ -80,7 +82,16 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
       toast.error("คุณสามารถอัพโหลดภาพได้สูงสุด 10 ภาพเท่านั้น");
       return;
     }
-    setUploadedFiles(files.map(file => file.name));
+    const filePreviews = files.map(file => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+      name: file.name
+    }));
+    setUploadedFiles(filePreviews);
+  };
+
+  const handleImageClick = (url: string) => {
+    setSelectedImage(url); // Open the modal with the selected image
   };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
@@ -363,7 +374,6 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
                         เพิ่มเวลาทำการ
                       </button>
                     </div>
-
                     <div className="relative z-0 w-full mb-6 group">
                       <label htmlFor="image_paths" className="block text-sm font-medium leading-6 text-gray-900">
                         รูปภาพสถานที่
@@ -393,18 +403,70 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
                           <p className="text-xs leading-5 text-red-600">คุณสามารถอัพโหลดภาพได้ไม่เกิน 10 ภาพ</p>
                         </div>
                       </div>
+                      {/* Display uploaded files with click-to-view functionality */}
                       {uploadedFiles.length > 0 && (
                         <div className="mt-4">
                           <h3 className="text-lg font-medium text-gray-700">ไฟล์ที่อัปโหลด:</h3>
-                          <ul className="list-disc list-inside text-sm text-gray-700">
-                            {uploadedFiles.map((fileName, index) => (
-                              <li key={index}>{fileName}</li>
+                          <div className="grid grid-cols-3 gap-4 mt-4">
+                            {uploadedFiles.map((file, index) => (
+                              <div key={index} className="relative">
+                                <Image
+                                  src={file.previewUrl}
+                                  alt={`Uploaded ${index}`}
+                                  className="object-cover w-full h-32 rounded-md cursor-pointer"
+                                  onClick={() => handleImageClick(file.previewUrl)}
+                                  layout="responsive"
+                                  width={300} 
+                                  height={200}
+                                  objectFit="cover"
+                                />
+                                <p className="text-xs text-center mt-2">{file.name}</p>
+                              </div>
                             ))}
-                          </ul>
+                          </div>
                         </div>
                       )}
                     </div>
 
+                 {/* Image Preview Modal */}
+{selectedImage && (
+  <Transition appear show={!!selectedImage} as={Fragment}>
+    <Dialog as="div" className="relative z-50" onClose={() => setSelectedImage(null)}>
+      <Transition.Child
+        as={Fragment}
+        enter="ease-out duration-300"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="ease-in duration-200"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-25 transition-opacity" />
+      </Transition.Child>
+
+      <div className="fixed inset-0 flex items-center justify-center p-4">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto overflow-auto">
+          {/* Responsive Image */}
+          <Image 
+            src={selectedImage} 
+            alt="Preview" 
+            className="object-contain w-full h-auto max-h-[80vh] rounded-md"
+            layout="responsive"
+            width={300}  
+            height={200}
+            objectFit="cover"
+          />
+          <button
+            onClick={() => setSelectedImage(null)}
+            className="mt-4 bg-red-500 text-white px-4 py-2 rounded w-full sm:w-auto"
+          >
+            ปิด
+          </button>
+        </div>
+      </div>
+    </Dialog>
+  </Transition>
+)}
                     <div className="relative z-0 w-full mb-6 group">
                     <div className="flex items-center mb-6">
   <FontAwesomeIcon icon={faUpload} className="mr-2 text-gray-500" />

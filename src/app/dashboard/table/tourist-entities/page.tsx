@@ -108,9 +108,12 @@ const PlaceIndexPage: FC = () => {
             accessor: 'id',
         },
         {
-            Header: 'ชื่อ',
-            accessor: 'name',
-        },
+          Header: 'ชื่อ',
+          accessor: 'name',
+          Cell: ({ cell: { value } }: { cell: { value: string } }) => (
+              <span className="font-medium text-lg text-gray-700">{value}</span>
+          ),
+      },
         {
           Header: 'ฤดูกาล',
           accessor: 'season_name',
