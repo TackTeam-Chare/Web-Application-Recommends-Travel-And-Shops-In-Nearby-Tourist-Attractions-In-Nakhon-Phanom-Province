@@ -9,7 +9,7 @@ import { uploadTourismImages } from '@/services/admin/insert';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaMapMarkerAlt, FaUpload } from 'react-icons/fa';
-
+import Image from 'next/image';
 
 interface FormData {
   tourism_entities_id: string;
@@ -30,6 +30,8 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
   const router = useRouter();
   const [places, setPlaces] = useState<Place[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPlaces = async () => {
@@ -45,23 +47,27 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
     fetchPlaces();
   }, []);
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    const filePreviews = files.map(file => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+    setUploadedFiles(filePreviews);
+  };
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const formData = new FormData();
     formData.append('tourism_entities_id', data.tourism_entities_id);
-    for (let i = 0; i < data.image_paths.length; i++) {
-      formData.append('image_paths', data.image_paths[i]);
-    }
+    uploadedFiles.forEach(file => {
+      formData.append('image_paths', file.file);
+    });
 
     try {
       await uploadTourismImages(formData);
       toast.success('อัปโหลดรูปภาพสำเร็จ', {
         position: 'top-right',
         autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
       });
       setTimeout(() => {
         onClose();
@@ -72,11 +78,6 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
       toast.error('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ', {
         position: 'top-right',
         autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
       });
     }
   };
@@ -122,7 +123,7 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
                         <FaMapMarkerAlt className="mr-2 text-gray-500" />
                         <select
                           {...register('tourism_entities_id', { required: 'กรุณาเลือกสถานที่' })}
-                          className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-Orange-500 focus:border-Orange-500 sm:text-sm"
+                          className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                         >
                           <option value="">เลือกสถานที่</option>
                           {places.map((place) => (
@@ -142,21 +143,81 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
                           type="file"
                           {...register('image_paths', { required: 'กรุณาเลือกรูปภาพ' })}
                           multiple
-                          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-Orange-50 file:text-Orange-700 hover:file:bg-Orange-100"
+                          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                          onChange={handleFileChange}
                         />
                       </div>
                       {errors.image_paths && (
                         <p className="text-red-500 text-xs mt-1">{errors.image_paths.message}</p>
                       )}
                     </div>
+                    {uploadedFiles.length > 0 && (
+                      <div className="mt-4">
+                        <h3 className="text-lg font-medium text-gray-700">ไฟล์ที่อัปโหลด:</h3>
+                        <div className="grid grid-cols-3 gap-4 mt-4">
+                          {uploadedFiles.map((file, index) => (
+                            <div key={index} className="relative">
+                              <Image
+                                src={file.previewUrl}
+                                alt={`Uploaded ${index}`}
+                                className="object-cover w-full h-32 rounded-md cursor-pointer"
+                                width={150}
+                                height={100}
+                                onClick={() => setSelectedImage(file.previewUrl)}
+                                unoptimized
+                              />
+                              <p className="text-xs text-center mt-2">{file.file.name}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     <button
                       type="submit"
-                      className="w-full justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-Orange-600 hover:bg-Orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-Orange-500 flex items-center gap-2"
+                      className="w-full justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 flex items-center gap-2"
                     >
                       <FaUpload />
                       อัปโหลด
                     </button>
                   </form>
+
+                  {/* Image Preview Modal */}
+                  {selectedImage && (
+                    <Transition appear show={!!selectedImage} as={Fragment}>
+                      <Dialog as="div" className="relative z-50" onClose={() => setSelectedImage(null)}>
+                        <Transition.Child
+                          as={Fragment}
+                          enter="ease-out duration-300"
+                          enterFrom="opacity-0"
+                          enterTo="opacity-100"
+                          leave="ease-in duration-200"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0"
+                        >
+                          <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
+                        </Transition.Child>
+
+                        <div className="fixed inset-0 flex items-center justify-center p-4">
+                          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto overflow-auto">
+                            <Image 
+                              src={selectedImage} 
+                              alt="Preview" 
+                              className="object-contain w-full h-auto max-h-[80vh] rounded-md" 
+                              width={800}
+                              height={600}
+                              unoptimized
+                            />
+                            <button
+                              onClick={() => setSelectedImage(null)}
+                              className="mt-4 bg-red-500 text-white px-4 py-2 rounded w-full sm:w-auto"
+                            >
+                              ปิด
+                            </button>
+                          </div>
+                        </div>
+                      </Dialog>
+                    </Transition>
+                  )}
                   <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
