@@ -575,3 +575,43 @@ export const fetchAllFilters = async (): Promise<{ seasons: Season[], districts:
     throw new Error(error.response?.data?.error || 'Error fetching all filters');
   }
 };
+
+
+// Function to search places by multiple criteria
+export const searchTouristPlaces = async (
+  name?: string,
+  district_id?: number,
+  category_id?: number,
+  season_id?: number,
+  day_of_week?: string,
+  opening_time?: string,
+  closing_time?: string
+): Promise<Place[]> => {
+  try {
+    const params: Record<string, any> = {};
+
+    if (name) params.name = name;
+    if (district_id) params.district_id = district_id;
+    if (category_id) params.category_id = category_id;
+    if (season_id) params.season_id = season_id;
+    if (day_of_week) params.day_of_week = day_of_week;
+    if (opening_time) params.opening_time = opening_time;
+    if (closing_time) params.closing_time = closing_time;
+
+    const response: AxiosResponse<Place[]> = await api.get('/search-filters', { params });
+    const data = Array.isArray(response.data) ? response.data : [];
+
+    return data.map(place => ({
+      ...place,
+      images: place.images
+        ? place.images.map((image: { image_path: string }) => ({
+            image_path: image.image_path,
+            image_url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.image_path}`
+          }))
+        : [] // Default to an empty array if no images
+    }));
+  } catch (error: any) {
+    console.error('Error searching places:', error);
+    throw new Error(error.response?.data?.error || 'Error searching places');
+  }
+};
