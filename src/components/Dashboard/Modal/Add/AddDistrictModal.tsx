@@ -4,9 +4,11 @@ import React, { FC, Fragment } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { createDistrict } from '@/services/admin/insert';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { FaPlus, FaTimes } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 interface FormData {
   name: string;
@@ -23,17 +25,29 @@ const AddDistrictModal: FC<AddDistrictModalProps> = ({ isOpen, onClose }) => {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       await createDistrict(data);
-      toast.success('เพิ่มเขตสำเร็จ!');
+
+      MySwal.fire({
+        icon: 'success',
+        title: 'เพิ่มเขตสำเร็จ!',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
       onClose();
     } catch (error) {
-      toast.error('ไม่สามารถเพิ่มเขตได้ กรุณาลองใหม่อีกครั้ง.');
+
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'ไม่สามารถเพิ่มเขตได้ กรุณาลองใหม่อีกครั้ง.',
+      });
     }
   };
 
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={onClose}> {/* Use onClose function here */}
+        <Dialog as="div" className="relative z-50" onClose={onClose}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -97,7 +111,6 @@ const AddDistrictModal: FC<AddDistrictModalProps> = ({ isOpen, onClose }) => {
           </div>
         </Dialog>
       </Transition>
-      <ToastContainer />
     </>
   );
 };

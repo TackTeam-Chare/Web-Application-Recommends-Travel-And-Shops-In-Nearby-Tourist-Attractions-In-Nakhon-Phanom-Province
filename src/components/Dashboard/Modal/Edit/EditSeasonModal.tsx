@@ -4,10 +4,10 @@ import React, { useEffect, useState, FC, Fragment } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
-import { getSeasonById} from '@/services/admin/get';
+import { getSeasonById } from '@/services/admin/get';
 import { updateSeason } from '@/services/admin/edit';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { FaSave, FaSpinner } from 'react-icons/fa';
 
 interface SeasonForm {
@@ -22,13 +22,14 @@ interface EditSeasonModalProps {
   onClose: () => void;
 }
 
+const MySwal = withReactContent(Swal);
+
 const EditSeasonModal: FC<EditSeasonModalProps> = ({ id, isOpen, onClose }) => {
   const numericId = Number(id);
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<SeasonForm>();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSeason = async () => {
@@ -39,7 +40,10 @@ const EditSeasonModal: FC<EditSeasonModalProps> = ({ id, isOpen, onClose }) => {
         setValue('date_end', season.date_end.split('T')[0]);
         setIsLoading(false);
       } catch (error) {
-        setError('เกิดข้อผิดพลาดในการดึงข้อมูลฤดูกาล');
+        MySwal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาดในการดึงข้อมูลฤดูกาล',
+        });
         setIsLoading(false);
       }
     };
@@ -47,7 +51,10 @@ const EditSeasonModal: FC<EditSeasonModalProps> = ({ id, isOpen, onClose }) => {
     if (!isNaN(numericId)) {
       fetchSeason();
     } else {
-      setError('รหัสไม่ถูกต้อง');
+      MySwal.fire({
+        icon: 'error',
+        title: 'รหัสไม่ถูกต้อง',
+      });
       setIsLoading(false);
     }
   }, [numericId, setValue]);
@@ -56,14 +63,21 @@ const EditSeasonModal: FC<EditSeasonModalProps> = ({ id, isOpen, onClose }) => {
     setIsSubmitting(true);
     try {
       await updateSeason(numericId, data);
-      toast.success('อัปเดตฤดูกาลสำเร็จ');
+      MySwal.fire({
+        icon: 'success',
+        title: 'อัปเดตฤดูกาลสำเร็จ',
+        showConfirmButton: false,
+        timer: 1500,
+      });
       setTimeout(() => {
         onClose();
         router.push('/dashboard/table/seasons');
       }, 2000);
     } catch (error) {
-      setError('เกิดข้อผิดพลาดในการอัปเดตฤดูกาล');
-      toast.error('เกิดข้อผิดพลาดในการอัปเดตฤดูกาล');
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาดในการอัปเดตฤดูกาล',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -181,7 +195,6 @@ const EditSeasonModal: FC<EditSeasonModalProps> = ({ id, isOpen, onClose }) => {
                       </form>
                     </>
                   )}
-                  <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

@@ -6,8 +6,8 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
 import { getSeasonsRelationById, getSeasons, getPlaceById } from '@/services/admin/get';
 import { updateSeasonsRelation } from '@/services/admin/edit';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { FaSave, FaSpinner } from 'react-icons/fa';
 
 interface FormData {
@@ -25,6 +25,8 @@ interface EditSeasonsRelationModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const MySwal = withReactContent(Swal);
 
 const EditSeasonsRelationModal: FC<EditSeasonsRelationModalProps> = ({ id, isOpen, onClose }) => {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
@@ -57,9 +59,11 @@ const EditSeasonsRelationModal: FC<EditSeasonsRelationModalProps> = ({ id, isOpe
 
         setIsLoading(false);
       } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการดึงข้อมูล:', error);
+        MySwal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาดในการดึงข้อมูล',
+        });
         setIsLoading(false);
-        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
       }
     };
 
@@ -72,14 +76,21 @@ const EditSeasonsRelationModal: FC<EditSeasonsRelationModalProps> = ({ id, isOpe
     setIsSubmitting(true);
     try {
       await updateSeasonsRelation(numericId, data);
-      toast.success('อัปเดตความสัมพันธ์ฤดูกาลสำเร็จ');
+      MySwal.fire({
+        icon: 'success',
+        title: 'อัปเดตความสัมพันธ์ฤดูกาลสำเร็จ',
+        showConfirmButton: false,
+        timer: 1500,
+      });
       setTimeout(() => {
         onClose();
         router.push('/dashboard/table/seasons-relation');
       }, 2000);
     } catch (error) {
-      console.error('เกิดข้อผิดพลาดในการอัปเดตความสัมพันธ์ฤดูกาล:', error);
-      toast.error('เกิดข้อผิดพลาดในการอัปเดตความสัมพันธ์ฤดูกาล');
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาดในการอัปเดตความสัมพันธ์ฤดูกาล',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -167,7 +178,6 @@ const EditSeasonsRelationModal: FC<EditSeasonsRelationModalProps> = ({ id, isOpe
                       </form>
                     </>
                   )}
-                  <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

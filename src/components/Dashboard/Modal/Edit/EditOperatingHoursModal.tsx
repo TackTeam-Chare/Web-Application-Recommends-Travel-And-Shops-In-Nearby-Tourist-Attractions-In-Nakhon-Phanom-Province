@@ -6,8 +6,8 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
 import { getOperatingHoursById, getPlaces } from '@/services/admin/get';
 import { updateOperatingHours } from '@/services/admin/edit';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { FaSave, FaSpinner } from 'react-icons/fa';
 
 interface OperatingHour {
@@ -25,10 +25,12 @@ interface FormData {
 }
 
 interface EditOperatingHoursModalProps {
-  id: string;  // id is of type string
+  id: string;
   isOpen: boolean;
   onClose: () => void;
 }
+
+const MySwal = withReactContent(Swal);
 
 const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen, onClose }) => {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
@@ -48,43 +50,61 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
         setValue('day_of_week', operatingHour.day_of_week);
         setValue('opening_time', operatingHour.opening_time);
         setValue('closing_time', operatingHour.closing_time);
-
+  
         const placesData = await getPlaces();
         setPlaces(placesData);
-
+  
         const place = placesData.find(p => p.id.toString() === operatingHour.place_id);
         if (place) {
           setPlaceName(`ID: ${place.id} - ${place.name}`);
         }
       } catch (error) {
         console.error('เกิดข้อผิดพลาดในการดึงข้อมูลเวลาทำการ:', error);
-        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูลเวลาทำการ');
+
+        const err = error as Error;
+        MySwal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาดในการดึงข้อมูลเวลาทำการ',
+          text: err.message || 'An unknown error occurred',
+        });
       } finally {
         setIsLoading(false);
       }
     };
-
+  
     if (numericId) {
       fetchOperatingHour();
     }
   }, [numericId, setValue]);
-
+  
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
     try {
       await updateOperatingHours(numericId, data);
-      toast.success('อัปเดตเวลาทำการสำเร็จ');
+      MySwal.fire({
+        icon: 'success',
+        title: 'อัปเดตเวลาทำการสำเร็จ',
+        showConfirmButton: false,
+        timer: 1500,
+      });
       setTimeout(() => {
         onClose();
-        router.push('/dashboard/table/time');
+        router.push('/dashboard/table/operating-hours');
       }, 2000);
     } catch (error) {
       console.error('เกิดข้อผิดพลาดในการอัปเดตเวลาทำการ:', error);
-      toast.error('เกิดข้อผิดพลาดในการอัปเดตเวลาทำการ');
+
+      const err = error as Error;
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาดในการอัปเดตเวลาทำการ',
+        text: err.message || 'An unknown error occurred',
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   return (
     <>
@@ -195,7 +215,6 @@ const EditOperatingHoursModal: FC<EditOperatingHoursModalProps> = ({ id, isOpen,
                       </form>
                     </>
                   )}
-                  <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

@@ -23,7 +23,10 @@ import {
   CubeIcon,
 } from "@heroicons/react/20/solid";
 
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { logout } from "@/services/admin/auth";
+const MySwal = withReactContent(Swal);
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -31,20 +34,41 @@ export default function Header() {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
-    setLoading(true);
-    try {
-      const response = await logout();
-      console.log("Logout successful:", response);
-      if (!localStorage.getItem('token')) {
+    const result = await MySwal.fire({
+      title: "คุณแน่ใจหรือไม่?",
+      text: "คุณต้องการออกจากระบบใช่ไหม?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "ใช่, ออกจากระบบ",
+      cancelButtonText: "ยกเลิก",
+    });
+
+    if (result.isConfirmed) {
+      setLoading(true);
+      try {
+        const response = await logout();
+        console.log("Logout successful:", response);
+        localStorage.removeItem('token'); // Ensure token removal
+        MySwal.fire(
+          "ออกจากระบบแล้ว!",
+          "คุณออกจากระบบสำเร็จ",
+          "success"
+        );
         router.push('/auth/login');
-      } else {
-        throw new Error('Failed to remove token');
+      } catch (error) {
+        console.error('Error logging out:', error);
+        setLoading(false);
+        MySwal.fire(
+          "เกิดข้อผิดพลาด!",
+          "ไม่สามารถออกจากระบบได้ กรุณาลองอีกครั้ง",
+          "error"
+        );
       }
-    } catch (error) {
-      console.error('Error logging out:', error);
-      setLoading(false);
     }
   };
+
 
   return (
     <header className="bg-orange-500 text-white shadow-md p-4">
@@ -54,7 +78,7 @@ export default function Header() {
         {/* Logo with Typing Animation */}
         <div
             className="text-2xl md:text-4xl font-bold cursor-pointer whitespace-nowrap"
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/dashboard")}
           >
             ผู้ดูเเลระบบ
           </div>
@@ -98,7 +122,7 @@ export default function Header() {
                   <a
                     key={index}
                     href={item.href}
-                    className="flex items-center block px-4 py-2 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out"
+                    className="flex items-center px-4 py-2 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out"
                   >
                     <item.icon className="h-5 w-5 mr-2" />
                     {item.text}
@@ -129,7 +153,7 @@ export default function Header() {
                   <a
                     key={index}
                     href={item.href}
-                    className="flex items-center block px-4 py-2 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out"
+                    className="flex items-center  px-4 py-2 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out"
                   >
                     <item.icon className="h-5 w-5 mr-2" />
                     {item.text}
@@ -191,7 +215,7 @@ export default function Header() {
               <a
                 key={index}
                 href={item.href}
-                className="flex items-center block text-lg text-white border border-white-500 bg-transparent hover:bg-orange-600 rounded-md px-4 py-2 transition duration-300 ease-in-out transform hover:scale-105"
+                className="flex items-center text-lg text-white border border-white-500 bg-transparent hover:bg-orange-600 rounded-md px-4 py-2 transition duration-300 ease-in-out transform hover:scale-105"
               >
                 <item.icon className="h-5 w-5 mr-2" />
                 {item.text}
@@ -219,7 +243,7 @@ export default function Header() {
                   <a
                     key={index}
                     href={item.href}
-                    className="flex items-center block rounded-lg py-2 px-4 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
+                    className="flex items-center rounded-lg py-2 px-4 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
                   >
                     <item.icon className="h-5 w-5 mr-2" />
                     {item.text}
@@ -248,7 +272,7 @@ export default function Header() {
                   <a
                     key={index}
                     href={item.href}
-                    className="flex items-center block rounded-lg py-2 px-4 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
+                    className="flex items-center rounded-lg py-2 px-4 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
                   >
                     <item.icon className="h-5 w-5 mr-2" />
                     {item.text}

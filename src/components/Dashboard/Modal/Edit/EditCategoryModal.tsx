@@ -6,9 +6,9 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
 import { updateCategory } from '@/services/admin/edit';
 import { getCategoryById } from '@/services/admin/get';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { FaSave, FaSpinner } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface EditCategoryModalProps {
   id: string;
@@ -19,6 +19,8 @@ interface EditCategoryModalProps {
 interface FormData {
   name: string;
 }
+
+const MySwal = withReactContent(Swal);
 
 const EditCategoryModal: FC<EditCategoryModalProps> = ({ id, isOpen, onClose }) => {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
@@ -33,8 +35,11 @@ const EditCategoryModal: FC<EditCategoryModalProps> = ({ id, isOpen, onClose }) 
         setValue('name', category.name);
         setIsLoading(false);
       } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลหมวดหมู่:', error);
-        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูลหมวดหมู่');
+        MySwal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อผิดพลาดในการดึงข้อมูลหมวดหมู่',
+        });
         setIsLoading(false);
       }
     };
@@ -48,14 +53,22 @@ const EditCategoryModal: FC<EditCategoryModalProps> = ({ id, isOpen, onClose }) 
     setIsSubmitting(true);
     try {
       await updateCategory(parseInt(id, 10), data);
-      toast.success('อัปเดตหมวดหมู่สำเร็จ');
+      MySwal.fire({
+        icon: 'success',
+        title: 'อัปเดตสำเร็จ',
+        showConfirmButton: false,
+        timer: 1500,
+      });
       setTimeout(() => {
         onClose();
         router.push('/dashboard/table/categories');
       }, 2000);
     } catch (error) {
-      console.error('เกิดข้อผิดพลาดในการอัปเดตหมวดหมู่:', error);
-      toast.error('เกิดข้อผิดพลาดในการอัปเดตหมวดหมู่');
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'ไม่สามารถอัปเดตหมวดหมู่ได้',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -137,7 +150,6 @@ const EditCategoryModal: FC<EditCategoryModalProps> = ({ id, isOpen, onClose }) 
                       </form>
                     </>
                   )}
-                  <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

@@ -4,8 +4,8 @@ import React, { FC, Fragment } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { createSeason } from '@/services/admin/insert';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 
 interface FormData {
@@ -19,32 +19,27 @@ interface AddSeasonModalProps {
   onClose: () => void;
 }
 
+const MySwal = withReactContent(Swal);
+
 const AddSeasonModal: FC<AddSeasonModalProps> = ({ isOpen, onClose }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
     try {
       const response = await createSeason(data);
-      toast.success(`ฤดูกาลถูกสร้างสำเร็จด้วย ID: ${response.id}`, {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+      MySwal.fire({
+        icon: 'success',
+        title: `ฤดูกาลถูกสร้างสำเร็จ`,
+        showConfirmButton: true,
+        timer: 3000
       });
-      onClose();  // Close modal on success
+      onClose();
     } catch (error) {
-      console.error('Error creating season:', error);
-      toast.error('เกิดข้อผิดพลาดในการสร้างฤดูกาล', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาดในการสร้างฤดูกาล',
+        text: 'กรุณาลองอีกครั้ง',
+        showConfirmButton: true
       });
     }
   };
@@ -153,7 +148,6 @@ const AddSeasonModal: FC<AddSeasonModalProps> = ({ isOpen, onClose }) => {
                       </button>
                     </div>
                   </form>
-                  <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

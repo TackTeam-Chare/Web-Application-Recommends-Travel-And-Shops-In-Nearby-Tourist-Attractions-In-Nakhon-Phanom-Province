@@ -5,9 +5,11 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { createOperatingHours } from '@/services/admin/insert';
 import { getPlaces } from '@/services/admin/get';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { FaClock, FaCalendarDay, FaMapMarkerAlt, FaPlus, FaTimes } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 interface Place {
   id: number;
@@ -40,7 +42,11 @@ const AddOperatingHoursModal: FC<AddOperatingHoursModalProps> = ({ isOpen, onClo
         setPlaces(placesData);
       } catch (error) {
         console.error('Error fetching places:', error);
-        toast.error('Error fetching places');
+        MySwal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error fetching places. Please try again.',
+        });
       }
     };
 
@@ -50,26 +56,22 @@ const AddOperatingHoursModal: FC<AddOperatingHoursModalProps> = ({ isOpen, onClo
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       const response = await createOperatingHours(data);
-      toast.success(`เวลาเปิดทำการถูกสร้างสำเร็จด้วย ID: ${response.id}`, {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+      MySwal.fire({
+        icon: 'success',
+        title: 'สร้างเวลาเปิดทำการสำเร็จ',
+        text: `เวลาเปิดทำการถูกสร้างสำเร็จด้วย ID: ${response.id}`,
+        showConfirmButton: false,
+        timer: 2000,
       });
+
       onClose();
     } catch (error) {
       console.error('Error creating operating hours:', error);
-      toast.error('เกิดข้อผิดพลาดในการสร้างเวลาเปิดทำการ', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'ไม่สามารถสร้างเวลาเปิดทำการได้ กรุณาลองใหม่อีกครั้ง.',
       });
     }
   };
@@ -193,7 +195,6 @@ const AddOperatingHoursModal: FC<AddOperatingHoursModalProps> = ({ isOpen, onClo
                       </button>
                     </div>
                   </form>
-                  <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

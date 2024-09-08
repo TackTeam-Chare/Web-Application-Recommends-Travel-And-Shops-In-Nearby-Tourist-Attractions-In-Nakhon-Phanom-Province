@@ -7,8 +7,8 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
 import { getPlaceImagesById, getPlaceById } from '@/services/admin/get';
 import { updateTourismImages } from '@/services/admin/edit';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { FaSave, FaSpinner } from 'react-icons/fa';
 
 interface FormData {
@@ -29,6 +29,8 @@ interface EditImagesModalProps {
   onClose: () => void;
 }
 
+const MySwal = withReactContent(Swal);
+
 const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
   const router = useRouter();
@@ -43,9 +45,8 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
   useEffect(() => {
     const fetchEntity = async () => {
       try {
-
         const image = await getPlaceImagesById(numericId);
-
+  
         if (image.tourism_entities_id) {
           const place = await getPlaceById(image.tourism_entities_id);
           setValue('tourism_entities_id', `Id:${image.tourism_entities_id} ${place.name}`);
@@ -57,22 +58,27 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
             tourism_entities_id: image.tourism_entities_id,
           }]);
         } else {
-          throw new Error('tourism_entities_id is missing in the fetched image data.');
+          throw new Error('ไม่พบ tourism_entities_id ในข้อมูลที่ดึงมา');
         }
-
+  
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);
-        toast.error('Error fetching data');
+        const err = error as Error;
+        console.error('เกิดข้อผิดพลาดในการดึงข้อมูล:', err);
+        MySwal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาดในการดึงข้อมูล',
+          text: err.message,
+        });
         setIsLoading(false);
       }
     };
-
+  
     if (numericId) {
       fetchEntity();
     }
   }, [numericId, setValue]);
-
+  
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
     const formData = new FormData();
@@ -80,21 +86,32 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
     for (let i = 0; i < imageFiles.length; i++) {
       formData.append('image_paths', imageFiles[i]);
     }
-
+  
     try {
       await updateTourismImages(numericId, formData);
-      toast.success('Images updated successfully');
+      MySwal.fire({
+        icon: 'success',
+        title: 'อัปเดตรูปภาพสำเร็จ',
+        showConfirmButton: false,
+        timer: 1500
+      });
       setTimeout(() => {
         onClose();
-        router.push('/dashboard/table/images');
+        router.push('/dashboard/table/tourism-entities-images');
       }, 2000);
     } catch (error) {
-      console.error('Error updating images:', error);
-      toast.error('Error updating images');
+      const err = error as Error;
+      console.error('เกิดข้อผิดพลาดในการอัปเดตรูปภาพ:', err);
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาดในการอัปเดตรูปภาพ',
+        text: err.message,
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -200,7 +217,6 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ id, isOpen, onClose }) => {
                       </form>
                     </>
                   )}
-                  <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

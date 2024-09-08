@@ -6,10 +6,10 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
 import { getPlaces } from '@/services/admin/get';
 import { uploadTourismImages } from '@/services/admin/insert';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { FaMapMarkerAlt, FaUpload } from 'react-icons/fa';
 import Image from 'next/image';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface FormData {
   tourism_entities_id: string;
@@ -26,6 +26,8 @@ interface UploadImagesModalProps {
   onClose: () => void;
 }
 
+const MySwal = withReactContent(Swal);
+
 const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
   const router = useRouter();
@@ -39,11 +41,15 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
         const placesData: Place[] = await getPlaces();
         setPlaces(placesData);
       } catch (error) {
-        console.error('Error fetching places:', error);
-        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูลสถานที่');
+        const err = error as Error;
+        MySwal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาดในการดึงข้อมูลสถานที่',
+          text: err.message,
+        });
       }
     };
-
+  
     fetchPlaces();
   }, []);
 
@@ -62,25 +68,29 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
     uploadedFiles.forEach(file => {
       formData.append('image_paths', file.file);
     });
-
+  
     try {
       await uploadTourismImages(formData);
-      toast.success('อัปโหลดรูปภาพสำเร็จ', {
-        position: 'top-right',
-        autoClose: 5000,
+      MySwal.fire({
+        icon: 'success',
+        title: 'อัปโหลดรูปภาพสำเร็จ',
+        showConfirmButton: false,
+        timer: 1500
       });
       setTimeout(() => {
         onClose();
-        router.push('/dashboard/table/images');
+        router.push('/dashboard/table/tourism-entities-images');
       }, 2000);
     } catch (error) {
-      console.error('Error uploading images:', error);
-      toast.error('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ', {
-        position: 'top-right',
-        autoClose: 5000,
+      const err = error as Error;
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ',
+        text: err.message,
       });
     }
   };
+  
 
   return (
     <>
@@ -181,7 +191,6 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
                     </button>
                   </form>
 
-                  {/* Image Preview Modal */}
                   {selectedImage && (
                     <Transition appear show={!!selectedImage} as={Fragment}>
                       <Dialog as="div" className="relative z-50" onClose={() => setSelectedImage(null)}>
@@ -218,7 +227,6 @@ const UploadImagesModal: FC<UploadImagesModalProps> = ({ isOpen, onClose }) => {
                       </Dialog>
                     </Transition>
                   )}
-                  <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

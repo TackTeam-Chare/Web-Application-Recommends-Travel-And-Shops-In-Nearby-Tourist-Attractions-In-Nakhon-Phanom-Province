@@ -5,22 +5,22 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { createSeasonsRelation } from '@/services/admin/insert';
 import { getSeasons, getPlaces } from '@/services/admin/get';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { FaMapMarkerAlt, FaCalendarAlt, FaPlus, FaTimes } from 'react-icons/fa'; // Import icons
+import { FaMapMarkerAlt, FaCalendarAlt, FaPlus, FaTimes } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface FormData {
-  tourism_entities_id: number; 
-  season_id: number; 
+  tourism_entities_id: number;
+  season_id: number;
 }
 
 interface Season {
-  id: number; 
+  id: number;
   name: string;
 }
 
 interface Place {
-  id: number; 
+  id: number;
   name: string;
 }
 
@@ -28,6 +28,8 @@ interface AddSeasonsRelationModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const MySwal = withReactContent(Swal);
 
 const AddSeasonsRelationModal: FC<AddSeasonsRelationModalProps> = ({ isOpen, onClose }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
@@ -45,7 +47,11 @@ const AddSeasonsRelationModal: FC<AddSeasonsRelationModalProps> = ({ isOpen, onC
         setTouristEntities(touristEntitiesData);
       } catch (error) {
         console.error('Error fetching data:', error);
-        toast.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
+        MySwal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาดในการดึงข้อมูล',
+          showConfirmButton: true
+        });
       }
     };
 
@@ -55,26 +61,19 @@ const AddSeasonsRelationModal: FC<AddSeasonsRelationModalProps> = ({ isOpen, onC
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       await createSeasonsRelation(data);
-      toast.success('ความสัมพันธ์ถูกสร้างสำเร็จ', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+      MySwal.fire({
+        icon: 'success',
+        title: 'ความสัมพันธ์ถูกสร้างสำเร็จ',
+        showConfirmButton: false,
+        timer: 1500
       });
-      onClose();  // Close modal on success
+      onClose();
     } catch (error) {
-      console.error('Error creating relation:', error);
-      toast.error('เกิดข้อผิดพลาดในการสร้างความสัมพันธ์', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาดในการสร้างความสัมพันธ์',
+        text: 'กรุณาลองอีกครั้ง',
+        showConfirmButton: true
       });
     }
   };
@@ -165,7 +164,6 @@ const AddSeasonsRelationModal: FC<AddSeasonsRelationModalProps> = ({ isOpen, onC
                       </button>
                     </div>
                   </form>
-                  <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

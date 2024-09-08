@@ -3,15 +3,15 @@ import Image from "next/image";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Dialog, Transition } from "@headlessui/react";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { getPlaceById, getDistricts, getCategories, getSeasons } from "@/services/admin/get";
 import { updateTouristEntity } from "@/services/admin/edit";
-import { ToastContainer, toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPlus, faMapMarkerAlt, faTags, faSnowflake, faGlobe, faUpload, faClock, } from "@fortawesome/free-solid-svg-icons";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
-import "react-toastify/dist/ReactToastify.css";
 
 interface OperatingHour {
   day_of_week: string;
@@ -44,6 +44,8 @@ interface EditPlaceModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const MySwal = withReactContent(Swal);
 
 const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
   const router = useRouter();
@@ -100,7 +102,11 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
         setExistingImages(placeData.images || []);
       } catch (error) {
         console.error("ไม่สามารถดึงข้อมูลได้", error);
-        toast.error("ไม่สามารถดึงข้อมูลได้ กรุณาลองอีกครั้ง");
+        MySwal.fire({
+          icon: 'error',
+          title: 'ไม่สามารถดึงข้อมูลได้',
+          text: 'กรุณาลองอีกครั้ง',
+        });
       }
     };
 
@@ -125,7 +131,12 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
 
   const onSubmit = async (data: FormData) => {
     if (!isDirty) {
-      toast.warn("ไม่มีการเปลี่ยนแปลงข้อมูล");
+      MySwal.fire({
+        icon: 'warning',
+        title: 'ไม่มีการเปลี่ยนแปลงข้อมูล',
+        showConfirmButton: false,
+        timer: 1500
+      });
       return;
     }
 
@@ -150,14 +161,23 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
         throw new Error("ไม่สามารถอัปเดตสถานที่ได้");
       }
 
-      toast.success("อัปเดตสถานที่สำเร็จ!");
+      MySwal.fire({
+        icon: 'success',
+        title: 'อัปเดตสถานที่สำเร็จ!',
+        showConfirmButton: false,
+        timer: 1500
+      });
       setTimeout(() => {
         onClose();
         router.push("/dashboard/table/tourist-entities");
       }, 2000);
     } catch (error) {
       console.error("ไม่สามารถอัปเดตสถานที่ได้", error);
-      toast.error("ไม่สามารถอัปเดตสถานที่ได้ กรุณาลองอีกครั้ง");
+      MySwal.fire({
+        icon: 'error',
+        title: 'ไม่สามารถอัปเดตสถานที่ได้',
+        text: 'กรุณาลองอีกครั้ง',
+      });
     } finally {
       setSubmitting(false);
     }
@@ -165,14 +185,18 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
 
   const handleClose = () => {
     if (isDirty) {
-      toast.warn("ปิดโดยไม่บันทึกการเปลี่ยนแปลง", {
-        autoClose: 1000,
-        onClose: () => onClose(),
+      MySwal.fire({
+        icon: 'warning',
+        title: 'ปิดโดยไม่บันทึกการเปลี่ยนแปลง',
+        showConfirmButton: false,
+        timer: 1000,
+        willClose: () => onClose(),
       });
     } else {
       onClose();
     }
   };
+
 
   return (
     <>
@@ -554,7 +578,6 @@ const EditPlaceModal: FC<EditPlaceModalProps> = ({ id, isOpen, onClose }) => {
                       </button>
                     </div>
                   </form>
-                  <ToastContainer />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

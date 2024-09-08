@@ -13,6 +13,8 @@ import { faTrash, faPlus, faMapMarkerAlt, faTags, faSnowflake, faGlobe, faUpload
 import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface OperatingHour {
   day_of_week: string;
@@ -39,6 +41,8 @@ interface CreateProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const MySwal = withReactContent(Swal);
 
 const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) => {
   const { register, handleSubmit, control,setValue, formState: { errors } } = useForm<FormData>({
@@ -73,8 +77,11 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
         setCategories(categoriesData);
         setSeasons(seasonsData);
       } catch (error) {
-        console.error("ไม่สามารถโหลดข้อมูลได้", error);
-        toast.error("ไม่สามารถโหลดข้อมูลได้ กรุณาลองอีกครั้ง");
+        MySwal.fire({
+          icon: 'error',
+          title: 'ไม่สามารถโหลดข้อมูลได้',
+          text: (error as Error).message,
+        });
       }
     };
 
@@ -84,7 +91,11 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const files = Array.from(event.target.files || []);
     if (files.length > 10) {
-      toast.error("คุณสามารถอัพโหลดภาพได้สูงสุด 10 ภาพเท่านั้น");
+      MySwal.fire({
+        icon: 'warning',
+        title: 'อัพโหลดสูงสุด 10 รูปภาพ',
+        text: 'คุณสามารถอัพโหลดภาพได้สูงสุด 10 ภาพเท่านั้น'
+      });
       return;
     }
     const filePreviews = files.map(file => ({
@@ -96,7 +107,7 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
   };
 
   const handleImageClick = (url: string) => {
-    setSelectedImage(url); // Open the modal with the selected image
+    setSelectedImage(url);
   };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
@@ -123,11 +134,19 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, onClose }) =>
         throw new Error("ไม่สามารถเพิ่มสถานที่ได้");
       }
 
-      toast.success("เพิ่มสถานที่สำเร็จ!");
-      setTimeout(onClose, 2000);  // ปิดโมดอลเมื่อสำเร็จหลังจาก 2 วินาทีเพื่อให้ toast แสดงผล
+      MySwal.fire({
+        icon: 'success',
+        title: 'เพิ่มสถานที่สำเร็จ!',
+        showConfirmButton: false,
+        timer: 1500
+      });
+      setTimeout(onClose, 2000);
     } catch (error) {
-      console.error("ไม่สามารถเพิ่มสถานที่ได้", error);
-      toast.error("ไม่สามารถเพิ่มสถานที่ได้ กรุณาลองอีกครั้ง");
+      MySwal.fire({
+        icon: 'error',
+        title: 'ไม่สามารถเพิ่มสถานที่ได้',
+        text: (error as Error).message,
+      });
     } finally {
       setSubmitting(false);
     }

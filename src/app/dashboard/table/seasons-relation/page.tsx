@@ -145,7 +145,7 @@ const SeasonsRelationIndexPage: FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-8 text-center text-blue-600">ความสัมพันธ์ระหว่างฤดูกาลและหน่วยงานท่องเที่ยว</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-blue-600">ตารางความสัมพันธ์ระหว่างฤดูกาล</h1>
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={() => setIsAddModalOpen(true)}

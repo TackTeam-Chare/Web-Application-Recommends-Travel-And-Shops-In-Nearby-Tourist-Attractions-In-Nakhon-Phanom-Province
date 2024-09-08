@@ -4,16 +4,14 @@ import { useRouter } from "next/navigation";
 import Image from "next/image"; // Import Image from next/image
 import { login } from "@/services/admin/auth";
 import { FaUser, FaLock } from "react-icons/fa"; // Add icons
+import Swal from "sweetalert2"; // Import SweetAlert2
+import withReactContent from "sweetalert2-react-content";
 
-interface Alert {
-  type: string;
-  message: string;
-}
+const MySwal = withReactContent(Swal);
 
 const AdminLogin: FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [alert, setAlert] = useState<Alert>({ type: "", message: "" });
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -22,13 +20,25 @@ const AdminLogin: FC = () => {
       const response = await login({ username, password });
       console.log("Login successful:", response);
       localStorage.setItem("token", response.token);
-      setAlert({ type: "success", message: "เข้าสู่ระบบสำเร็จ!" });
+      
+      // Display success alert
+      MySwal.fire({
+        icon: "success",
+        title: "เข้าสู่ระบบสำเร็จ!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      // Redirect to dashboard
       router.push("../../dashboard");
     } catch (error) {
       console.error("Login failed:", error);
-      setAlert({
-        type: "error",
-        message: "เข้าสู่ระบบล้มเหลว กรุณาลองอีกครั้ง",
+
+      // Display error alert
+      MySwal.fire({
+        icon: "error",
+        title: "เข้าสู่ระบบล้มเหลว",
+        text: "กรุณาลองอีกครั้ง",
       });
     }
   };
@@ -109,18 +119,6 @@ const AdminLogin: FC = () => {
                 เข้าสู่ระบบ
               </button>
             </div>
-            {alert.message && (
-              <div
-                className={`${
-                  alert.type === "success"
-                    ? "bg-green-100 border-green-400 text-green-700"
-                    : "bg-red-100 border-red-400 text-red-700"
-                } border px-4 py-3 rounded relative mt-4`}
-                role="alert"
-              >
-                <span className="block sm:inline">{alert.message}</span>
-              </div>
-            )}
           </form>
         </div>
       </div>

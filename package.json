@@ -43,7 +43,8 @@
     "react-tooltip": "^4.5.1",
     "recharts": "^2.12.7",
     "slick-carousel": "^1.8.1",
-    "sweetalert2": "^11.12.4"
+    "sweetalert2": "^11.13.3",
+    "sweetalert2-react-content": "^5.0.7"
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.4",

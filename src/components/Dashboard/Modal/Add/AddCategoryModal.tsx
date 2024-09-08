@@ -4,10 +4,12 @@ import React, { useState, Fragment } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { createCategory } from '@/services/admin/insert';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { FaFolderPlus, FaTimes, FaCheck, FaPlus } from 'react-icons/fa'; // Import icons for Cancel and Submit
+import { FaFolderPlus, FaTimes, FaPlus } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { useRouter } from 'next/navigation';
+
+const MySwal = withReactContent(Swal);
 
 interface FormData {
   name: string;
@@ -21,26 +23,22 @@ export default function CreateCategory() {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       const response = await createCategory(data);
-      toast.success('หมวดหมู่ถูกสร้างสำเร็จ!', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+
+      MySwal.fire({
+        icon: 'success',
+        title: 'หมวดหมู่ถูกสร้างสำเร็จ!',
+        showConfirmButton: false,
+        timer: 1500,
       });
+
       setIsOpen(false);
       router.push('/dashboard/table/categories');
     } catch (error) {
-      toast.error('เกิดข้อผิดพลาดในการสร้างหมวดหมู่', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+
+      MySwal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'เกิดข้อผิดพลาดในการสร้างหมวดหมู่',
       });
     }
   };
@@ -119,7 +117,6 @@ export default function CreateCategory() {
           </div>
         </Dialog>
       </Transition>
-      <ToastContainer />
     </>
   );
 }

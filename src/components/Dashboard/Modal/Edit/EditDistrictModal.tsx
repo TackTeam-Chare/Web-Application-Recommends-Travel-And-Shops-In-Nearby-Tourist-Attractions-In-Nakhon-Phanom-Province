@@ -4,8 +4,8 @@ import React, { FC, Fragment, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { updateDistrict } from '@/services/admin/edit';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface District {
   id: string;
@@ -22,6 +22,8 @@ interface FormData {
   name: string;
 }
 
+const MySwal = withReactContent(Swal);
+
 const EditDistrictModal: FC<EditDistrictModalProps> = ({ isOpen, onClose, district }) => {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
 
@@ -34,10 +36,19 @@ const EditDistrictModal: FC<EditDistrictModalProps> = ({ isOpen, onClose, distri
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       await updateDistrict(Number(district.id), data);
-      toast.success('อัปเดตอำเภอสำเร็จ!');
+      MySwal.fire({
+        icon: 'success',
+        title: 'อัปเดตอำเภอสำเร็จ!',
+        showConfirmButton: false,
+        timer: 1500
+      });
       onClose();
     } catch (error) {
-      toast.error('การอัปเดตอำเภอล้มเหลว กรุณาลองใหม่อีกครั้ง.');
+      MySwal.fire({
+        icon: 'error',
+        title: 'การอัปเดตอำเภอล้มเหลว',
+        text: 'กรุณาลองใหม่อีกครั้ง.',
+      });
     }
   };
 
@@ -106,7 +117,6 @@ const EditDistrictModal: FC<EditDistrictModalProps> = ({ isOpen, onClose, distri
           </div>
         </Dialog>
       </Transition>
-      <ToastContainer />
     </>
   );
 };
