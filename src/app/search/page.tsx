@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Tooltip from "react-tooltip"; // Corrected import statement
+import Tooltip from "react-tooltip";
 import {
   FaMapMarkerAlt,
   FaSearch,
@@ -15,9 +15,10 @@ import {
   FaTree,
   FaTimesCircle,
   FaClock,
-  FaCalendarAlt, // New icon for days filter
-  FaLayerGroup, // New icon for categories filter
+  FaCalendarAlt,
+  FaLayerGroup,
   FaLeaf,
+  FaSun, FaCloudRain, FaSnowflake, FaGlobe 
 } from "react-icons/fa";
 import { FallingLines } from "react-loader-spinner";
 import Link from "next/link";
@@ -59,6 +60,7 @@ const GeocodingSearchPage: React.FC = () => {
   }>({});
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [isTimeFilterVisible, setIsTimeFilterVisible] = useState(false); // State to show opening hours input
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
@@ -136,10 +138,13 @@ const GeocodingSearchPage: React.FC = () => {
   };
 
   const handleSearchByField = (field: keyof typeof searchParams, value: string | number) => {
-    const updatedParams = { ...searchParams, [field]: value };
-    setSearchParams(updatedParams);
-    searchPlaces(updatedParams);
-
+    setSearchParams(prevParams => ({
+      ...prevParams,
+      [field]: value, // เพิ่มค่าที่เลือกใหม่
+    }));
+    searchPlaces({ ...searchParams, [field]: value });
+  
+    // จัดการกับชื่อฟิลเตอร์ที่เลือกแสดงผล
     if (field === "category") {
       const categoryName = filters.categories.find(cat => cat.id === value)?.name || null;
       setSelectedCategory(categoryName);
@@ -148,10 +153,15 @@ const GeocodingSearchPage: React.FC = () => {
       const seasonName = filters.seasons.find(season => season.id === value)?.name || null;
       setSelectedSeason(seasonName);
     }
+    if (field === "district") {
+      const districtName = filters.districts.find(district => district.id === value)?.name || null;
+      setSelectedDistrict(districtName);
+    }
     if (field === "day_of_week") {
       setSelectedDay(value as string);
     }
   };
+  
 
   const handleCurrentLocationClick = () => {
     if (userLocation) {
@@ -166,20 +176,17 @@ const GeocodingSearchPage: React.FC = () => {
     setNearbyPlaces([]);
     setSelectedCategory(null);
     setSelectedSeason(null);
+    setSelectedDistrict(null);
     setSelectedDay(null);
-    setIsTimeFilterVisible(false); // Reset opening hours display
+    setIsTimeFilterVisible(false);
     if (userLocation) {
       setMapCenter(userLocation);
     }
   };
 
   const resetTogglesAndSearch = () => {
-    setSelectedCategory(null);
-    setSelectedSeason(null);
     setIsTimeFilterVisible(false);
-    clearSearch();
   };
-
   const settings = {
     dots: true,
     infinite: true,
@@ -214,8 +221,8 @@ const GeocodingSearchPage: React.FC = () => {
   return (
     <div className="container mx-auto p-4 relative">
       {/* Search Bar and Buttons */}
-      <div className="flex items-center justify-center mb-6">
-        <div className="relative w-full max-w-md mx-auto flex items-center justify-center">
+      <div className="flex flex-col lg:flex-row items-center justify-center mb-6">
+        <div className="relative w-full lg:max-w-md mx-auto flex items-center justify-center mb-4 lg:mb-0">
           <button
             onClick={handleCurrentLocationClick}
             className="bg-orange-500 text-white p-3 rounded-full hover:bg-orange-600 transition duration-300"
@@ -225,7 +232,7 @@ const GeocodingSearchPage: React.FC = () => {
             <FaMapMarkerAlt />
           </button>
           <Tooltip place="top" type="dark" effect="solid" />
-          <div className="relative w-full max-w-md mx-4">
+          <div className="relative w-full max-w-full lg:max-w-md mx-4">
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
             <input
               type="text"
@@ -233,8 +240,9 @@ const GeocodingSearchPage: React.FC = () => {
               className="p-2 pl-10 border border-orange-500 rounded w-full focus:outline-none focus:border-orange-600"
               value={searchParams.q || ""}
               onChange={(e) => handleSearchByField("q", e.target.value)}
-              aria-label="Search by place name"
+              aria-label="ค้นชื่อสถานที่"
             />
+            {searchParams.q || searchParams.category || searchParams.district || searchParams.season ? (
             <button
               onClick={clearSearch}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-500"
@@ -242,48 +250,60 @@ const GeocodingSearchPage: React.FC = () => {
             >
               <FaTimesCircle size={20} />
             </button>
+          ) : null}
           </div>
         </div>
       </div>
-
-      {/* Toggle Buttons for Categories, Seasons, and Days */}
-      <div className="flex justify-center mb-4">
+  
+      {/* Toggle Buttons for Categories, Seasons, Districts, and Days */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 justify-center mb-4">
         <button
           onClick={() => {
             resetTogglesAndSearch();
             setSelectedCategory((prev) => (prev ? null : "category"));
           }}
-          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 mr-2 flex items-center"
+          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center justify-center"
         >
-          <FaLayerGroup className="mr-2" /> เลือกประเภทสถานที่
+          <FaLayerGroup className="mr-2" /> ประเภทสถานที่
         </button>
         <button
           onClick={() => {
             resetTogglesAndSearch();
             setSelectedSeason((prev) => (prev ? null : "season"));
           }}
-          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 mr-2 flex items-center"
+          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center justify-center"
         >
-          <FaLeaf className="mr-2" /> เลือกสถานที่ตามฤดูกาล
+          <FaLeaf className="mr-2" /> สถานที่ตามฤดูกาล
+        </button>
+        <button
+          onClick={() => {
+            resetTogglesAndSearch();
+            setSelectedDistrict((prev) => (prev ? null : "district"));
+          }}
+          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center justify-center"
+        >
+          <FaMapMarkerAlt className="mr-2" /> เลือกอำเภอ
         </button>
         <button
           onClick={() => {
             resetTogglesAndSearch();
             setIsTimeFilterVisible((prev) => !prev);
           }}
-          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center"
+          className="border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center justify-center"
         >
-          <FaCalendarAlt className="mr-2" /> เลือกตามวันและเวลา
+          <FaCalendarAlt className="mr-2" /> วันและเวลา
         </button>
       </div>
-
-      {/* Category, Season, and Time Filters */}
+  
+      {/* Category, Season, District, and Time Filters */}
       {selectedCategory && (
         <div className="flex flex-wrap gap-2 justify-center mb-4">
           {filters.categories.map((category) => (
             <button
               key={category.id}
-              className={`border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center ${searchParams.category === category.id ? 'bg-orange-500 text-white' : ''}`}
+              className={`border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center justify-center ${
+                searchParams.category === category.id ? 'bg-orange-500 text-white' : ''
+              }`}
               onClick={() => handleSearchByField("category", category.id)}
             >
               {category.name === "สถานที่ท่องเที่ยว" && <FaTree className="mr-2" />}
@@ -295,21 +315,43 @@ const GeocodingSearchPage: React.FC = () => {
           ))}
         </div>
       )}
-
-      {selectedSeason && (
+  
+  {selectedSeason && (
+  <div className="flex flex-wrap gap-2 justify-center mb-4">
+    {filters.seasons.map((season) => (
+      <button
+        key={season.id}
+        className={`border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center justify-center ${
+          searchParams.season === season.id ? 'bg-orange-500 text-white' : ''
+        }`}
+        onClick={() => handleSearchByField("season", season.id)}
+      >
+        {season.name === "ฤดูร้อน" && <FaSun className="mr-2" />}
+        {season.name === "ฤดูฝน" && <FaCloudRain className="mr-2" />}
+        {season.name === "ฤดูหนาว" && <FaSnowflake className="mr-2" />}
+        {season.name === "ตลอดทั้งปี" && <FaGlobe className="mr-2" />}
+        {season.name}
+      </button>
+    ))}
+  </div>
+)}
+  
+      {selectedDistrict && (
         <div className="flex flex-wrap gap-2 justify-center mb-4">
-          {filters.seasons.map((season) => (
+          {filters.districts.map((district) => (
             <button
-              key={season.id}
-              className={`border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center ${searchParams.season === season.id ? 'bg-orange-500 text-white' : ''}`}
-              onClick={() => handleSearchByField("season", season.id)}
+              key={district.id}
+              className={`border-2 border-orange-500 text-orange-500 rounded-full py-1 px-3 flex items-center justify-center ${
+                searchParams.district === district.id ? 'bg-orange-500 text-white' : ''
+              }`}
+              onClick={() => handleSearchByField("district", district.id)}
             >
-              {season.name}
+              {district.name}
             </button>
           ))}
         </div>
       )}
-
+  
       {isTimeFilterVisible && (
         <div className="flex flex-col sm:flex-row justify-center items-center mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
           <div className="flex items-center space-x-2">
@@ -330,7 +372,7 @@ const GeocodingSearchPage: React.FC = () => {
               <option value="Saturday">วันเสาร์</option>
             </select>
           </div>
-
+  
           <div className="flex items-center space-x-2">
             <FaClock className="text-orange-500" />
             <label className="text-orange-500 font-semibold">เวลาเปิด:</label>
@@ -341,7 +383,7 @@ const GeocodingSearchPage: React.FC = () => {
               value={searchParams.opening_time || ""}
             />
           </div>
-
+  
           <div className="flex items-center space-x-2">
             <FaClock className="text-orange-500" />
             <label className="text-orange-500 font-semibold">เวลาปิด:</label>
@@ -354,21 +396,22 @@ const GeocodingSearchPage: React.FC = () => {
           </div>
         </div>
       )}
-
+  
       {/* Display selected filters */}
       <div className="text-center mb-4">
         {selectedCategory && <p className="text-lg font-bold text-orange-500">หมวดหมู่ที่เลือก: {selectedCategory}</p>}
         {selectedSeason && <p className="text-lg font-bold text-orange-500">ฤดูกาลที่เลือก: {selectedSeason}</p>}
+        {selectedDistrict && <p className="text-lg font-bold text-orange-500">อำเภอที่เลือก: {selectedDistrict}</p>}
         {selectedDay && <p className="text-lg font-bold text-orange-500">วันที่เลือก: {selectedDay}</p>}
       </div>
-
+  
       {/* Loading Spinner */}
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
           <FallingLines width="100" color="#4fa94d" visible={true} />
         </div>
       )}
-
+  
       {/* MapComponent Integration */}
       <div className={`w-full h-96 mb-6 ${loading ? "blur-sm" : ""}`}>
         {isClient && (
@@ -384,7 +427,7 @@ const GeocodingSearchPage: React.FC = () => {
           />
         )}
       </div>
-
+  
       {/* Display search query and results count */}
       <div className="mt-4">
         {searchParams.q && (
@@ -392,7 +435,7 @@ const GeocodingSearchPage: React.FC = () => {
             คำที่ค้นหา: &quot;{searchParams.q}&quot; (พบ {searchResults.length} ผลลัพธ์)
           </p>
         )}
-
+  
         {/* Display search results using Slider */}
         {searchResults.length > 0 && (
           <div className="mb-8">
@@ -424,7 +467,7 @@ const GeocodingSearchPage: React.FC = () => {
           </div>
         )}
       </div>
-
+  
       {/* Display categorized places using sliders with counts */}
       {filters.categories.map((category) => {
         const categorizedPlaces = categorizePlaces(category.id);
@@ -460,6 +503,7 @@ const GeocodingSearchPage: React.FC = () => {
       })}
     </div>
   );
+  
 };
 
 export default GeocodingSearchPage;

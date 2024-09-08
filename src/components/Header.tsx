@@ -18,7 +18,7 @@ import {
   ShoppingBagIcon,
   BuildingStorefrontIcon,
   XCircleIcon,
-  UserIcon, // Import the UserIcon from Heroicons
+  UserIcon,
 } from "@heroicons/react/20/solid";
 
 export default function Header() {
@@ -75,8 +75,6 @@ export default function Header() {
               </div>
             </Popover.Panel>
           </Popover>
-
-          {/* Admin Login Button */}
           <a
             href="/auth/login"
             className="flex items-center text-lg hover:text-white text-white border border-white-500 bg-transparent hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 rounded-lg px-3 py-2"
@@ -132,8 +130,6 @@ export default function Header() {
                 {item.text}
               </a>
             ))}
-
-            {/* Mobile "สถานที่" with MapIcon */}
             <Disclosure as="div">
               <Disclosure.Button className="group flex w-full items-center justify-between rounded-lg py-2 px-4 text-lg hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105">
                 <MapIcon className="h-5 w-5 mr-2" />
@@ -162,8 +158,6 @@ export default function Header() {
                 ))}
               </Disclosure.Panel>
             </Disclosure>
-
-            {/* Mobile Admin Login */}
             <a
               href="/auth/login"
               className="flex items-center text-lg hover:text-white text-white border border-white-500 bg-transparent hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 rounded-lg px-3 py-2"
