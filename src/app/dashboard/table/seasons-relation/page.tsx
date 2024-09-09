@@ -78,18 +78,18 @@ const SeasonsRelationIndexPage: FC = () => {
     () => [
       {
         Header: 'รหัส',
-        accessor: 'id',
+        accessor: 'id' as const,
       },
       {
         Header: 'ฤดูกาล',
-        accessor: 'season_name',
+        accessor: 'season_name'  as const,
         Cell: ({ row }: { row: { original: Relation } }) => (
           <span> {row.original.season_name}</span>
         ),
       },
       {
         Header: 'หน่วยงานท่องเที่ยว',
-        accessor: 'tourism_entity_name',
+        accessor: 'tourism_entity_name'  as const,
         Cell: ({ row }: { row: { original: Relation } }) => (
           <span>{`ID: ${row.original.tourism_entities_id}, ชื่อ: ${row.original.tourism_entity_name}`}</span>
         ),
