@@ -121,7 +121,7 @@ export default function Header() {
         <a
           key={index}
           href={item.href}
-          className="flex items-center px-4 py-2 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out"
+             className="flex items-center rounded-lg py-2 px-4 hover:bg-orange-600 hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
         >
           <item.icon className="h-5 w-5 mr-2" />
           {item.text}
@@ -178,7 +178,7 @@ export default function Header() {
               type="button"
               onClick={handleLogout}
               disabled={loading}
-              className="flex items-center text-lg text-white border border-white-500 bg-transparent hover:bg-white-500 hover:text-white transition duration-300 ease-in-out transform hover:scale-105 rounded-full px-4 py-2"
+               className="flex items-center text-lg hover:text-white text-white border border-white-500 bg-transparent hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 rounded-lg px-3 py-2"
             >
               <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-1" />
               ออกจากระบบ
