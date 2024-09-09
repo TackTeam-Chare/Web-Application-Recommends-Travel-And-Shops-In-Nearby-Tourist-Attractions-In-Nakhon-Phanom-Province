@@ -113,9 +113,8 @@ const CategoriesPage: React.FC = () => {
         ),
       },
     ],
-    [handleDelete] // เพิ่ม dependency เพื่อป้องกันไม่ให้ columns ถูกคำนวณใหม่ทุกครั้ง
+    []
   );
-  
 
   const {
     getTableProps,
@@ -146,7 +145,7 @@ const CategoriesPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-8 text-center text-black-600">
+        <h1 className="text-3xl font-bold mb-8 text-center text-bold text-black-600">
           หมวดหมู่
         </h1>
         <div className="flex justify-between items-center mb-4">
@@ -233,13 +232,11 @@ const CategoriesPage: React.FC = () => {
           </button>
         </div>
         {/* Modals */}
-        {isCreateModalOpen && (
-          <CreateCategory isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
-        )}
+        {isCreateModalOpen && <CreateCategory />}
         {isEditModalOpen && editCategoryId && (
           <EditCategoryModal id={editCategoryId} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} />
         )}
-        <ToastContainer position="bottom-right" autoClose={5000} />
+        <ToastContainer />
       </div>
     </div>
   );
